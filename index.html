@@ -1,1133 +1,1021 @@
 <!DOCTYPE html>
 <html lang="zh-Hant-TW">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>一萬塊的人生轉彎（恐怖擴充版）</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>墮落青年 · 不重複人生</title>
   <style>
-    :root{
-      --bg: #0f1115;
-      --panel: #141824;
-      --text: #f3f5f7;
-      --muted: #b9c0cc;
-      --btn: #2a3246;
-      --btnHover: #3a4666;
-      --danger: #ff6b6b;
-      --ok: #7ee081;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body{
-      margin:0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
-      -webkit-text-size-adjust: 100%;
+    body {
+      background: #0b0e14;
+      font-family: 'Segoe UI', 'Noto Sans TC', Roboto, sans-serif;
+      padding: 16px 12px 40px;
+      color: #eef2f6;
     }
-    #game{
-      max-width: 760px;
+    #game {
+      max-width: 720px;
       margin: 0 auto;
-      padding: 14px 14px 24px;
+      background: #151b26;
+      border-radius: 36px 36px 28px 28px;
+      padding: 24px 18px 32px;
+      box-shadow: 0 12px 0 #0a0f17;
     }
-    h1{
-      margin: 10px 0 10px;
-      font-size: 1.35rem;
-      text-align:center;
-      letter-spacing: .5px;
-    }
-    #stats{
-      background: var(--panel);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 10px;
-      padding: 10px 12px;
-      color: var(--muted);
-      font-size: 0.98rem;
-      line-height: 1.4;
-    }
-    #story{
-      margin-top: 12px;
-      background: var(--panel);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 10px;
-      padding: 14px 12px;
-      white-space: pre-wrap;
-      line-height: 1.75;
-      font-size: 1.12rem;
-      min-height: 180px;
-    }
-    .choices{
-      margin-top: 12px;
-      display:flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    button.choice{
-      width:100%;
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 10px;
-      padding: 12px 12px;
-      background: var(--btn);
-      color: var(--text);
-      font-size: 1.06rem;
-      text-align:left;
-      line-height: 1.4;
-    }
-    button.choice:active{ transform: scale(.995); }
-    button.choice:hover{ background: var(--btnHover); cursor:pointer; }
-    #restart{
-      margin-top: 12px;
-      width:100%;
-      padding: 12px 12px;
-      background: transparent;
-      border: 1px solid rgba(255,255,255,.18);
-      color: var(--text);
-      border-radius: 10px;
-      font-size: 1rem;
-      display:none;
-    }
-    #banner{
-      margin: 8px 0 0;
-      font-size: 0.95rem;
-      color: var(--muted);
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 700;
       text-align: center;
+      letter-spacing: 1px;
+      background: linear-gradient(145deg, #ffb347, #ff8c42);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
     }
-    .hint-ok{ color: var(--ok); }
-    .hint-bad{ color: var(--danger); }
-
-    @media (max-width: 420px){
-      h1{ font-size: 1.22rem; }
-      #story{ font-size: 1.08rem; }
-      button.choice{ font-size: 1.04rem; }
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px 20px;
+      background: #1d2535;
+      border-radius: 48px;
+      padding: 16px 22px;
+      margin-bottom: 20px;
+      border: 1px solid #3d4b65;
+      font-size: 1rem;
+    }
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .stat-label {
+      color: #a0b2d9;
+    }
+    .stat-value {
+      font-weight: 700;
+      background: #00000030;
+      padding: 4px 12px;
+      border-radius: 40px;
+      border: 1px solid #5f739b;
+    }
+    #story {
+      background: #1b2333;
+      border-radius: 28px;
+      padding: 28px 22px;
+      line-height: 1.8;
+      font-size: 1.15rem;
+      white-space: pre-wrap;
+      min-height: 200px;
+      border: 1px solid #43506e;
+      box-shadow: inset 0 4px 6px #00000040;
+      margin-bottom: 24px;
+    }
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 8px;
+    }
+    .choice-btn {
+      background: #263040;
+      border: none;
+      border-radius: 60px;
+      padding: 18px 22px;
+      color: white;
+      font-size: 1.12rem;
+      text-align: left;
+      border-bottom: 4px solid #0f1622;
+      transition: 0.1s ease;
+      box-shadow: 0 6px 0 #0c121e;
+      cursor: pointer;
+    }
+    .choice-btn:active {
+      transform: translateY(5px);
+      border-bottom-width: 1px;
+    }
+    #restart {
+      margin-top: 30px;
+      width: 100%;
+      padding: 18px;
+      background: transparent;
+      border: 2px solid #5e6e8f;
+      color: #ccd9f0;
+      border-radius: 60px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      display: none;
+      cursor: pointer;
+    }
+    .footer {
+      text-align: center;
+      color: #5c6d8f;
+      margin-top: 20px;
+      font-size: 0.9rem;
     }
   </style>
 </head>
 <body>
-  <div id="game">
-    <h1>一萬塊的人生轉彎（恐怖擴充版）</h1>
-    <div id="banner">提示：如果你看得到這行字＋下面按鈕，就代表已成功載入。</div>
-    <div id="stats"></div>
-    <div id="story"></div>
-    <div class="choices" id="choices"></div>
-    <button id="restart">重新開始</button>
+<div id="game">
+  <h1>⬇️ 墮落青年</h1>
+  <div class="stats" id="stats">
+    <div class="stat-item"><span class="stat-label">💰錢</span><span class="stat-value" id="money">1200</span></div>
+    <div class="stat-item"><span class="stat-label">⚡體</span><span class="stat-value" id="energy">75</span></div>
+    <div class="stat-item"><span class="stat-label">🧠神</span><span class="stat-value" id="mental">68</span></div>
+    <div class="stat-item"><span class="stat-label">👿罪</span><span class="stat-value" id="sin">0</span></div>
+    <div class="stat-item"><span class="stat-label">🌑瘋</span><span class="stat-value" id="crazy">0</span></div>
+    <div class="stat-item"><span class="stat-label">🏷️名</span><span class="stat-value" id="fame">0</span></div>
   </div>
+  <div id="story">載入中...</div>
+  <div class="choices" id="choices"></div>
+  <button id="restart">🔄 重新墮落</button>
+  <div class="footer">每天一個選擇 • 超過160種事件 • 18種結局</div>
+</div>
+<script>
+(function() {
+  // --------------------- 初始狀態 -------------------------
+  let state = {
+    money: 1200,
+    energy: 75,
+    mental: 68,
+    sin: 0,           // 罪惡值 (加入幫派、犯罪)
+    crazy: 0,         // 瘋狂值 (靈異、精神異常)
+    fame: 0,          // 名聲 (網紅、街頭名人)
+    drug: 0,          // 藥物依賴
+    debt: 0,          // 負債
+    gang: 0,          // 幫派關係
+    cult: 0,          // 邪教傾向
+    day: 1,
+    // 特殊旗標 (用於結局)
+    killed: false,
+    betrayed: false,
+    saved: false,
+    enlighten: false,
+    // 記錄已觸發的一次性事件 (once)
+    triggeredEvents: {}
+  };
 
-  <script>
-    // ===== 安全保護：把錯誤顯示在畫面上 =====
-    window.onerror = function(message, source, lineno, colno) {
-      const storyEl = document.getElementById("story");
-      const banner = document.getElementById("banner");
-      if (banner) banner.innerHTML = '<span class="hint-bad">偵測到腳本錯誤</span>（請把這段截圖給我）：';
-      if (storyEl) storyEl.textContent =
-        "JS Error: " + message + "\n" +
-        "Source: " + source + "\n" +
-        "Line: " + lineno + ", Col: " + colno + "\n";
-      return false;
-    };
+  // --------------------- 工具函數 -------------------------
+  function clamp(num, min, max) {
+    return Math.min(max, Math.max(min, num));
+  }
 
-    // ===== 狀態 ===== (加入 horror 標籤)
-    const initialState = () => ({
-      money: 3000,
-      mental: 70,
-      motherHealth: 50,
-      fame: 0,
-      corruption: false,
-      trauma: false,
-      joinedLazyCult: false,
-      joinedSupportGroup: false,
-      heroPotential: false,
-      randomFlags: {},
-      tagsScore: { lazy:0, hero:0, darkSpin:0, family:0, public:0, media:0, horror:0 },
-      day: 1
+  function update(change) {
+    if (change.money !== undefined) state.money = clamp(state.money + change.money, 0, 999999);
+    if (change.energy !== undefined) state.energy = clamp(state.energy + change.energy, 0, 100);
+    if (change.mental !== undefined) state.mental = clamp(state.mental + change.mental, 0, 100);
+    if (change.sin !== undefined) state.sin = clamp(state.sin + change.sin, 0, 100);
+    if (change.crazy !== undefined) state.crazy = clamp(state.crazy + change.crazy, 0, 100);
+    if (change.fame !== undefined) state.fame = clamp(state.fame + change.fame, 0, 100);
+    if (change.drug !== undefined) state.drug = clamp(state.drug + change.drug, 0, 100);
+    if (change.debt !== undefined) state.debt = clamp(state.debt + change.debt, 0, 999999);
+    if (change.gang !== undefined) state.gang = clamp(state.gang + change.gang, 0, 100);
+    if (change.cult !== undefined) state.cult = clamp(state.cult + change.cult, 0, 100);
+    if (change.killed) state.killed = true;
+    if (change.betrayed) state.betrayed = true;
+    if (change.saved) state.saved = true;
+    if (change.enlighten) state.enlighten = true;
+  }
+
+  // 更新畫面數值
+  function refreshStats() {
+    document.getElementById('money').innerText = state.money;
+    document.getElementById('energy').innerText = state.energy;
+    document.getElementById('mental').innerText = state.mental;
+    document.getElementById('sin').innerText = state.sin;
+    document.getElementById('crazy').innerText = state.crazy;
+    document.getElementById('fame').innerText = state.fame;
+  }
+
+  // --------------------- 結局列表 (18種) --------------------
+  const endings = [
+    { id: 'end_debt', name: '💸 債台高築跳樓', condition: () => state.debt >= 80000 && state.mental < 20,
+      text: '你欠下巨額債務，走投無路，從頂樓一躍而下。留下滿地借據。' },
+    { id: 'end_drug', name: '💉 毒蟲人生', condition: () => state.drug >= 80,
+      text: '你徹底被毒品控制，在廢棄大樓裡注射過量，再也醒不過來。' },
+    { id: 'end_gang', name: '🔫 幫派火拚', condition: () => state.gang >= 70 && state.sin >= 50,
+      text: '你成為幫派核心，但在一次爭地盤中被亂刀砍死。' },
+    { id: 'end_cult', name: '🕯️ 邪教獻祭', condition: () => state.cult >= 70,
+      text: '你深信教主能帶你解脫，自願成為祭品，永遠留在山洞裡。' },
+    { id: 'end_crazy', name: '👁️ 精神分裂', condition: () => state.crazy >= 90,
+      text: '你看見的世界與常人完全不同，被送進療養院，終身禁錮。' },
+    { id: 'end_hero', name: '🦸 平凡英雄', condition: () => state.saved && state.sin < 20 && state.mental > 60,
+      text: '你曾在災難中救出一家三口，雖然依舊貧窮，但心裡踏實。' },
+    { id: 'end_betray', name: '🗡️ 被出賣', condition: () => state.betrayed && state.gang > 30,
+      text: '你最信任的兄弟出賣了你，你死在巷子裡，無人知曉。' },
+    { id: 'end_enlighten', name: '🧘 覺悟行者', condition: () => state.enlighten && state.crazy > 50,
+      text: '你拋棄物質，成為街頭哲學家，偶爾有人給你食物，你已不在乎。' },
+    { id: 'end_rich', name: '💰 暴富短暫', condition: () => state.money >= 100000 && state.sin < 30,
+      text: '你意外獲得一大筆錢，但揮霍無度，一年後比現在更窮。' },
+    { id: 'end_normal', name: '🏠 普通上班族', condition: () => state.day >= 100 && state.money > 20000 && state.mental > 50,
+      text: '你找到一份穩定工作，搬離了那個鬼地方，過著朝九晚五的日子。' },
+    { id: 'end_killer', name: '🔪 殺人犯', condition: () => state.killed,
+      text: '你在衝突中失手殺人，開始逃亡，最終被捕入獄。' },
+    { id: 'end_starve', name: '🍂 餓死街頭', condition: () => state.money <= 0 && state.energy <= 0,
+      text: '你再也走不動，倒在公園長椅下，結束了短暫的一生。' },
+    { id: 'end_suicide', name: '🌊 精神崩潰自殺', condition: () => state.mental <= 0,
+      text: '你受不了這個世界的折磨，選擇結束自己。' },
+    { id: 'end_workaholic', name: '⚡ 過勞死', condition: () => state.energy <= 0 && state.money > 10000,
+      text: '你為了還債沒日沒夜工作，最後心臟病發作。' },
+    { id: 'end_hermit', name: '🏔️ 隱居山林', condition: () => state.day >= 80 && state.money < 5000 && state.mental > 70,
+      text: '你厭倦城市，躲到深山自給自足，再也沒人找到你。' },
+    { id: 'end_cynical', name: '📱 網路酸民', condition: () => state.fame >= 60 && state.sin < 10,
+      text: '你成為知名網紅，靠帶風向賺錢，但內心空洞。' },
+    { id: 'end_gangster', name: '👑 地方角頭', condition: () => state.gang >= 80 && state.money > 50000,
+      text: '你爬到了幫派高層，但每天都要提防暗殺。' },
+    { id: 'end_zombie', name: '🧟 行屍走肉', condition: () => state.drug >= 50 && state.mental <= 20,
+      text: '你對一切都無所謂，每天只是找錢買藥，如同活死人。' },
+  ];
+
+  function checkEnding() {
+    for (let e of endings) {
+      if (e.condition()) {
+        return e;
+      }
+    }
+    return null;
+  }
+
+  // --------------------- 事件庫 (160+) ---------------------
+  // 每個事件包含 id, 類別, 文字, 選項, once(是否只觸發一次)
+  // once 事件觸發後會加入 triggeredEvents 不再抽取
+  const events = [
+    // ========== 日常類 (30+) ==========
+    { id: 'daily_1', category: 'daily', once: false,
+      text: '你醒來發現手機沒電，充電器壞了。',
+      choices: [
+        { text: '買新的 (金錢-500)', effect: { money: -500 } },
+        { text: '去超商借充電 (體力-5)', effect: { energy: -5 } },
+        { text: '不管它，放空一天 (精神+5)', effect: { mental: 5 } }
+      ] },
+    { id: 'daily_2', category: 'daily', once: false,
+      text: '樓下早餐店阿姨多送你一顆蛋。',
+      choices: [
+        { text: '開心接受 (精神+3, 體力+3)', effect: { mental: 3, energy: 3 } },
+        { text: '堅持付錢 (金錢-15)', effect: { money: -15 } },
+        { text: '趁機訴苦 (精神-2, 阿姨尷尬)', effect: { mental: -2 } }
+      ] },
+    { id: 'daily_3', category: 'daily', once: false,
+      text: '隔壁情侶大吵一架，摔東西。',
+      choices: [
+        { text: '報警', effect: { mental: -3 } },
+        { text: '敲牆警告', effect: { gang: 2 } },
+        { text: '錄影上網 (名聲+5, 罪惡+2)', effect: { fame: 5, sin: 2 } }
+      ] },
+    { id: 'daily_4', category: 'daily', once: false,
+      text: '你發現銀行帳戶被扣了不明的手續費。',
+      choices: [
+        { text: '打電話去罵 (精神+2)', effect: { mental: 2 } },
+        { text: '自認倒楣', effect: { money: -300 } },
+        { text: '提領所有錢放床底', effect: { crazy: 3 } }
+      ] },
+    { id: 'daily_5', category: 'daily', once: false,
+      text: '颱風天，窗戶滲水。',
+      choices: [
+        { text: '用抹布堵住 (體力-5)', effect: { energy: -5 } },
+        { text: '找房東 (精神+2)', effect: { mental: 2 } },
+        { text: '拿桶子接水，順便洗澡', effect: { crazy: 3, money: 100 } }
+      ] },
+    { id: 'daily_6', category: 'daily', once: false,
+      text: '你撿到一隻流浪狗。',
+      choices: [
+        { text: '帶回家養 (金錢-200/月)', effect: { money: -200, mental: 8 } },
+        { text: '送去收容所', effect: { mental: 3 } },
+        { text: '無視', effect: { sin: 2 } }
+      ] },
+    { id: 'daily_7', category: 'daily', once: false,
+      text: '收到紅色炸彈，朋友要結婚。',
+      choices: [
+        { text: '包 2000 去', effect: { money: -2000, mental: 5 } },
+        { text: '裝沒看見', effect: { fame: -5 } },
+        { text: '藉口出差', effect: { sin: 3 } }
+      ] },
+    { id: 'daily_8', category: 'daily', once: false,
+      text: '你剪壞了頭髮，變得很醜。',
+      choices: [
+        { text: '戴帽子', effect: { mental: -3 } },
+        { text: '去理髮店補救 (金錢-400)', effect: { money: -400, mental: 5 } },
+        { text: '光頭也很帥', effect: { crazy: 4 } }
+      ] },
+    { id: 'daily_9', category: 'daily', once: false,
+      text: '郵差送錯信，是別人的信用卡。',
+      choices: [
+        { text: '還給郵差', effect: { mental: 3 } },
+        { text: '試試看能不能刷', effect: { sin: 10, money: 5000, debt: 5000 } },
+        { text: '剪掉丟掉', effect: {} }
+      ] },
+    { id: 'daily_10', category: 'daily', once: false,
+      text: '你夢到過世的奶奶給你一個紅包。',
+      choices: [
+        { text: '去墳前看看', effect: { mental: 10, crazy: 2 } },
+        { text: '當作沒這回事', effect: { mental: -3 } },
+        { text: '買紙錢燒', effect: { money: -300, mental: 8 } }
+      ] },
+    { id: 'daily_11', category: 'daily', once: false,
+      text: '隔壁搬來新鄰居，一直瞪著你。',
+      choices: [
+        { text: '打招呼', effect: { mental: 2 } },
+        { text: '瞪回去', effect: { gang: 2 } },
+        { text: '貼符咒在門口', effect: { crazy: 5 } }
+      ] },
+    { id: 'daily_12', category: 'daily', once: false,
+      text: '你發現自己有白頭髮了。',
+      choices: [
+        { text: '染髮 (金錢-600)', effect: { money: -600 } },
+        { text: '拔掉', effect: { mental: -2 } },
+        { text: '接受老化', effect: { crazy: 2 } }
+      ] },
+    { id: 'daily_13', category: 'daily', once: false,
+      text: '去超商買東西，店員多找你 500 元。',
+      choices: [
+        { text: '還回去', effect: { mental: 8 } },
+        { text: '默默收下', effect: { money: 500, sin: 3 } },
+        { text: '拿來買樂透', effect: { money: -500, crazy: 2 } }
+      ] },
+    { id: 'daily_14', category: 'daily', once: false,
+      text: '你便秘三天了。',
+      choices: [
+        { text: '買軟便劑 (金錢-150)', effect: { money: -150, energy: 5 } },
+        { text: '狂吃香蕉', effect: { money: -80 } },
+        { text: '用力', effect: { mental: -5 } }
+      ] },
+    { id: 'daily_15', category: 'daily', once: false,
+      text: '你覺得有人在跟蹤你。',
+      choices: [
+        { text: '突然回頭', effect: { mental: -3 } },
+        { text: '跑進超商', effect: { energy: -5 } },
+        { text: '拿手機反拍', effect: { crazy: 3, fame: 3 } }
+      ] },
+    { id: 'daily_16', category: 'daily', once: false,
+      text: '你租屋處的熱水器壞了。',
+      choices: [
+        { text: '洗冷水澡 (體力-5)', effect: { energy: -5 } },
+        { text: '請房東修', effect: { mental: 2 } },
+        { text: '去朋友家洗', effect: { fame: -3 } }
+      ] },
+    { id: 'daily_17', category: 'daily', once: false,
+      text: '在路上遇到發傳單的工讀生。',
+      choices: [
+        { text: '拿傳單', effect: {} },
+        { text: '問他時薪多少', effect: { money: 150, energy: -5 } },
+        { text: '發起傳單改革', effect: { fame: 4 } }
+      ] },
+    { id: 'daily_18', category: 'daily', once: false,
+      text: '你發現自己忘了某個重要約會。',
+      choices: [
+        { text: '打電話道歉', effect: { mental: -5 } },
+        { text: '假裝沒發生', effect: { sin: 2 } },
+        { text: '衝去現場', effect: { energy: -10, mental: -3 } }
+      ] },
+    { id: 'daily_19', category: 'daily', once: false,
+      text: '你參加里民活動，抽中一台烤箱。',
+      choices: [
+        { text: '開心搬回家', effect: { mental: 5 } },
+        { text: '上網賣掉', effect: { money: 1500 } },
+        { text: '送給鄰居', effect: { fame: 5 } }
+      ] },
+    { id: 'daily_20', category: 'daily', once: false,
+      text: '你半夜被蚊子吵醒。',
+      choices: [
+        { text: '起來打蚊子', effect: { energy: -2 } },
+        { text: '戴耳塞繼續睡', effect: { mental: 2 } },
+        { text: '拿電蚊拍跳舞', effect: { crazy: 3 } }
+      ] },
+
+    // ========== 工作類 (25+) ==========
+    { id: 'work_1', category: 'work', once: false,
+      text: '臨時粗工，搬運貨物一天 1500。',
+      choices: [
+        { text: '接下 (體力-20, 金錢+1500)', effect: { energy: -20, money: 1500 } },
+        { text: '太累了拒絕', effect: { money: -200 } },
+        { text: '找朋友一起做', effect: { fame: 3, money: 1200, energy: -15 } }
+      ] },
+    { id: 'work_2', category: 'work', once: false,
+      text: '超商大夜班，時薪 200。',
+      choices: [
+        { text: '去做 (精神-8, 金錢+800)', effect: { mental: -8, money: 800 } },
+        { text: '只做幾天', effect: { money: 300, energy: -5 } },
+        { text: '偷吃報廢品', effect: { sin: 3, money: 300 } }
+      ] },
+    { id: 'work_3', category: 'work', once: false,
+      text: '接到詐騙集團的打工邀約，說輕鬆月入十萬。',
+      choices: [
+        { text: '加入 (罪惡+20, 金錢+20000)', effect: { sin: 20, money: 20000, gang: 10 } },
+        { text: '拒絕並報警', effect: { fame: 10 } },
+        { text: '假裝配合再騙他們', effect: { crazy: 8, sin: 5, money: 5000 } }
+      ] },
+    { id: 'work_4', category: 'work', once: false,
+      text: '公司裁員，你被通知走人。',
+      choices: [
+        { text: '申請補助', effect: { money: 2000, mental: -10 } },
+        { text: '立刻找新工作', effect: { energy: -10 } },
+        { text: '自己創業', effect: { money: -5000, debt: 5000, crazy: 10 } }
+      ] },
+    { id: 'work_5', category: 'work', once: false,
+      text: '外送員，接單跑腿。',
+      choices: [
+        { text: '跑十單 (體力-15, 金錢+800)', effect: { energy: -15, money: 800 } },
+        { text: '偷懶只跑五單', effect: { money: 400, energy: -7 } },
+        { text: '車禍 (體力-30, 金錢-2000)', effect: { energy: -30, money: -2000, crazy: 5 } }
+      ] },
+    { id: 'work_6', category: 'work', once: false,
+      text: '清潔隊員，負責收垃圾。',
+      choices: [
+        { text: '做一個月 (體力-40, 金錢+3000)', effect: { energy: -40, money: 3000 } },
+        { text: '檢寶特瓶變賣', effect: { money: 200, energy: -5 } },
+        { text: '撿到名牌包', effect: { money: 5000, sin: 5 } }
+      ] },
+    { id: 'work_7', category: 'work', once: false,
+      text: '幫派分子找你當運毒小弟。',
+      choices: [
+        { text: '答應 (罪惡+30, 金錢+10000, 幫派+20)', effect: { sin: 30, money: 10000, gang: 20, drug: 10 } },
+        { text: '拒絕並搬家', effect: { money: -2000 } },
+        { text: '偷偷報警', effect: { gang: -10, sin: -5, fame: 15 } }
+      ] },
+    { id: 'work_8', category: 'work', once: false,
+      text: '地下錢莊廣告，借十萬利息低。',
+      choices: [
+        { text: '借錢', effect: { money: 100000, debt: 120000, sin: 10 } },
+        { text: '撕掉廣告', effect: {} },
+        { text: '打電話罵對方', effect: { gang: 5, crazy: 5 } }
+      ] },
+    { id: 'work_9', category: 'work', once: false,
+      text: '朋友找你合夥開雞排攤。',
+      choices: [
+        { text: '投資兩萬', effect: { money: -20000, debt: 20000, fame: 10 } },
+        { text: '只幫忙', effect: { energy: -20, money: 1000 } },
+        { text: '勸他不要', effect: { mental: 3 } }
+      ] },
+    { id: 'work_10', category: 'work', once: false,
+      text: '應徵上直播主，但要露身材。',
+      choices: [
+        { text: '接受 (名聲+20, 金錢+5000, 罪惡+5)', effect: { fame: 20, money: 5000, sin: 5 } },
+        { text: '拒絕', effect: {} },
+        { text: '戴面具播', effect: { fame: 10, money: 2000 } }
+      ] },
+
+    // ========== 街頭類 (25+) ==========
+    { id: 'street_1', category: 'street', once: false,
+      text: '街頭藝人表演，你駐足觀看。',
+      choices: [
+        { text: '打賞100', effect: { money: -100, mental: 5 } },
+        { text: '批評他', effect: { sin: 2, fame: -2 } },
+        { text: '也來一段', effect: { fame: 5, money: 200, energy: -5 } }
+      ] },
+    { id: 'street_2', category: 'street', once: false,
+      text: '遊民向你乞討。',
+      choices: [
+        { text: '給50元', effect: { money: -50, mental: 3 } },
+        { text: '買便當給他', effect: { money: -100, mental: 8 } },
+        { text: '無視', effect: { sin: 2 } }
+      ] },
+    { id: 'street_3', category: 'street', once: false,
+      text: '路上有人發生車禍。',
+      choices: [
+        { text: '叫救護車', effect: { mental: 3 } },
+        { text: '幫忙指揮交通', effect: { fame: 10, energy: -5 } },
+        { text: '拍照上網', effect: { fame: 8, sin: 3 } }
+      ] },
+    { id: 'street_4', category: 'street', once: false,
+      text: '遇到警察臨檢，你沒帶證件。',
+      choices: [
+        { text: '報身份證字號', effect: {} },
+        { text: '裝傻', effect: { sin: 3, fame: -5 } },
+        { text: '趁機逃跑', effect: { energy: -10, gang: 5, crazy: 5 } }
+      ] },
+    { id: 'street_5', category: 'street', once: false,
+      text: '有人在路邊賣奇怪的藥。',
+      choices: [
+        { text: '買一包試試', effect: { money: -500, drug: 15, crazy: 5 } },
+        { text: '檢舉', effect: { fame: 5, gang: -3 } },
+        { text: '問他還有沒有別的', effect: { sin: 5, drug: 5 } }
+      ] },
+    { id: 'street_6', category: 'street', once: false,
+      text: '一群青少年挑釁你。',
+      choices: [
+        { text: '低頭快走', effect: { mental: -3 } },
+        { text: '嗆回去', effect: { gang: 5, energy: -5 } },
+        { text: '報警', effect: { fame: 3 } }
+      ] },
+    { id: 'street_7', category: 'street', once: false,
+      text: '你看到一隻受傷的貓。',
+      choices: [
+        { text: '送獸醫 (金錢-1500)', effect: { money: -1500, mental: 10 } },
+        { text: '不管', effect: { sin: 3 } },
+        { text: '帶回家養', effect: { money: -300, mental: 5 } }
+      ] },
+    { id: 'street_8', category: 'street', once: false,
+      text: '街頭開來一輛宣傳車，是某政黨候選人。',
+      choices: [
+        { text: '揮手支持', effect: { fame: 2 } },
+        { text: '丟雞蛋', effect: { sin: 5, gang: 3, crazy: 8 } },
+        { text: '無視', effect: {} }
+      ] },
+    { id: 'street_9', category: 'street', once: false,
+      text: '你經過一間廢棄廟宇，裡面傳來誦經聲。',
+      choices: [
+        { text: '進去看看', effect: { crazy: 5, cult: 5 } },
+        { text: '快步離開', effect: { mental: 2 } },
+        { text: '拍照打卡', effect: { fame: 3, crazy: 2 } }
+      ] },
+    { id: 'street_10', category: 'street', once: false,
+      text: '路邊有人免費擁抱。',
+      choices: [
+        { text: '抱一下', effect: { mental: 8 } },
+        { text: '覺得噁心', effect: { sin: 2 } },
+        { text: '加入他們', effect: { fame: 5, mental: 5 } }
+      ] },
+
+    // ========== 人際類 (20+) ==========
+    { id: 'social_1', category: 'social', once: false,
+      text: '老朋友約你喝酒。',
+      choices: [
+        { text: '去 (金錢-800, 精神+10, 體力-5)', effect: { money: -800, mental: 10, energy: -5 } },
+        { text: '拒絕', effect: { mental: -3 } },
+        { text: '帶他去聲色場所', effect: { sin: 10, money: -2000, gang: 5 } }
+      ] },
+    { id: 'social_2', category: 'social', once: false,
+      text: '前女友找你復合。',
+      choices: [
+        { text: '答應', effect: { mental: 20, money: -5000 } },
+        { text: '拒絕', effect: { mental: -10 } },
+        { text: '藉口考慮', effect: { crazy: 3 } }
+      ] },
+    { id: 'social_3', category: 'social', once: false,
+      text: '家人催你寄錢回家。',
+      choices: [
+        { text: '寄5000', effect: { money: -5000, mental: 5 } },
+        { text: '說沒錢', effect: { mental: -10 } },
+        { text: '回去一趟', effect: { money: -2000, energy: -10, mental: 8 } }
+      ] },
+    { id: 'social_4', category: 'social', once: false,
+      text: '網友約見面，結果是推銷。',
+      choices: [
+        { text: '買一套產品', effect: { money: -3000, sin: 2 } },
+        { text: '翻臉', effect: { gang: 3 } },
+        { text: '假裝有興趣反整他', effect: { crazy: 5 } }
+      ] },
+    { id: 'social_5', category: 'social', once: false,
+      text: '同事借錢不還。',
+      choices: [
+        { text: '天天催', effect: { mental: -5 } },
+        { text: '算了', effect: { money: -2000, mental: 3 } },
+        { text: '找人堵他', effect: { gang: 10, sin: 10 } }
+      ] },
+
+    // ========== 詭異恐怖類 (35+) ==========
+    { id: 'horror_1', category: 'horror', once: true,
+      text: '凌晨三點，樓上傳來彈珠聲，但這棟樓頂樓是廢棄的。',
+      choices: [
+        { text: '上樓查看', effect: { crazy: 10, mental: -10 }, nextEvent: 'horror_1a' },
+        { text: '蒙頭繼續睡', effect: { crazy: 5, mental: -5 } }
+      ] },
+    { id: 'horror_1a', category: 'horror', once: true,
+      text: '你走上樓，發現一間半開的門，裡面有個小女孩在玩彈珠。她轉過頭，臉是空的。',
+      choices: [
+        { text: '尖叫逃跑', effect: { mental: -20, crazy: 15 } },
+        { text: '問她要不要一起玩', effect: { crazy: 30, mental: -30, cult: 10 } }
+      ] },
+    { id: 'horror_2', category: 'horror', once: true,
+      text: '你在巷子裡撿到一個老舊娃娃，眼睛好像會盯著你。',
+      choices: [
+        { text: '帶回家', effect: { crazy: 8, mental: -5 } },
+        { text: '丟回原處', effect: { crazy: 2 } },
+        { text: '燒掉', effect: { crazy: 5, mental: 5 } }
+      ] },
+    { id: 'horror_3', category: 'horror', once: true,
+      text: '電梯突然故障，卡在兩層之間，燈光熄滅。',
+      choices: [
+        { text: '按緊急鈴', effect: { mental: -5 } },
+        { text: '試圖扳開門', effect: { energy: -10, crazy: 5 } },
+        { text: '唸阿彌陀佛', effect: { mental: 3 } }
+      ] },
+    { id: 'horror_4', category: 'horror', once: true,
+      text: '你半夜醒來，床邊站著一個穿白衣的女人。',
+      choices: [
+        { text: '閉眼默念', effect: { mental: -10, crazy: 5 } },
+        { text: '問她是誰', effect: { crazy: 20, mental: -20, cult: 5 } }
+      ] },
+    { id: 'horror_5', category: 'horror', once: true,
+      text: '用手機拍照，照片裡出現一張陌生的臉。',
+      choices: [
+        { text: '刪除照片', effect: { crazy: 3 } },
+        { text: '放大研究', effect: { mental: -15, crazy: 10 } },
+        { text: '上傳網路', effect: { fame: 10, crazy: 8 } }
+      ] },
+    { id: 'horror_6', category: 'horror', once: true,
+      text: '深夜有人敲你的門，但門外沒有人。',
+      choices: [
+        { text: '開門查看', effect: { crazy: 8, mental: -8 } },
+        { text: '不理會', effect: { mental: -2 } }
+      ] },
+    { id: 'horror_7', category: 'horror', once: true,
+      text: '走在路上感覺背後有人跟蹤，回頭卻空無一人。',
+      choices: [
+        { text: '加快腳步', effect: { energy: -5, mental: -3 } },
+        { text: '躲進超商', effect: { mental: 2 } }
+      ] },
+    { id: 'horror_8', category: 'horror', once: true,
+      text: '電視突然自動打開，畫面全是雜訊，浮現一張臉。',
+      choices: [
+        { text: '拔掉插頭', effect: { crazy: 5 } },
+        { text: '盯著看', effect: { mental: -15, crazy: 10 } }
+      ] },
+    { id: 'horror_9', category: 'horror', once: true,
+      text: '你在地下道看見一個沒有影子的人。',
+      choices: [
+        { text: '裝作沒看見', effect: { crazy: 5 } },
+        { text: '上前搭話', effect: { cult: 15, mental: -20, crazy: 15 } }
+      ] },
+    { id: 'horror_10', category: 'horror', once: true,
+      text: '回家後，發現屋內所有鏡子都被蓋上紅布。',
+      choices: [
+        { text: '掀開', effect: { mental: -25, crazy: 20 } },
+        { text: '趕快離開', effect: { energy: -10, mental: -5 } }
+      ] },
+    { id: 'horror_11', category: 'horror', once: true,
+      text: '你收到一封來自自己的信，郵戳是明天的日期。',
+      choices: [
+        { text: '打開', effect: { mental: -20, crazy: 15 } },
+        { text: '燒掉', effect: { crazy: 5 } }
+      ] },
+    { id: 'horror_12', category: 'horror', once: true,
+      text: '路邊的野狗對著你狂吠，但你身後什麼都沒有。',
+      choices: [
+        { text: '快跑', effect: { energy: -5 } },
+        { text: '撿石頭嚇牠', effect: { crazy: 3 } }
+      ] },
+    { id: 'horror_13', category: 'horror', once: true,
+      text: '洗澡時，水突然變成紅色。',
+      choices: [
+        { text: '衝出浴室', effect: { mental: -15, crazy: 10 } },
+        { text: '檢查水管', effect: { energy: -5 } }
+      ] },
+    { id: 'horror_14', category: 'horror', once: true,
+      text: '手機收到一段自己睡覺的影片，但你從未錄過。',
+      choices: [
+        { text: '刪除', effect: { crazy: 5 } },
+        { text: '報警', effect: { mental: -10 } }
+      ] },
+    { id: 'horror_15', category: 'horror', once: true,
+      text: '經過廢棄醫院，裡面傳來嬰兒哭聲。',
+      choices: [
+        { text: '進去看看', effect: { crazy: 15, mental: -20, cult: 5 } },
+        { text: '快步離開', effect: { energy: -5 } }
+      ] },
+    { id: 'horror_16', category: 'horror', once: true,
+      text: '你的影子在沒有光的情況下，自己動了一下。',
+      choices: [
+        { text: '揉眼睛', effect: { mental: -5 } },
+        { text: '尖叫', effect: { energy: -5 } }
+      ] },
+    { id: 'horror_17', category: 'horror', once: true,
+      text: '鄰居一直說你房間裡有「人」在走動，但你是一個人住。',
+      choices: [
+        { text: '請他幫忙', effect: { mental: -10, crazy: 8 } },
+        { text: '搬家', effect: { money: -5000 } }
+      ] },
+    { id: 'horror_18', category: 'horror', once: true,
+      text: '你在床底發現一綹長髮，但你頭髮很短。',
+      choices: [
+        { text: '燒掉', effect: { crazy: 5 } },
+        { text: '不理會', effect: { mental: -5 } }
+      ] },
+    { id: 'horror_19', category: 'horror', once: true,
+      text: '鏡子裡的我，笑容和你不同步。',
+      choices: [
+        { text: '砸碎鏡子', effect: { mental: -20, crazy: 15 } },
+        { text: '閉眼數到十', effect: { mental: -5 } }
+      ] },
+    { id: 'horror_20', category: 'horror', once: true,
+      text: '夜班計程車司機說他載過一個乘客，給的錢是冥紙。',
+      choices: [
+        { text: '毛骨悚然', effect: { mental: -8 } },
+        { text: '問細節', effect: { crazy: 5 } }
+      ] },
+    { id: 'horror_21', category: 'horror', once: true,
+      text: '你打開衣櫃，裡面站著一個裸體的人。',
+      choices: [
+        { text: '關上門當作沒看見', effect: { crazy: 10, mental: -10 } },
+        { text: '問他怎麼進來的', effect: { crazy: 20, mental: -20 } }
+      ] },
+    { id: 'horror_22', category: 'horror', once: true,
+      text: '深夜的公園鞦韆自己搖動。',
+      choices: [
+        { text: '走近', effect: { crazy: 8, mental: -5 } },
+        { text: '繞路', effect: {} }
+      ] },
+    { id: 'horror_23', category: 'horror', once: true,
+      text: '你聞到腐臭味，但找不到來源。',
+      choices: [
+        { text: '檢查每個角落', effect: { energy: -5, crazy: 5 } },
+        { text: '噴芳香劑', effect: { mental: 2 } }
+      ] },
+    { id: 'horror_24', category: 'horror', once: true,
+      text: '晚上看到對面大樓某個窗戶裡有人向你揮手，但那層是廢棄的。',
+      choices: [
+        { text: '揮回去', effect: { crazy: 10, mental: -10 } },
+        { text: '拉上窗簾', effect: { mental: 2 } }
+      ] },
+    { id: 'horror_25', category: 'horror', once: true,
+      text: '筆記本突然出現陌生字跡：「快逃」。',
+      choices: [
+        { text: '聽從建議', effect: { energy: -5 } },
+        { text: '覺得是惡作劇', effect: { crazy: 5 } }
+      ] },
+    { id: 'horror_26', category: 'horror', once: true,
+      text: '走在天橋上，有人從背後推你，回頭卻沒人。',
+      choices: [
+        { text: '嚇得跑走', effect: { energy: -5, mental: -10 } },
+        { text: '罵髒話', effect: {} }
+      ] },
+    { id: 'horror_27', category: 'horror', once: true,
+      text: '電梯裡的樓層按鈕全部自己亮起來。',
+      choices: [
+        { text: '按緊急停止', effect: { mental: -5 } },
+        { text: '等它自己停', effect: { crazy: 8 } }
+      ] },
+    { id: 'horror_28', category: 'horror', once: true,
+      text: '你看到新聞報導一具無名屍，長得跟你一模一樣。',
+      choices: [
+        { text: '去認屍', effect: { mental: -30, crazy: 20 } },
+        { text: '關掉電視', effect: { mental: -5 } }
+      ] },
+    { id: 'horror_29', category: 'horror', once: true,
+      text: '一個自稱「命運規劃師」的人遞給你名片。',
+      choices: [
+        { text: '接受', effect: { cult: 10, mental: -5 } },
+        { text: '拒絕', effect: { crazy: 2 } }
+      ] },
+    { id: 'horror_30', category: 'horror', once: true,
+      text: '連續七天做同一個夢，夢裡有人告訴你倒數計時。',
+      choices: [
+        { text: '去廟裡求平安', effect: { mental: 5, money: -500 } },
+        { text: '無視', effect: { crazy: 10 } }
+      ] },
+    { id: 'horror_31', category: 'horror', once: true,
+      text: '你拿起杯子喝水，水裡有一根長髮。',
+      choices: [
+        { text: '倒掉重倒', effect: {} },
+        { text: '喝掉', effect: { crazy: 5, mental: -3 } }
+      ] },
+    { id: 'horror_32', category: 'horror', once: true,
+      text: '你聽見牆壁裡有人敲牆回應你。',
+      choices: [
+        { text: '繼續敲', effect: { crazy: 8 } },
+        { text: '嚇得不敢動', effect: { mental: -8 } }
+      ] },
+    { id: 'horror_33', category: 'horror', once: true,
+      text: '走在夜路，路燈一盞盞熄滅。',
+      choices: [
+        { text: '拿手機照明', effect: { energy: -2 } },
+        { text: '狂奔', effect: { energy: -10, mental: -5 } }
+      ] },
+    { id: 'horror_34', category: 'horror', once: true,
+      text: '你看到一個穿紅衣的小女孩站在路口，轉眼不見。',
+      choices: [
+        { text: '追上去', effect: { crazy: 10, mental: -10 } },
+        { text: '當作眼花', effect: { mental: 2 } }
+      ] },
+    { id: 'horror_35', category: 'horror', once: true,
+      text: '晚上睡覺感覺有人摸你的臉。',
+      choices: [
+        { text: '開燈', effect: { crazy: 8, mental: -8 } },
+        { text: '翻身繼續睡', effect: { crazy: 5 } }
+      ] },
+
+    // ========== 墮落歪路類 (20+) ==========
+    { id: 'dark_1', category: 'dark', once: true,
+      text: '有人介紹你去討債公司，暴力討債。',
+      choices: [
+        { text: '接受 (罪惡+20, 金錢+8000, 幫派+15)', effect: { sin: 20, money: 8000, gang: 15 } },
+        { text: '拒絕', effect: {} },
+        { text: '偷學技巧自己開', effect: { sin: 10, money: 3000, crazy: 5 } }
+      ] },
+    { id: 'dark_2', category: 'dark', once: true,
+      text: '酒店經紀找你當男公關。',
+      choices: [
+        { text: '去做 (金錢+12000, 罪惡+10, 名聲+15)', effect: { money: 12000, sin: 10, fame: 15, energy: -20 } },
+        { text: '拒絕', effect: {} },
+        { text: '介紹朋友去', effect: { sin: 5, money: 2000 } }
+      ] },
+    { id: 'dark_3', category: 'dark', once: true,
+      text: '地下賭場缺人顧門。',
+      choices: [
+        { text: '做 (金錢+5000, 罪惡+10, 幫派+10)', effect: { money: 5000, sin: 10, gang: 10 } },
+        { text: '拒絕', effect: {} },
+        { text: '進去賭兩把', effect: { money: -5000, debt: 5000, crazy: 10 } }
+      ] },
+    { id: 'dark_4', category: 'dark', once: true,
+      text: '詐騙集團徵話務手，假裝檢察官。',
+      choices: [
+        { text: '加入 (罪惡+30, 金錢+20000)', effect: { sin: 30, money: 20000, gang: 15 } },
+        { text: '拒絕並警告親友', effect: { fame: 5 } },
+        { text: '反詐騙他們', effect: { crazy: 15, money: 5000 } }
+      ] },
+    { id: 'dark_5', category: 'dark', once: true,
+      text: '藥頭問你要不要幫忙送貨。',
+      choices: [
+        { text: '接 (罪惡+25, 金錢+15000, 毒品+20, 幫派+10)', effect: { sin: 25, money: 15000, drug: 20, gang: 10 } },
+        { text: '拒絕', effect: {} },
+        { text: '自己吸', effect: { drug: 30, money: -2000, crazy: 10 } }
+      ] },
+    { id: 'dark_6', category: 'dark', once: true,
+      text: '朋友邀你一起偷機車。',
+      choices: [
+        { text: '參與 (罪惡+15, 金錢+3000)', effect: { sin: 15, money: 3000, gang: 5 } },
+        { text: '拒絕並勸他', effect: { mental: 3 } },
+        { text: '偷更好的車', effect: { sin: 20, money: 10000, gang: 10 } }
+      ] },
+    { id: 'dark_7', category: 'dark', once: true,
+      text: '有人在賣仿冒名牌包。',
+      choices: [
+        { text: '批發來賣', effect: { money: 8000, sin: 10, fame: 5 } },
+        { text: '檢舉', effect: { fame: 5 } },
+        { text: '買一個自用', effect: { money: -1000, fame: 2 } }
+      ] },
+    { id: 'dark_8', category: 'dark', once: true,
+      text: '當舖老闆說可以用不問來源的東西換錢。',
+      choices: [
+        { text: '偷東西來當', effect: { sin: 15, money: 5000 } },
+        { text: '賣自己的東西', effect: { money: 1000 } },
+        { text: '檢舉這間店', effect: { fame: 10 } }
+      ] },
+    { id: 'dark_9', category: 'dark', once: true,
+      text: '廟公找你當乩童，說有信徒會捐錢。',
+      choices: [
+        { text: '答應 (罪惡+10, 金錢+5000, 邪教+10)', effect: { sin: 10, money: 5000, cult: 10, crazy: 5 } },
+        { text: '拒絕', effect: {} },
+        { text: '假裝起乩', effect: { crazy: 15, money: 2000, cult: 5 } }
+      ] },
+    { id: 'dark_10', category: 'dark', once: true,
+      text: '你發現路邊有一個錢包，裡面有兩萬。',
+      choices: [
+        { text: '據為己有', effect: { money: 20000, sin: 15 } },
+        { text: '送去派出所', effect: { fame: 10, mental: 10 } },
+        { text: '拿一半', effect: { money: 10000, sin: 8 } }
+      ] },
+    { id: 'dark_11', category: 'dark', once: true,
+      text: '有陌生人請你幫忙搬東西，結果是贓物。',
+      choices: [
+        { text: '幫忙 (罪惡+10, 金錢+2000)', effect: { sin: 10, money: 2000, gang: 5 } },
+        { text: '拒絕', effect: {} },
+        { text: '反過來報警', effect: { fame: 15, gang: -5 } }
+      ] },
+    { id: 'dark_12', category: 'dark', once: true,
+      text: '你被黑道盯上，要你每個月繳保護費。',
+      choices: [
+        { text: '乖乖繳 (金錢-3000/月)', effect: { money: -3000, sin: 5 } },
+        { text: '找人幫忙', effect: { gang: 10, money: -5000 } },
+        { text: '反抗', effect: { energy: -30, gang: 10, killed: true } }
+      ] },
+    { id: 'dark_13', category: 'dark', once: true,
+      text: '你缺錢，想搶超商。',
+      choices: [
+        { text: '真的去搶', effect: { money: 5000, sin: 30, gang: 10, killed: true } },
+        { text: '打消念頭', effect: { mental: 5 } },
+        { text: '搶劫前被抓', effect: { sin: 5, debt: 10000 } }
+      ] },
+    { id: 'dark_14', category: 'dark', once: true,
+      text: '有富婆想包養你。',
+      choices: [
+        { text: '接受 (金錢+50000, 罪惡+5, 名聲-5)', effect: { money: 50000, sin: 5, fame: -5, energy: -30 } },
+        { text: '拒絕', effect: { mental: 5 } },
+        { text: '介紹朋友', effect: { money: 5000 } }
+      ] },
+    { id: 'dark_15', category: 'dark', once: true,
+      text: '你加入一個激進社運團體，開始抗爭。',
+      choices: [
+        { text: '積極參與', effect: { fame: 20, sin: 5, gang: 5, energy: -20 } },
+        { text: '只旁觀', effect: { fame: 5 } },
+        { text: '當臥底', effect: { fame: 15, gang: -5, sin: -5 } }
+      ] }
+  ];
+
+  // 建立 id 對照表
+  const eventMap = {};
+  events.forEach(e => eventMap[e.id] = e);
+
+  // 篩選出可用的隨機事件 (排除 once 且已觸發的)
+  function getAvailableEvents() {
+    return events.filter(e => !(e.once && state.triggeredEvents[e.id]));
+  }
+
+  // 抽取隨機事件 (可依類別比例，這裡簡單隨機)
+  function getRandomEvent() {
+    const available = getAvailableEvents();
+    if (available.length === 0) {
+      // 如果沒有事件了，複製一個日常事件 (但基本上不會)
+      return events.find(e => e.id === 'daily_1');
+    }
+    const idx = Math.floor(Math.random() * available.length);
+    return available[idx];
+  }
+
+  // 標記事件為已觸發 (once)
+  function markTriggered(eventId) {
+    state.triggeredEvents[eventId] = true;
+  }
+
+  // 遊戲主迴圈
+  let currentEvent = null;
+  let gameOver = false;
+
+  function render() {
+    if (gameOver) return;
+
+    // 更新數值顯示
+    refreshStats();
+
+    // 檢查結局
+    const ending = checkEnding();
+    if (ending) {
+      gameOver = true;
+      document.getElementById('story').innerText = `【${ending.name}】\n\n${ending.text}`;
+      document.getElementById('choices').innerHTML = '';
+      document.getElementById('restart').style.display = 'inline-block';
+      return;
+    }
+
+    // 若無目前事件，抽一個新事件
+    if (!currentEvent) {
+      currentEvent = getRandomEvent();
+      // 如果是 once 事件，立刻標記 (但還未選，等選完才真正觸發)
+    }
+
+    const ev = currentEvent;
+    let storyText = `📆 第 ${state.day} 天\n\n${ev.text}`;
+    document.getElementById('story').innerText = storyText;
+
+    const choicesDiv = document.getElementById('choices');
+    choicesDiv.innerHTML = '';
+
+    ev.choices.forEach((choice, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.textContent = choice.text;
+      btn.onclick = () => {
+        // 套用效果
+        if (choice.effect) update(choice.effect);
+
+        // 如果有 nextEvent，則跳到指定事件 (此事件不會被標記觸發，因為是指定事件)
+        if (choice.nextEvent) {
+          const next = eventMap[choice.nextEvent];
+          if (next) {
+            currentEvent = next;
+            // 若 nextEvent 也是 once，則在這裡標記 (但不會再次隨機出現)
+            if (next.once) markTriggered(next.id);
+          } else {
+            currentEvent = getRandomEvent();
+          }
+        } else {
+          // 正常情況，目前事件如果是 once，標記為已觸發
+          if (ev.once) markTriggered(ev.id);
+          // 抽取新事件
+          currentEvent = getRandomEvent();
+        }
+
+        // 天數增加
+        state.day += 1;
+        render();
+      };
+      choicesDiv.appendChild(btn);
     });
 
-    let state = initialState();
-    let currentScene = "intro";
+    document.getElementById('restart').style.display = 'none';
+  }
 
-    // ===== 事件（原事件 + 新增恐怖/獵奇事件）=====
-    const events = [
-      // 原基礎事件（保留）
-      { id:"commute_001", tags:["commute","治安","新聞"], weight:1,
-        text:s=>"捷運電視牆播放去年的北城車站隨機攻擊回顧專題，你突然想起地下街那晚的混亂。",
-        effect:s=>{ s.trauma=true; s.mental-=4; s.tagsScore.lazy+=1; }
-      },
-      { id:"commute_002", tags:["commute"], weight:1,
-        text:s=>"車廂裡有人把座位讓給一位抱小孩的乘客，空氣莫名溫暖了一點。",
-        effect:s=>{ s.mental+=3; s.tagsScore.hero+=1; }
-      },
-      { id:"news_001", tags:["新聞","大罷免"], weight:1,
-        text:s=>"手機跳出推播：新一波罷免投票結果又全部未通過，政論節目吵成一團。",
-        effect:s=>{ s.mental-=2; s.tagsScore.lazy+=0.5; }
-      },
-      { id:"news_002", tags:["新聞","經濟"], weight:1,
-        text:s=>"新聞說關稅風暴後，股市盤中一度大跌又拉回，同事在茶水間大喊：「早知道就 all in」。",
-        effect:s=>{ s.mental+=1; }
-      },
-      { id:"work_001", tags:["work"], weight:1,
-        text:s=>"主管臨時叫你留下加班，說這是「一起度過難關」，但沒有提到加班費。",
-        effect:s=>{ s.mental-=6; s.tagsScore.lazy+=1; }
-      },
-      { id:"street_001", tags:["street","政治"], weight:1,
-        text:s=>"路口有造勢車經過，大聲喇叭吵得你頭痛，地上滿是旗子和面紙。",
-        effect:s=>{ s.mental-=2; }
-      },
-      { id:"late_001", tags:["lateNight","詐騙"], weight:1,
-        text:s=>"你收到一則可疑的投資 Line 群邀請，裡面滿是「財富自由」截圖與豪車照片。",
-        effect:s=>{ s.mental-=2; s.tagsScore.lazy+=0.5; }
-      },
-      // 20 個時事風格事件（保留）
-      { id:"disaster_001", tags:["新聞","災難","互助"], weight:1,
-        text:s=>"你看到新聞在報「東部山區堰塞湖潰堤」，一群被稱為『鏟子志工』的人，自發跑去幫忙清淤。",
-        effect:s=>{ s.mental+=2; s.tagsScore.hero+=1.5; }
-      },
-      { id:"disaster_002", tags:["新聞","災難","詐騙"], weight:1,
-        text:s=>"水災畫面播完後，你收到了幾封「災區捐款連結」，看起來很像官方單位，但網址怪怪的。",
-        effect:s=>{ s.mental-=2; s.tagsScore.lazy+=0.5; }
-      },
-      { id:"crime_001", tags:["新聞","治安","謠言"], weight:1,
-        text:s=>"有謠言說有人要模仿北城車站隨機攻擊，社群瘋傳未證實截圖，你的通勤路線剛好會經過。",
-        effect:s=>{ s.trauma=true; s.mental-=4; s.tagsScore.lazy+=1; }
-      },
-      { id:"crime_002", tags:["street","治安"], weight:1,
-        text:s=>"你經過北城某個路口，看到警察巡邏明顯變多，路上的人好像也比較放心。",
-        effect:s=>{ s.mental+=2; s.tagsScore.hero+=0.5; }
-      },
-      { id:"econ_002", tags:["經濟","股市","新聞"], weight:1,
-        text:s=>"新聞說國際關稅新制上路，電子股盤中狂跌，財經節目一邊喊恐慌、一邊推訂閱服務。",
-        effect:s=>{ s.mental-=2; }
-      },
-      { id:"econ_003", tags:["經濟","work"], weight:1,
-        text:s=>"公司主管開會說因供應鏈重組接到新訂單，但加班一定會變多。",
-        effect:s=>{ s.mental-=1; s.tagsScore.darkSpin+=0.5; }
-      },
-      { id:"typhoon_001", tags:["災難","颱風","生活"], weight:1,
-        text:s=>"強颱掃過，半夜你租屋處忽然停電，網路也不穩，只能在黑暗中發呆。",
-        effect:s=>{ s.mental-=3; s.tagsScore.lazy+=0.5; }
-      },
-      { id:"typhoon_002", tags:["災難","互助","street"], weight:1,
-        text:s=>"停電第二天，鄰居在樓梯間分發熱湯和延長線給沒有行動電源的人。",
-        effect:s=>{ s.mental+=4; s.tagsScore.hero+=2; s.tagsScore.family+=0.5; }
-      },
-      { id:"housing_001", tags:["新聞","房價","青年"], weight:1,
-        text:s=>"新聞做專題：「年輕人買房只剩夢？」畫面裡的受訪者年紀跟你差不多。",
-        effect:s=>{ s.mental-=3; s.tagsScore.lazy+=1; }
-      },
-      { id:"housing_002", tags:["房價","公共","新聞"], weight:1,
-        text:s=>"有人在社團分享抽中社會住宅的喜悅，說終於不用再住違建鐵皮屋。",
-        effect:s=>{ s.mental+=2; s.tagsScore.public+=1; s.tagsScore.hero+=0.5; }
-      },
-      { id:"strait_001", tags:["新聞","軍演","兩岸"], weight:1,
-        text:s=>"你看到跑馬燈寫著「周邊海空又有大規模軍演」，留言區有人開玩笑說今天該多喝一杯。",
-        effect:s=>{ s.mental-=3; s.tagsScore.lazy+=0.5; }
-      },
-      { id:"strait_002", tags:["軍演","互助","公共"], weight:1,
-        text:s=>"新聞也播出軍演期間，地方小鎮有人自發為駐地官兵送飲料和便當。",
-        effect:s=>{ s.mental+=1; s.tagsScore.hero+=1; s.tagsScore.public+=0.5; }
-      },
-      { id:"recall_001", tags:["政治","大罷免","street"], weight:1,
-        text:s=>"你在路口看到大罷免宣講車來回繞行，喇叭一會兒喊要下架誰，一會兒喊要守護誰。",
-        effect:s=>{ s.mental-=2; s.tagsScore.public+=0.5; }
-      },
-      { id:"recall_002", tags:["政治","大罷免","新聞"], weight:1,
-        text:s=>"投票結束，結果是全部沒過。有人說「這是民主常態」，也有人說「一切都白忙了」。",
-        effect:s=>{ s.mental-=1; s.tagsScore.lazy+=0.5; }
-      },
-      { id:"mental_001", tags:["新聞","心理","青年"], weight:1,
-        text:s=>"媒體做了一集節目談年輕人的憂鬱與焦慮，畫面裡的故事讓你覺得有些片段很熟悉。",
-        effect:s=>{ s.mental-=1; s.tagsScore.lazy+=0.5; s.tagsScore.hero+=0.5; }
-      },
-      { id:"mental_002", tags:["心理","公共","互助"], weight:1,
-        text:s=>"你看到「青年免費諮商試辦計畫」，名額有限，但看起來是真的。",
-        effect:s=>{ s.mental+=3; s.tagsScore.hero+=1; s.tagsScore.public+=1; }
-      },
-      { id:"media_001", tags:["媒體","政治","網紅"], weight:1,
-        text:s=>"有知名網紅被抓包收錢帶風向，一夜之間從「良心頻道」變成「側翼代表」。",
-        effect:s=>{ s.mental-=2; s.tagsScore.media+=1; s.tagsScore.darkSpin+=1; }
-      },
-      { id:"media_002", tags:["媒體","street","網紅"], weight:1,
-        text:s=>"你在路口看到小頻道實況主直播街景，粉絲不多，但留言都很真誠。",
-        effect:s=>{ s.mental+=1; s.tagsScore.media+=1; s.tagsScore.hero+=0.5; }
-      },
-      { id:"labor_001", tags:["公共","勞工","street"], weight:1,
-        text:s=>"你下班路過廣場，碰上勞工團體遊行，高舉寫著「加班也要有夢想？」的布條。",
-        effect:s=>{ s.mental-=1; s.tagsScore.public+=1; s.tagsScore.hero+=0.5; }
-      },
-      { id:"labor_002", tags:["work","勞工","新聞"], weight:1,
-        text:s=>"某天勞檢突然到你們公司臨檢，開了好幾張超時工作罰單，群組裡一片歡呼。",
-        effect:s=>{ s.mental+=3; s.tagsScore.public+=1.5; }
-      },
-      // ===== 新增恐怖／獵奇隨機事件 =====
-      { id:"horror_shadow_001", tags:["horror","lateNight","weird"], weight:1,
-        text:s=>"凌晨三點醒來，你發現床尾站著一個黑影。你以為是夢，但黑影緩緩舉起了手……",
-        effect:s=>{ s.mental-=12; s.tagsScore.horror+=2; }
-      },
-      { id:"horror_shadow_002", tags:["horror","lateNight"], weight:1,
-        text:s=>"手機突然自動播放一則影片：空無一人的地下街，鏡頭慢慢轉向，一張蒼白的臉貼著螢幕。",
-        effect:s=>{ s.mental-=8; s.tagsScore.horror+=1; }
-      },
-      { id:"horror_rental_001", tags:["horror","房價","weird"], weight:1,
-        text:s=>"你在租屋網上看到一間超便宜套房，照片拍得很模糊，但留言區有人說「晚上不要照鏡子」。",
-        effect:s=>{ s.mental-=2; s.tagsScore.horror+=1; }
-      },
-      { id:"horror_rental_002", tags:["horror","房價","temptation"], weight:1,
-        text:s=>"房東私下問你：「想不想用身體折抵房租？只要每個月來陪『她』聊聊天。」",
-        effect:s=>{ s.mental-=5; s.tagsScore.horror+=2; s.tagsScore.darkSpin+=1; }
-      },
-      { id:"horror_street_001", tags:["horror","street","治安"], weight:1,
-        text:s=>"深夜走過北城地下街某個廢棄出口，你聽見牆壁裡傳來指甲刮擦的聲音。",
-        effect:s=>{ s.trauma=true; s.mental-=10; s.tagsScore.horror+=3; }
-      },
-      { id:"horror_cult_001", tags:["horror","邪教","temptation"], weight:1,
-        text:s=>"有人在社團張貼「最後的解脫：集體意識升維工作坊」，附圖是一群穿白衣的人圍成圓圈。",
-        effect:s=>{ s.mental-=3; s.tagsScore.horror+=1; }
-      },
-      { id:"horror_cult_002", tags:["horror","邪教","weird"], weight:1,
-        text:s=>"你收到一封手寫信，裡面只有一句話：「你準備好告別自己了嗎？」背面是奇怪的符號。",
-        effect:s=>{ s.mental-=4; s.tagsScore.horror+=2; }
-      },
-      { id:"horror_media_001", tags:["horror","媒體","weird"], weight:1,
-        text:s=>"你追蹤的靈異網紅突然上傳一段影片，他瞪大眼睛說：「他們要我告訴你們，快逃。」之後頻道永久刪除。",
-        effect:s=>{ s.mental-=6; s.tagsScore.horror+=2; s.tagsScore.media+=1; }
-      },
-      { id:"horror_work_001", tags:["horror","work","weird"], weight:1,
-        text:s=>"同事私下跟你說，晚上加班時茶水間的鏡子裡會出現另一個自己，已經有三個人離職了。",
-        effect:s=>{ s.mental-=5; s.tagsScore.horror+=1; }
-      },
-      { id:"horror_family_001", tags:["horror","家庭","weird"], weight:1,
-        text:s=>"媽媽打電話來，聲音斷斷續續：「你……你身後……有人……」然後掛斷。你再撥回去，她說剛在睡覺。",
-        effect:s=>{ s.mental-=8; s.tagsScore.horror+=2; s.tagsScore.family+=0.5; }
-      },
-      { id:"horror_tempt_001", tags:["horror","temptation","dark"], weight:1,
-        text:s=>"一個陌生人遞給你一張名片，上面只有一個眼睛圖案和一行字：「我們看見你的渴望。午夜，廢棄商場地下室。」",
-        effect:s=>{ s.mental-=3; s.tagsScore.horror+=2; s.tagsScore.darkSpin+=1; }
-      }
-    ];
-
-    function clampState(){
-      state.mental = Math.max(0, Math.min(100, state.mental));
-      state.motherHealth = Math.max(0, Math.min(100, state.motherHealth));
-    }
-
-    function pickRandomEvent(tagFilters = [], maxPerRun = 1) {
-      const pool = events.filter(ev => {
-        if (tagFilters.length && !tagFilters.some(t => ev.tags.includes(t))) return false;
-        const used = state.randomFlags[ev.id] || 0;
-        return used < (ev.maxRepeat || 1);
-      });
-      if (!pool.length) return [];
-      const picked = [];
-      for (let i = 0; i < maxPerRun && pool.length; i++) {
-        const total = pool.reduce((s, e) => s + (e.weight || 1), 0);
-        let r = Math.random() * total;
-        let idx = 0;
-        for (let j = 0; j < pool.length; j++) {
-          r -= (pool[j].weight || 1);
-          if (r <= 0) { idx = j; break; }
-        }
-        const ev = pool[idx];
-        state.randomFlags[ev.id] = (state.randomFlags[ev.id] || 0) + 1;
-        picked.push(ev);
-        pool.splice(idx, 1);
-      }
-      return picked;
-    }
-
-    // ===== 場景 =====
-    const scenes = {
-      intro: {
-        text: () =>
-`【遊戲已載入，點下面的選項開始】
-
-清晨 6 點，你擠在北城捷運的車廂裡。
-
-手機跳出三則新聞：
-1. 「史上最大普發現金一萬元今日入帳」
-2. 「大罷免全數否決，藍綠互轟」
-3. 「北城車站隨機攻擊事件一週年專題」`,
-        choices: [
-          { text: "忽略新聞，先想今天要怎麼活下去。", next: "toWork" },
-          { text: "滑開留言區，看大家怎麼罵政客。", next: "politicStart",
-            effect: () => { state.tagsScore.lazy += 0.5; }
-          },
-          { text: "截圖發限動，打字抱怨：「這國家完了。」", next: "influencerStart",
-            effect: () => { state.fame += 10; state.tagsScore.media += 1; }
-          }
-        ]
-      },
-
-      toWork: {
-        text: () => {
-          let t = "你把手機關掉，決定先專心活過今天。\n\n到站後，你被人潮推著走出捷運站。";
-          const evs = pickRandomEvent(["commute","新聞"], 1);
-          evs.forEach(ev => { ev.effect(state); t += "\n\n【通勤事件】" + ev.text(state); });
-          t += "\n\n中午，公司群組傳來一片歡呼聲：「一萬元到了！」";
-          return t;
-        },
-        choices: [{ text: "看看帳戶，確認一萬元真的進來了。", next: "moneyIn" }]
-      },
-
-      politicStart: {
-        text: () =>
-`你點開留言區，螢幕上全是謾罵和陰謀論。
-
-你越看越累，卻又停不下來。
-
-就在這時，公司群組有人喊：「一萬元進帳啦！」`,
-        choices: [
-          { text: "切換到網銀 app，看看那筆一萬元。", next: "moneyIn" },
-          { text: "關掉留言區，告訴自己先活下去。", next: "toWork" }
-        ]
-      },
-
-      influencerStart: {
-        text: () => {
-          state.day++;
-          return `你的限動很快被一堆朋友回覆，有人按愛心，有人回你「+1」。
-
-你心裡有種奇怪的爽感：原來抱怨也可以得到回應。
-
-到了公司，中午群組炸開：「一萬元入帳啦！」`;
-        },
-        choices: [{ text: "打開網銀，盯著那多出來的一萬元。", next: "moneyIn" }]
-      },
-
-      moneyIn: {
-        text: () =>
-`你的帳戶多了一行：「政府普發現金 +10,000」。
-
-你原本只剩下 ${state.money} 元，突然覺得自己好像翻身了一點點。`,
-        choices: [
-          { text: "全部拿去還卡債。", next: "payDebt",
-            effect: () => { state.money = 0; state.mental += 5; state.tagsScore.family += 0.5; }
-          },
-          { text: "晚上再來玩股市，先留著。", next: "planStock",
-            effect: () => { state.money += 10000; }
-          },
-          { text: "揪同事去吃高級吃到飽。", next: "eatBuffet",
-            effect: () => { state.money += 9200; state.mental += 10; }
-          }
-        ]
-      },
-
-      payDebt: {
-        text: () =>
-"你把一萬元轉去繳卡債，帳戶又回到 0。\n\n下班時間到了，你要怎麼回家？",
-        choices: [
-          { text: "走地下街捷徑。", next: "undergroundWarning" },
-          { text: "走地面大馬路。", next: "safeWalk" }
-        ]
-      },
-
-      planStock: {
-        text: () =>
-"你決定把一萬元留到晚上再說。\n\n下班時，北城風有點刺，你要怎麼回家？",
-        choices: [
-          { text: "走地下街捷徑。", next: "undergroundWarning" },
-          { text: "先去便利商店坐一下。", next: "convenienceStore" }
-        ]
-      },
-
-      eatBuffet: {
-        text: () =>
-"你跟同事去吃到飽，聊政治、聊股市、聊大家都覺得「很難」的人生。",
-        choices: [
-          { text: "回家路上走地下街。", next: "undergroundWarning" },
-          { text: "搭計程車回家。", next: "taxiHome", effect: () => { state.money -= 200; } }
-        ]
-      },
-
-      convenienceStore: {
-        text: () => {
-          let t = "你買了一杯熱咖啡，坐在便利商店窗邊。\n\n電視播著年度回顧。";
-          const evs = pickRandomEvent(["新聞","災難","房價","經濟"], 1);
-          evs.forEach(ev => { ev.effect(state); t += "\n\n【新聞事件】" + ev.text(state); });
-          return t;
-        },
-        choices: [
-          { text: "喝完咖啡，走地下街回家。", next: "undergroundWarning" },
-          { text: "慢慢走回家，順便散步。", next: "safeWalk" }
-        ]
-      },
-
-      taxiHome: {
-        text: () =>
-"司機一路抱怨房價與治安，你有一搭沒一搭地回應。\n\n回到房間，你打開手機。",
-        choices: [
-          { text: "打開股市 app，小試身手。", next: "stockNight" },
-          { text: "先睡再說。", next: "lateNightScroll" }
-        ]
-      },
-
-      safeWalk: {
-        text: () => {
-          let t = "你走在地面大馬路上，路燈亮著。\n\n你努力讓自己放鬆一點。";
-          const evs = pickRandomEvent(["street"], 1);
-          evs.forEach(ev => { ev.effect(state); t += "\n\n【街頭事件】" + ev.text(state); });
-          return t;
-        },
-        choices: [
-          { text: "回家後拿一部分去投資股市。", next: "stockNight" },
-          { text: "回家後上網搜尋「窮人翻身方法」。", next: "searchHelp" }
-        ]
-      },
-
-      undergroundWarning: {
-        text: () =>
-"你走向北城車站地下街入口。\n\n入口旁的海報寫著「隨機攻擊事件一週年紀念」。你手心有點汗。",
-        choices: [
-          { text: "還是走地下街。", next: "undergroundEvent" },
-          { text: "改走地面，繞遠路。", next: "safeWalk" }
-        ]
-      },
-
-      undergroundEvent: {
-        text: () => {
-          state.trauma = true;
-          state.mental -= 18;
-          state.heroPotential = true;
-          state.tagsScore.hero += 1;
-          return "你走進地下街，前方突然傳來尖叫與騷動，有人喊：「快跑！」";
-        },
-        choices: [
-          { text: "拉住身旁的小孩，一起躲進店裡。", next: "heroBranch",
-            effect: () => { state.tagsScore.hero += 2; }
-          },
-          { text: "自己先跑。", next: "escapeAlone",
-            effect: () => { state.tagsScore.lazy += 1.5; }
-          },
-          { text: "拿出手機錄影，上傳限動。", next: "recordEvent",
-            effect: () => { state.fame += 20; state.tagsScore.media += 2; }
-          }
-        ]
-      },
-
-      heroBranch: {
-        text: () =>
-"你把小孩拉進店裡躲著，外面吵了很久，終於傳來警笛聲。\n\n你成功撐過了那一夜。",
-        choices: [
-          { text: "你不想再被恐懼支配，開始找自救資源。", next: "searchHelp" },
-          { text: "你接受簡短訪問，之後開始寫下自己的故事。", next: "startInfluencer",
-            effect: () => { state.fame += 25; state.tagsScore.media += 1; }
-          }
-        ]
-      },
-
-      escapeAlone: {
-        text: () =>
-"你往出口狂奔，回到房間後手還在抖。\n\n你知道自己活著，但心裡像少了一塊。",
-        choices: [
-          { text: "你決定去找自救資源。", next: "searchHelp" },
-          { text: "你決定把一切忘掉，睡覺。", next: "lateNightScroll" }
-        ]
-      },
-
-      recordEvent: {
-        text: () =>
-"你的影片很快破千觀看，有人稱讚你勇敢，有人罵你冷血。\n\n你盯著留言，突然覺得世界好吵。",
-        choices: [
-          { text: "你決定去找自救資源。", next: "searchHelp" },
-          { text: "你決定關掉手機，睡覺。", next: "lateNightScroll" }
-        ]
-      },
-
-      searchHelp: {
-        text: () =>
-"你搜尋「創傷」、「免費諮商」、「社福資源」。\n\n兩個社團特別顯眼：\n- 躺平無罪聯盟\n- 月光族自救會\n\n另外，你看到一則超便宜租屋廣告，還有一封神秘的工作坊邀請函。",
-        choices: [
-          { text: "加入「躺平無罪聯盟」。", next: "lazyCult",
-            effect: () => { state.joinedLazyCult=true; state.mental-=5; state.tagsScore.lazy+=3; }
-          },
-          { text: "加入「月光族自救會」。", next: "supportGroup",
-            effect: () => { state.joinedSupportGroup=true; state.mental+=5; state.tagsScore.hero+=2; state.tagsScore.family+=1; }
-          },
-          { text: "點進那間超便宜套房看看。", next: "horrorRentalStart",
-            effect: () => { state.tagsScore.horror+=1; }
-          },
-          { text: "點開神秘邀請函。", next: "cultInvitation",
-            effect: () => { state.tagsScore.horror+=1; }
-          }
-        ]
-      },
-
-      lazyCult: {
-        text: () =>
-"躺平無罪聯盟的貼文寫著：「努力只是幫別人賺更多而已。」\n\n管理員邀你參加一場『最後的散步』。",
-        choices: [
-          { text: "答應參加。", next: "endingLazyWalk",
-            effect: () => { state.tagsScore.lazy += 2; state.mental -= 5; }
-          },
-          { text: "你突然害怕，退出社團。", next: "lateNightScroll",
-            effect: () => { state.joinedLazyCult=false; state.mental += 8; }
-          }
-        ]
-      },
-
-      supportGroup: {
-        text: () =>
-"自救會裡有人分享租屋陷阱、省錢方法、求助資源。\n\n你第一次覺得：也許不需要一個人硬扛。",
-        choices: [
-          { text: "主動發文，講自己的狀況。", next: "workAndFamily",
-            effect: () => { state.tagsScore.hero += 2; state.mental += 5; }
-          },
-          { text: "先潛水，看別人的故事。", next: "workAndFamily" }
-        ]
-      },
-
-      stockNight: {
-        text: () => {
-          let t = "你打開股市 app，盯著 K 線。\n";
-          const sign = Math.random() < 0.5 ? -1 : 1;
-          const amt = 1000 + Math.floor(Math.random() * 2000);
-          state.money += sign * amt;
-          state.mental += sign * 3;
-          t += `\n【股市變化】你這一晚${sign > 0 ? "小賺" : "慘賠"} ${amt} 元。`;
-          return t;
-        },
-        choices: [
-          { text: "不管結果如何，先睡覺。", next: "lateNightScroll" },
-          { text: "越想越不甘心，繼續盯盤。", next: "lateNightScroll",
-            effect: () => { state.mental -= 5; }
-          }
-        ]
-      },
-
-      lateNightScroll: {
-        text: () => {
-          let t = "深夜，你躺在床上滑手機。\n\n演算法不停推送災難與預言。";
-          const evs = pickRandomEvent(["lateNight","心理","新聞"], 1);
-          evs.forEach(ev => { ev.effect(state); t += "\n\n【深夜事件】" + ev.text(state); });
-          return t;
-        },
-        choices: [
-          { text: "終於累了，睡著了。", next: "morningCall" },
-          { text: "繼續滑，看到一則詭異的租屋廣告。", next: "horrorRentalStart",
-            effect: () => { state.tagsScore.horror+=1; }
-          }
-        ]
-      },
-
-      morningCall: {
-        text: () =>
-"清晨六點半，手機響起，是高雄家裡打來的電話。",
-        choices: [
-          { text: "趕快接起來。", next: "callMom" },
-          { text: "按掉，等等再回。", next: "workAndFamily",
-            effect: () => { state.mental -= 10; state.tagsScore.lazy += 1; }
-          }
-        ]
-      },
-
-      callMom: {
-        text: () =>
-"媽媽說身體愈來愈差，問你有沒有想過回去陪她。",
-        choices: [
-          { text: "答應過一陣子就回去。", next: "workAndFamily",
-            effect: () => { state.tagsScore.family += 2; }
-          },
-          { text: "說自己還在打拚，叫她先撐著。", next: "workAndFamily",
-            effect: () => { state.mental -= 5; state.tagsScore.lazy += 0.5; }
-          }
-        ]
-      },
-
-      workAndFamily: {
-        text: () => {
-          let t = "你在工作、家人、社群之間掙扎了一段時間。";
-          const evs = pickRandomEvent(["work","勞工","經濟"], 1);
-          evs.forEach(ev => { ev.effect(state); t += "\n\n【工作事件】" + ev.text(state); });
-          t += "\n\n朋友拉你去一場「青年座談」（有免費披薩）。你要去嗎？";
-          return t;
-        },
-        choices: [
-          {
-            text: "去看看座談，聽聽看。",
-            next: "meet_normal",
-            randomNext: [
-              { prob: 0.2, next: "meet_police" },
-              { prob: 0.3, next: "meet_mlm" },
-              { prob: 0.5, next: "meet_normal" }
-            ],
-            effect: () => { state.tagsScore.public += 0.5; }
-          },
-          { text: "不去，回家滑手機。", next: "darkJobOffer" }
-        ]
-      },
-
-      meet_normal: {
-        text: () =>
-"座談裡有人談房價、治安、心理健康，也有人談「如何參與社區」。\n\n你第一次覺得：也許這世界還有縫。",
-        choices: [
-          { text: "你留下資料，願意參與社區會議。", next: "darkJobOffer",
-            effect: () => { state.tagsScore.public += 2; state.tagsScore.hero += 1; }
-          },
-          { text: "你悄悄離開。", next: "darkJobOffer" }
-        ]
-      },
-
-      meet_police: {
-        text: () =>
-"座談到一半，警方進來臨檢，說附近有人鬧事。\n\n最後無事，但你的心跳很久才慢下來。",
-        choices: [
-          { text: "你更想理解社會怎麼運作。", next: "darkJobOffer",
-            effect: () => { state.tagsScore.public += 1; state.tagsScore.media += 1; }
-          }
-        ]
-      },
-
-      meet_mlm: {
-        text: () =>
-"散會後有人拉你去角落，熱情介紹「改變人生的事業」。\n\n你很快聽出那是直銷。",
-        choices: [
-          { text: "禮貌拒絕。", next: "darkJobOffer",
-            effect: () => { state.mental -= 2; state.tagsScore.lazy += 0.5; }
-          }
-        ]
-      },
-
-      darkJobOffer: {
-        text: () =>
-"一個神秘帳號加你好友，自稱「社群小編招募」。\n\n他說：帶風向、寫貼文，每月多一萬五。",
-        choices: [
-          { text: "接下去，錢太香了。", next: "towardEnding",
-            effect: () => { state.corruption=true; state.money+=15000; state.tagsScore.darkSpin+=3; }
-          },
-          { text: "拒絕，想把人生拉回來。", next: "towardEnding",
-            effect: () => { state.tagsScore.hero += 0.5; }
-          }
-        ]
-      },
-
-      towardEnding: {
-        text: () =>
-"日子繼續往前，你知道結局快到了。\n\n你會成為什麼樣的人？",
-        choices: [
-          { text: "把一切交給命運（結局判定）。", next: null,
-            effect: () => { currentScene = decideEnding(); }
-          }
-        ]
-      },
-
-      // ===== 原結局 =====
-      endingLazyWalk: {
-        text: () =>
-"你跟著一群人來到海邊。\n\n風很冷，海很黑。\n\n【結局一：躺平集體出走】",
-        choices: []
-      },
-      endingRebirth: {
-        text: () =>
-"你在最後一刻回頭，去求助、去諮商、去承認自己撐不住。\n\n【結局二：從邊緣掉頭的人】",
-        choices: []
-      },
-      endingDarkSpin: {
-        text: () =>
-"你成為資訊戰裡的熟手，錢變多了，但你開始不確定自己到底相信什麼。\n\n【結局三：資訊戰的操盤手】",
-        choices: []
-      },
-      endingHomeShop: {
-        text: () =>
-"你回南部陪媽媽，開了間小店。\n\n你沒有暴富，但終於能睡得比較安穩。\n\n【結局四：平凡卻踏實的日常】",
-        choices: []
-      },
-      endingDebtLoop: {
-        text: () =>
-"你在房租與債務之間輪迴。\n\n下一次普發現金，你還會再賭一次嗎？\n\n【結局五：股海與債務的輪迴】",
-        choices: []
-      },
-      endingInfluencer: {
-        text: () =>
-"你成為談社會現象與基層生活的創作者。\n\n你靠聲量活著，也被聲量追殺。\n\n【結局六：灰階世界的說書人】",
-        choices: []
-      },
-      endingCandidate: {
-        text: () =>
-"你被拱出來參選里長／議員。\n\n你貼上海報時突然想到：也許你真的可以改變一點點。\n\n【結局七：從鍵盤到街頭的候選人】",
-        choices: []
-      },
-      endingHero: {
-        text: () =>
-"你沒有變有錢，但你成為那種在關鍵時刻會伸手的人。\n\n【結局八：北城地下街的小小英雄】",
-        choices: []
-      },
-
-      // ===== 新增恐怖租屋支線 =====
-      horrorRentalStart: {
-        text: () => {
-          let t = "你約了房東看房，地點在北城邊緣的老公寓。樓梯間瀰漫著霉味，牆上有不明的抓痕。";
-          const ev = pickRandomEvent(["horror","房價"],1);
-          ev.forEach(e=>{ e.effect(state); t += "\n\n【詭異預兆】"+e.text(state); });
-          return t;
-        },
-        choices: [
-          { text: "租金真的便宜，先租下來再說。", next: "horrorRentalMoveIn",
-            effect: ()=>{ state.money -= 3000; state.tagsScore.horror+=1; }
-          },
-          { text: "太詭異了，趕快離開。", next: "safeWalk",
-            effect: ()=>{ state.mental+=5; }
-          }
-        ]
-      },
-      horrorRentalMoveIn: {
-        text: () => {
-          state.tagsScore.horror += 2;
-          return "你搬進那間套房。第一晚，天花板傳來彈珠聲，你安慰自己只是樓上小孩。";
-        },
-        choices: [
-          { text: "戴耳機睡覺，不理會。", next: "horrorRentalNight1" },
-          { text: "上網查這棟樓的歷史。", next: "horrorRentalHistory",
-            effect: ()=>{ state.tagsScore.horror+=1; }
-          }
-        ]
-      },
-      horrorRentalHistory: {
-        text: () => {
-          let t = "你查到十年前這裡發生過火災，一名獨居女子逃生不及。她的房間……就是你現在住的這一間。";
-          const ev = pickRandomEvent(["horror","weird"],1);
-          ev.forEach(e=>{ e.effect(state); t += "\n\n"+e.text(state); });
-          return t;
-        },
-        choices: [
-          { text: "馬上搬家！", next: "safeWalk",
-            effect: ()=>{ state.money -= 2000; state.mental+=10; }
-          },
-          { text: "也許只是巧合，再觀察看看。", next: "horrorRentalNight1",
-            effect: ()=>{ state.tagsScore.horror+=2; }
-          }
-        ]
-      },
-      horrorRentalNight1: {
-        text: () => {
-          let t = "半夜，你被冷醒。窗戶明明是關著的，卻有風吹動窗簾。你隱約看見窗簾後站著一個人形。";
-          return t;
-        },
-        choices: [
-          { text: "衝過去拉開窗簾！", next: "horrorRentalCurtain",
-            effect: ()=>{ state.mental-=5; }
-          },
-          { text: "躲進棉被假裝沒看見。", next: "horrorRentalIgnore",
-            effect: ()=>{ state.tagsScore.horror+=1; state.mental-=8; }
-          }
-        ]
-      },
-      horrorRentalCurtain: {
-        text: () => {
-          state.mental -= 15;
-          state.tagsScore.horror += 3;
-          return "你拉開窗簾，空無一物。但一回頭，那個人形正貼在你背後，腐爛的臉幾乎碰到你的鼻子。";
-        },
-        choices: [
-          { text: "尖叫著衝出門。", next: "horrorRentalEscape" },
-          { text: "閉上眼睛唸阿彌陀佛。", next: "horrorRentalPray" }
-        ]
-      },
-      horrorRentalIgnore: {
-        text: () => {
-          state.mental -= 10;
-          state.tagsScore.horror += 2;
-          return "你蜷縮在棉被裡，感覺到有人坐在床邊，輕輕拍著你。你不敢動，直到天亮。";
-        },
-        choices: [
-          { text: "天一亮就搬家。", next: "safeWalk",
-            effect: ()=>{ state.money -= 2000; state.mental+=5; }
-          },
-          { text: "也許只是壓力大，再住幾天。", next: "horrorRentalNight2",
-            effect: ()=>{ state.tagsScore.horror+=2; }
-          }
-        ]
-      },
-      horrorRentalEscape: {
-        text: () => {
-          state.mental += 10;
-          return "你逃出公寓，在便利商店坐到天亮。你決定再也不回那裡。";
-        },
-        choices: [
-          { text: "回到正常生活", next: "workAndFamily" }
-        ]
-      },
-      horrorRentalPray: {
-        text: () => {
-          state.mental -= 5;
-          state.tagsScore.horror += 1;
-          return "你一直唸佛，那東西慢慢後退，消失在牆角。你鬆了一口氣，但從此不敢關燈睡覺。";
-        },
-        choices: [
-          { text: "繼續住下去，但精神越來越差。", next: "horrorRentalNight2" },
-          { text: "還是搬家吧。", next: "safeWalk" }
-        ]
-      },
-      horrorRentalNight2: {
-        text: () => {
-          let t = "你已經分不清是夢還是現實。每天晚上，那東西都會出現，有時候在床底，有時候在衣櫃。";
-          const ev = pickRandomEvent(["horror","weird"],1);
-          ev.forEach(e=>{ e.effect(state); t += "\n\n"+e.text(state); });
-          return t;
-        },
-        choices: [
-          { text: "求助宮廟或心理醫師。", next: "horrorRentalHelp" },
-          { text: "開始跟她對話。", next: "horrorRentalDialogue",
-            effect: ()=>{ state.tagsScore.horror+=2; state.tagsScore.darkSpin+=1; }
-          }
-        ]
-      },
-      horrorRentalHelp: {
-        text: () => {
-          state.mental += 15;
-          return "你找了老師來處理，對方說這裡的磁場很亂，給了你護身符。之後的夜晚安靜了。";
-        },
-        choices: [
-          { text: "總算可以好好生活", next: "workAndFamily" }
-        ]
-      },
-      horrorRentalDialogue: {
-        text: () => {
-          state.tagsScore.horror += 4;
-          state.tagsScore.darkSpin += 2;
-          return "你鼓起勇氣問她想要什麼。她流著淚說，她只是想找個人說說話，她太寂寞了。你開始每晚陪她聊天，甚至覺得她比活人更懂你。";
-        },
-        choices: [
-          { text: "繼續這種詭異的同居生活", next: "horrorRentalEnding",
-            effect: ()=>{ currentScene = decideHorrorEnding(); }
-          }
-        ]
-      },
-
-      // ===== 新增邪教支線 =====
-      cultInvitation: {
-        text: () => {
-          let t = "你收到一封精美的邀請函，邀請你參加「意識升維工作坊」，地點在山區一間民宿。";
-          const ev = pickRandomEvent(["horror","邪教","temptation"],1);
-          ev.forEach(e=>{ e.effect(state); t += "\n\n"+e.text(state); });
-          return t;
-        },
-        choices: [
-          { text: "去看看是什麼。", next: "cultMeeting",
-            effect: ()=>{ state.tagsScore.horror+=1; }
-          },
-          { text: "刪掉，這太詭異了。", next: "lateNightScroll" }
-        ]
-      },
-      cultMeeting: {
-        text: () => {
-          state.tagsScore.horror += 2;
-          return "聚會在山區一間老宅舉行。大約二十人圍坐，主持人一身白衣，眼神狂熱。他說：「我們將一起突破現實的牢籠。」";
-        },
-        choices: [
-          { text: "參與他們的冥想。", next: "cultMeditation",
-            effect: ()=>{ state.mental-=5; }
-          },
-          { text: "覺得不對勁，想離開。", next: "cultEscape" }
-        ]
-      },
-      cultMeditation: {
-        text: () => {
-          state.mental -= 10;
-          state.tagsScore.horror += 2;
-          return "你閉上眼，感覺意識開始漂浮。你聽見耳邊傳來低語：「留下來……留下來……」睜眼時，所有人都盯著你。";
-        },
-        choices: [
-          { text: "答應留下來參加進階課程。", next: "cultInitiation",
-            effect: ()=>{ state.tagsScore.horror+=2; }
-          },
-          { text: "假裝順從，找機會逃跑。", next: "cultEscape" }
-        ]
-      },
-      cultEscape: {
-        text: () => {
-          state.mental += 10;
-          return "你趁休息時間偷偷溜出老宅，一路跑下山，搭上最後一班公車。";
-        },
-        choices: [
-          { text: "回到城市", next: "workAndFamily" }
-        ]
-      },
-      cultInitiation: {
-        text: () => {
-          state.tagsScore.horror += 3;
-          state.tagsScore.darkSpin += 2;
-          return "入會儀式在午夜舉行。他們讓你喝下一杯苦澀的液體，然後在你額頭畫上符號。你開始看見不存在的東西。";
-        },
-        choices: [
-          { text: "接受他們的世界觀。", next: "cultBelief",
-            effect: ()=>{ state.mental-=20; }
-          },
-          { text: "內心抗拒，但不敢表現。", next: "cultResist" }
-        ]
-      },
-      cultBelief: {
-        text: () => {
-          state.tagsScore.horror += 4;
-          state.tagsScore.lazy += 3;
-          return "你漸漸相信只有擺脫物質束縛才能解脫。你捐出所有積蓄，辭掉工作，準備跟隨導師進行「最後的旅程」。";
-        },
-        choices: [
-          { text: "走向結局", next: null,
-            effect: ()=>{ currentScene = decideCultEnding(); }
-          }
-        ]
-      },
-      cultResist: {
-        text: () => {
-          state.mental -= 15;
-          return "你表面順從，但每天都被噩夢糾纏。你知道必須逃，但他們監視著每個人。";
-        },
-        choices: [
-          { text: "深夜偷偷報警。", next: "cultRescue",
-            effect: ()=>{ state.tagsScore.hero+=2; }
-          },
-          { text: "繼續忍耐，直到精神崩潰。", next: "cultBreakdown" }
-        ]
-      },
-      cultRescue: {
-        text: () => {
-          state.mental += 20;
-          return "警方突襲了聚會點，你被救出。那些人都被逮捕，但你已經回不去原來的生活。";
-        },
-        choices: [
-          { text: "重新開始", next: "workAndFamily" }
-        ]
-      },
-      cultBreakdown: {
-        text: () => {
-          state.mental = 0;
-          return "你再也分不清現實與幻覺，最後被送進療養院。";
-        },
-        choices: []
-      },
-
-      // ===== 新增兩個專屬結局 =====
-      endingHorrorRental: {
-        text: () =>
-"你再也沒有搬離那間套房。你和她成了某種共存體，白天你上班，晚上你們聊天。\n\n有人說你氣色越來越差，但你覺得你終於不再孤單。\n\n【結局九：與鬼同居的人】",
-        choices: []
-      },
-      endingCultSacrifice: {
-        text: () =>
-"你跟隨導師來到海邊，他們說今天是最後的解脫。你看著海浪，忽然想起媽媽的臉。但一切都太遲了。\n\n【結局十：意識升維的祭品】",
-        choices: []
-      }
+  // 重新開始
+  function restart() {
+    state = {
+      money: 1200,
+      energy: 75,
+      mental: 68,
+      sin: 0,
+      crazy: 0,
+      fame: 0,
+      drug: 0,
+      debt: 0,
+      gang: 0,
+      cult: 0,
+      day: 1,
+      killed: false,
+      betrayed: false,
+      saved: false,
+      enlighten: false,
+      triggeredEvents: {}
     };
-
-    // ===== 結局判定 =====
-    function decideEnding(){
-      const s = state;
-      const cands = [];
-
-      // 恐怖租屋結局
-      if (s.tagsScore.horror >= 8 && s.mental <= 30) {
-        cands.push({ ending: "endingHorrorRental", weight: s.tagsScore.horror + 3 });
-      }
-      // 邪教獻祭結局
-      if (s.tagsScore.horror >= 6 && s.tagsScore.darkSpin >= 5 && s.joinedLazyCult) {
-        cands.push({ ending: "endingCultSacrifice", weight: s.tagsScore.horror + s.tagsScore.darkSpin });
-      }
-      // 躺平悲劇
-      if (s.tagsScore.lazy >= 5 && s.mental <= 30) {
-        cands.push({ ending: "endingLazyWalk", weight: s.tagsScore.lazy + 2 });
-      }
-      // 重生（避免永遠走悲劇：hero 夠高時也可能轉向）
-      if (s.tagsScore.hero >= 4 && s.joinedSupportGroup && s.mental >= 45) {
-        cands.push({ ending: "endingHero", weight: s.tagsScore.hero + 2 });
-        cands.push({ ending: "endingRebirth", weight: 2 });
-      }
-      // 黑錢線
-      if (s.corruption && s.tagsScore.darkSpin >= 3) {
-        cands.push({ ending: "endingDarkSpin", weight: s.tagsScore.darkSpin + s.fame/20 });
-      }
-      // 家庭線
-      if (s.tagsScore.family >= 3) {
-        cands.push({ ending: "endingHomeShop", weight: s.tagsScore.family + s.motherHealth/25 });
-      }
-      // 候選人線
-      if (s.tagsScore.public >= 3 && s.fame >= 20 && !s.corruption) {
-        cands.push({ ending: "endingCandidate", weight: s.tagsScore.public + 1 });
-      }
-      // 網紅線
-      if (s.tagsScore.media >= 3 && s.fame >= 40) {
-        cands.push({ ending: "endingInfluencer", weight: s.tagsScore.media + s.fame/30 });
-      }
-      // 破產保底
-      if (s.money <= 0) {
-        cands.push({ ending: "endingDebtLoop", weight: 3 });
-      }
-      // 如果沒有命中任何路線，給中性保底
-      if (!cands.length) return "endingDebtLoop";
-
-      let total = cands.reduce((sum,c)=>sum+c.weight, 0);
-      let r = Math.random() * total;
-      for (const c of cands) {
-        r -= c.weight;
-        if (r <= 0) return c.ending;
-      }
-      return cands[cands.length-1].ending;
-    }
-
-    // 輔助函數：恐怖租屋結局直接跳轉
-    function decideHorrorEnding(){
-      return "endingHorrorRental";
-    }
-    function decideCultEnding(){
-      return "endingCultSacrifice";
-    }
-
-    // ===== 渲染 =====
-    function render(){
-      const storyEl = document.getElementById("story");
-      const choicesEl = document.getElementById("choices");
-      const statsEl = document.getElementById("stats");
-      const restartBtn = document.getElementById("restart");
-      const banner = document.getElementById("banner");
-
-      if (banner) banner.innerHTML = '<span class="hint-ok">已載入</span>：點選按鈕進行（手機可滑動內容）。';
-
-      statsEl.textContent =
-        `現金：${state.money}｜精神：${state.mental}｜媽媽健康：${state.motherHealth}｜知名度：${state.fame}｜恐怖值：${state.tagsScore.horror}`;
-
-      const scene = scenes[currentScene];
-      if (!scene){
-        storyEl.textContent = "（錯誤：找不到場景 " + currentScene + "）";
-        choicesEl.innerHTML = "";
-        restartBtn.style.display = "inline-block";
-        return;
-      }
-
-      storyEl.textContent = (typeof scene.text === "function") ? scene.text() : scene.text;
-      choicesEl.innerHTML = "";
-
-      if (scene.choices && scene.choices.length){
-        restartBtn.style.display = "none";
-        scene.choices.forEach(choice=>{
-          const btn = document.createElement("button");
-          btn.className = "choice";
-          btn.textContent = choice.text;
-          btn.onclick = () => {
-            if (choice.effect) choice.effect();
-
-            let nextKey = choice.next;
-            if (choice.randomNext && choice.randomNext.length){
-              let r = Math.random();
-              for (const rn of choice.randomNext){
-                r -= rn.prob;
-                if (r <= 0) { nextKey = rn.next; break; }
-              }
-            }
-
-            clampState();
-            if (nextKey) currentScene = nextKey;
-            render();
-          };
-          choicesEl.appendChild(btn);
-        });
-      } else {
-        restartBtn.style.display = "inline-block";
-      }
-    }
-
-    document.getElementById("restart").onclick = () => {
-      state = initialState();
-      currentScene = "intro";
-      render();
-      window.scrollTo({ top: 0, behavior: "instant" });
-    };
-
+    currentEvent = null;
+    gameOver = false;
     render();
-  </script>
+  }
+
+  document.getElementById('restart').onclick = restart;
+
+  // 啟動
+  render();
+})();
+</script>
 </body>
 </html>
