@@ -2,7 +2,7 @@
 <html lang="zh-Hant-TW">
 <head>
   <meta charset="UTF-8">
-  <title>一萬塊的人生轉彎（進階版）</title>
+  <title>一萬塊的人生轉彎（進階時事版）</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -74,7 +74,7 @@
 </head>
 <body>
   <div id="game">
-    <h1>一萬塊的人生轉彎（進階版）</h1>
+    <h1>一萬塊的人生轉彎（進階時事版）</h1>
     <div id="stats"></div>
     <div id="story"></div>
     <div class="choices" id="choices"></div>
@@ -93,14 +93,14 @@
       joinedLazyCult: false,
       joinedSupportGroup: false,
       heroPotential: false,
-      randomFlags: {}, // 記錄事件被觸發次數或標記
-      tagsScore: {     // 各種人生傾向
-        lazy: 0,      // 躺平 / 絕望
-        hero: 0,      // 英雄 / 互助
-        darkSpin: 0,  // 黑錢 / 資訊戰
-        family: 0,    // 家庭 / 回家
-        public: 0,    // 公共參與 / 候選人
-        media: 0      // 網紅 / 獨立記者
+      randomFlags: {},
+      tagsScore: {
+        lazy: 0,
+        hero: 0,
+        darkSpin: 0,
+        family: 0,
+        public: 0,
+        media: 0
       },
       day: 1
     });
@@ -108,8 +108,9 @@
     let state = initialState();
     let currentScene = "intro";
 
-    // === 隨機事件總表（示範 10 個，可擴充到 50+） ===
+    // === 隨機事件總表（含基礎＋20 個時事事件，可再自行擴充） ===
     const events = [
+      // 基礎示範事件
       {
         id: "commute_001",
         tags: ["commute", "治安", "新聞"],
@@ -218,8 +219,277 @@
           s.mental += 3;
           s.tagsScore.hero += 1;
         }
+      },
+
+      // === 20 個時事風格事件 ===
+
+      // 1. 花東水災＋鏟子志工
+      {
+        id: "disaster_001",
+        tags: ["新聞", "災難", "互助"],
+        weight: 1,
+        text: s =>
+          "你看到新聞在報「東部山區堰塞湖潰堤」，一群被稱為『鏟子志工』的人，自發跑去幫忙清淤。",
+        effect: s => {
+          s.mental += 2;
+          s.tagsScore.hero += 1.5;
+        }
+      },
+
+      // 2. 水災捐款詐騙
+      {
+        id: "disaster_002",
+        tags: ["新聞", "災難", "詐騙"],
+        weight: 1,
+        text: s =>
+          "水災畫面播完後，你收到了幾封「災區捐款連結」，看起來很像官方單位，但網址怪怪的。",
+        effect: s => {
+          s.mental -= 2;
+          s.tagsScore.lazy += 0.5;
+        }
+      },
+
+      // 3. 北城車站模仿攻擊謠言
+      {
+        id: "crime_001",
+        tags: ["新聞", "治安", "謠言"],
+        weight: 1,
+        text: s =>
+          "有謠言說有人要模仿北城車站隨機攻擊，社群瘋傳未證實的截圖，你的通勤路線剛好會經過。",
+        effect: s => {
+          s.trauma = true;
+          s.mental -= 4;
+          s.tagsScore.lazy += 1;
+        }
+      },
+
+      // 4. 北城街頭警察加強巡邏
+      {
+        id: "crime_002",
+        tags: ["street", "治安"],
+        weight: 1,
+        text: s =>
+          "你經過北城某個路口，看到警察巡邏明顯變多，路上的人好像也比較放心。",
+        effect: s => {
+          s.mental += 2;
+          s.tagsScore.hero += 0.5;
+        }
+      },
+
+      // 5. 關稅衝擊電子股
+      {
+        id: "econ_002",
+        tags: ["經濟", "股市", "新聞"],
+        weight: 1,
+        text: s =>
+          "新聞說國際關稅新制上路，電子股盤中狂跌，財經節目一邊喊恐慌、一邊推訂閱服務。",
+        effect: s => {
+          s.mental -= 2;
+        }
+      },
+
+      // 6. 公司收到轉單利多
+      {
+        id: "econ_003",
+        tags: ["經濟", "work"],
+        weight: 1,
+        text: s =>
+          "你們公司主管開會說，因為供應鏈重組，接到一筆國外新訂單，但加班一定會變多。",
+        effect: s => {
+          s.mental -= 1;
+          s.tagsScore.darkSpin += 0.5;
+        }
+      },
+
+      // 7. 颱風大停電
+      {
+        id: "typhoon_001",
+        tags: ["災難", "颱風", "生活"],
+        weight: 1,
+        text: s =>
+          "強颱掃過，半夜你租屋處忽然停電，手機網路也不穩，只能在黑暗中發呆。",
+        effect: s => {
+          s.mental -= 3;
+          s.tagsScore.lazy += 0.5;
+        }
+      },
+
+      // 8. 停電中鄰居互相幫忙
+      {
+        id: "typhoon_002",
+        tags: ["災難", "互助", "street"],
+        weight: 1,
+        text: s =>
+          "停電第二天，鄰居在樓梯間分發煮好的熱湯和延長線給沒有行動電源的人。",
+        effect: s => {
+          s.mental += 4;
+          s.tagsScore.hero += 2;
+          s.tagsScore.family += 0.5;
+        }
+      },
+
+      // 9. 房價新聞與青年哀號
+      {
+        id: "housing_001",
+        tags: ["新聞", "房價", "青年"],
+        weight: 1,
+        text: s =>
+          "新聞做了一個專題：「年輕人買房只剩夢？」畫面裡的受訪者年紀跟你差不多。",
+        effect: s => {
+          s.mental -= 3;
+          s.tagsScore.lazy += 1;
+        }
+      },
+
+      // 10. 社會住宅抽籤
+      {
+        id: "housing_002",
+        tags: ["房價", "公共", "新聞"],
+        weight: 1,
+        text: s =>
+          "有人在社團分享自己抽中社會住宅的喜悅，說終於不用再住違建鐵皮屋。",
+        effect: s => {
+          s.mental += 2;
+          s.tagsScore.public += 1;
+          s.tagsScore.hero += 0.5;
+        }
+      },
+
+      // 11. 兩岸軍演軍機繞台
+      {
+        id: "strait_001",
+        tags: ["新聞", "軍演", "兩岸"],
+        weight: 1,
+        text: s =>
+          "你看到新聞跑馬燈寫著「周邊海空又有大規模軍演」，有人在留言區開玩笑說今天該多喝一杯。",
+        effect: s => {
+          s.mental -= 3;
+          s.tagsScore.lazy += 0.5;
+        }
+      },
+
+      // 12. 軍演中志工送物資
+      {
+        id: "strait_002",
+        tags: ["軍演", "互助", "公共"],
+        weight: 1,
+        text: s =>
+          "新聞同時也播出軍演期間，地方小鎮有人自發為駐地官兵送飲料和便當。",
+        effect: s => {
+          s.mental += 1;
+          s.tagsScore.hero += 1;
+          s.tagsScore.public += 0.5;
+        }
+      },
+
+      // 13. 大罷免街頭宣講車
+      {
+        id: "recall_001",
+        tags: ["政治", "大罷免", "street"],
+        weight: 1,
+        text: s =>
+          "你在路口看到大罷免宣講車來回繞行，喇叭一會兒喊要下架誰，一會兒喊要守護誰。",
+        effect: s => {
+          s.mental -= 2;
+          s.tagsScore.public += 0.5;
+        }
+      },
+
+      // 14. 大罷免投票結果
+      {
+        id: "recall_002",
+        tags: ["政治", "大罷免", "新聞"],
+        weight: 1,
+        text: s =>
+          "投票結束，結果是全部沒過。你看到有人說「這是民主常態」，也有人說「一切都白忙了」。",
+        effect: s => {
+          s.mental -= 1;
+          s.tagsScore.lazy += 0.5;
+        }
+      },
+
+      // 15. 青年心理健康專題
+      {
+        id: "mental_001",
+        tags: ["新聞", "心理", "青年"],
+        weight: 1,
+        text: s =>
+          "媒體做了一集節目談年輕人的憂鬱症與焦慮，畫面裡的故事讓你覺得有些片段很熟悉。",
+        effect: s => {
+          s.mental -= 1;
+          s.tagsScore.lazy += 0.5;
+          s.tagsScore.hero += 0.5;
+        }
+      },
+
+      // 16. 免費心理諮商試辦計畫
+      {
+        id: "mental_002",
+        tags: ["心理", "公共", "互助"],
+        weight: 1,
+        text: s =>
+          "你在社團看到政府與民間合作的「青年免費諮商試辦計畫」，名額有限，但看起來是真的。",
+        effect: s => {
+          s.mental += 3;
+          s.tagsScore.hero += 1;
+          s.tagsScore.public += 1;
+        }
+      },
+
+      // 17. 網紅政治風向風波
+      {
+        id: "media_001",
+        tags: ["媒體", "政治", "網紅"],
+        weight: 1,
+        text: s =>
+          "有知名網紅被抓包收錢帶風向，一夜之間從「良心 Youtuber」變成「側翼代表」。",
+        effect: s => {
+          s.mental -= 2;
+          s.tagsScore.media += 1;
+          s.tagsScore.darkSpin += 1;
+        }
+      },
+
+      // 18. 小頻道街頭實況主
+      {
+        id: "media_002",
+        tags: ["媒體", "street", "網紅"],
+        weight: 1,
+        text: s =>
+          "你在路口看到一個小頻道實況主，拿著手機直播日常街景，粉絲不多，但留言都很真誠。",
+        effect: s => {
+          s.mental += 1;
+          s.tagsScore.media += 1;
+          s.tagsScore.hero += 0.5;
+        }
+      },
+
+      // 19. 勞工權益遊行
+      {
+        id: "labor_001",
+        tags: ["公共", "勞工", "street"],
+        weight: 1,
+        text: s =>
+          "你下班路過市府前廣場，剛好碰上勞工團體遊行，高舉寫著「加班也要有夢想？」的布條。",
+        effect: s => {
+          s.mental -= 1;
+          s.tagsScore.public += 1;
+          s.tagsScore.hero += 0.5;
+        }
+      },
+
+      // 20. 勞檢突擊你公司
+      {
+        id: "labor_002",
+        tags: ["work", "勞工", "新聞"],
+        weight: 1,
+        text: s =>
+          "某天勞檢突然到你們公司臨檢，結果開了好幾張超時工作罰單，群組裡一片歡呼。",
+        effect: s => {
+          s.mental += 3;
+          s.tagsScore.public += 1.5;
+        }
       }
-      // TODO：你可以在這裡繼續 push，做到 50+ 事件
     ];
 
     // 按標籤抽取隨機事件
@@ -313,7 +583,8 @@
         text: () =>
 `你點開留言區，螢幕上全是謾罵和陰謀論。
 
-有人說「大罷免就是一場笑話」，有人說「這國家只剩下鍵盤正義」，
+有人說「大罷免就是一場笑話」，有人說「這國家只剩下鍵盤正義」。
+
 你突然說不出話來，只是覺得有點累。
 
 就在這時，公司群組有人喊：「一萬元進帳啦！」`,
@@ -434,7 +705,747 @@
 `你買了一杯熱咖啡，坐在便利商店的窗邊，看著路人來來往往。
 
 電視新聞正在播：「大罷免全數否決、關稅風暴重創股市、全民普發現金」的年度回顧。`;
-          const evs = pickRandomEvent(["news"], 1);
+          const evs = pickRandomEvent(["news", "災難", "經濟"], 1);
+          evs.forEach(ev => {
+            ev.effect(state);
+            t += "\n\n【新聞事件】" + ev.text(state);
+          });
+          t += "\n\n你突然覺得，自己好像只是一個被新聞推著走的小人物。";
+          return t;
+        },
+        choices: [
+          { text: "喝完咖啡，走地下街回家。", next: "undergroundWarning" },
+          { text: "慢慢走回家，順便散步。", next: "safeWalk" }
+        ]
+      },
+
+      taxiHome: {
+        text: () =>
+`你攔了一台計程車，坐上去的瞬間，覺得自己像個有錢人。
+
+司機一路抱怨房價、抱怨政府、抱怨治安，你有一搭沒一搭地回應。
+
+回到租屋處，你躺在床上滑手機，想到那一萬元好像還可以做很多事。`,
+        choices: [
+          { text: "打開股市 app，打算小試身手。", next: "stockNight" },
+          { text: "累了，決定先睡一覺再說。", next: "lateNightScroll" }
+        ]
+      },
+
+      safeWalk: {
+        text: () => {
+          let t =
+`你選擇走地面大馬路，路燈亮著，車子來來往往，人潮稀稀落落。
+
+雖然多花了十五分鐘，但你覺得心裡比較踏實。`;
+          const evs = pickRandomEvent(["street"], 1);
+          evs.forEach(ev => {
+            ev.effect(state);
+            t += "\n\n【街頭事件】" + ev.text(state);
+          });
+          t += "\n\n回到房間，你打開手機，思考那一萬元的用途。";
+          return t;
+        },
+        choices: [
+          { text: "試著拿一部分去投資股市。", next: "stockNight" },
+          { text: "上網搜尋「窮人翻身方法」。", next: "searchHelp" }
+        ]
+      },
+
+      undergroundWarning: {
+        text: () =>
+`你走向北城車站地下街入口。
+
+入口旁貼著一張還沒撕掉的海報：「北城車站隨機攻擊事件一週年紀念座談」。
+
+你想起那天新聞畫面裡的尖叫和混亂，不禁打了個冷顫。`,
+        choices: [
+          { text: "還是走地下街，想快點回家。", next: "undergroundEvent" },
+          { text: "臨時改變心意，繞遠路走地面。", next: "safeWalk" }
+        ]
+      },
+
+      undergroundEvent: {
+        text: () => {
+          state.day++;
+          state.trauma = true;
+          state.mental -= 20;
+          state.heroPotential = true;
+          state.tagsScore.hero += 1;
+          return `你走進地下街，店家大多已經拉下鐵門下面是「整合了 20 個時事風格事件」的完整進階版 `game.html`，你可以直接整份存成 `game.html`，丟到 GitHub Pages 或手機瀏覽器開就能玩。  
+
+已包含：  
+- `events` 陣列（前 10 個示範＋新增 20 個時事事件，共 30 個，可繼續擴充）。  
+- `pickRandomEvent` 依標籤抽事件。  
+- 事件會影響 `money / mental / fame / trauma / tagsScore`，進而影響結局。  
+- `decideEnding()` 依傾向與狀態在 8 個結局中挑一個。  
+
+---
+
+```html
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>一萬塊的人生轉彎（進階時事版）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #111;
+      color: #eee;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    #game {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    h1 {
+      font-size: 1.6rem;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    #stats {
+      font-size: 0.9rem;
+      color: #ccc;
+      margin-bottom: 8px;
+    }
+    #story {
+      white-space: pre-wrap;
+      line-height: 1.6;
+      margin-bottom: 16px;
+      font-size: 1rem;
+    }
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    button.choice {
+      width: 100%;
+      padding: 10px 12px;
+      border: none;
+      border-radius: 4px;
+      background: #333;
+      color: #eee;
+      font-size: 1rem;
+      text-align: left;
+    }
+    button.choice:hover {
+      background: #555;
+      cursor: pointer;
+    }
+    button.choice:active {
+      background: #777;
+    }
+    #restart {
+      margin-top: 12px;
+      padding: 8px 10px;
+      background: #444;
+      border: none;
+      border-radius: 4px;
+      color: #eee;
+      font-size: 0.9rem;
+      display: none;
+    }
+    @media (max-width: 480px) {
+      h1 { font-size: 1.3rem; }
+      #story { font-size: 0.95rem; }
+      button.choice { font-size: 0.95rem; }
+    }
+  </style>
+</head>
+<body>
+  <div id="game">
+    <h1>一萬塊的人生轉彎（進階時事版）</h1>
+    <div id="stats"></div>
+    <div id="story"></div>
+    <div class="choices" id="choices"></div>
+    <button id="restart">重新開始</button>
+  </div>
+
+  <script>
+    // === 狀態 ===
+    const initialState = () => ({
+      money: 3000,
+      mental: 70,
+      motherHealth: 50,
+      fame: 0,
+      corruption: false,
+      trauma: false,
+      joinedLazyCult: false,
+      joinedSupportGroup: false,
+      heroPotential: false,
+      randomFlags: {},
+      tagsScore: {
+        lazy: 0,
+        hero: 0,
+        darkSpin: 0,
+        family: 0,
+        public: 0,
+        media: 0
+      },
+      day: 1
+    });
+
+    let state = initialState();
+    let currentScene = "intro";
+
+    // === 隨機事件總表（原本 10 + 新增 20 = 30 個，可再擴充） ===
+    const events = [
+      // 原本示範事件 10 個
+      {
+        id: "commute_001",
+        tags: ["commute", "治安", "新聞"],
+        weight: 1,
+        text: s =>
+          "捷運電視牆播放去年的北城車站隨機攻擊回顧專題，你突然想起地下街那晚的混亂。",
+        effect: s => {
+          s.trauma = true;
+          s.mental -= 4;
+          s.tagsScore.lazy += 1;
+        }
+      },
+      {
+        id: "commute_002",
+        tags: ["commute"],
+        weight: 1,
+        text: s =>
+          "車廂裡有人把座位讓給一位抱小孩的乘客，大家默默看著，空氣莫名溫暖了一點。",
+        effect: s => {
+          s.mental += 3;
+          s.tagsScore.hero += 1;
+        }
+      },
+      {
+        id: "news_001",
+        tags: ["新聞", "大罷免"],
+        weight: 1,
+        text: s =>
+          "手機跳出推播：新一波罷免投票結果又全部未通過，政論節目吵成一團。",
+        effect: s => {
+          s.mental -= 2;
+          s.tagsScore.lazy += 0.5;
+        }
+      },
+      {
+        id: "news_002",
+        tags: ["新聞", "經濟"],
+        weight: 1,
+        text: s =>
+          "新聞說關稅風暴後，股市盤中一度大跌又拉回，同事在茶水間大喊：「早知道就 all in」。",
+        effect: s => {
+          s.mental += 1;
+        }
+      },
+      {
+        id: "work_001",
+        tags: ["work"],
+        weight: 1,
+        text: s =>
+          "主管臨時叫你留下加班，說這是「一起度過難關」，但沒有提到加班費。",
+        effect: s => {
+          s.mental -= 6;
+          s.tagsScore.lazy += 1;
+        }
+      },
+      {
+        id: "work_002",
+        tags: ["work", "裁員"],
+        weight: 1,
+        text: s =>
+          "公司匿名信箱傳出有人被預告資遣的消息，茶水間瀰漫著焦慮的味道。",
+        effect: s => {
+          s.mental -= 4;
+        }
+      },
+      {
+        id: "street_001",
+        tags: ["street", "政治"],
+        weight: 1,
+        text: s =>
+          "路口有造勢車經過，大聲喇叭吵得你頭痛，地上滿是旗子和面紙。",
+        effect: s => {
+          s.mental -= 2;
+        }
+      },
+      {
+        id: "street_002",
+        tags: ["street", "連署"],
+        weight: 1,
+        text: s =>
+          "有人請你連署要求改善社會安全網，你猶豫一下，還是簽了名字。",
+        effect: s => {
+          s.mental += 1;
+          s.tagsScore.hero += 1;
+          s.tagsScore.public += 0.5;
+        }
+      },
+      {
+        id: "late_001",
+        tags: ["lateNight", "詐騙"],
+        weight: 1,
+        text: s =>
+          "你收到一則可疑的投資 Line 群邀請，裡面滿是「財富自由」截圖與豪車照片。",
+        effect: s => {
+          s.mental -= 2;
+          s.tagsScore.lazy += 0.5;
+        }
+      },
+      {
+        id: "late_002",
+        tags: ["lateNight", "互助"],
+        weight: 1,
+        text: s =>
+          "你在社團看到有人分享免費心理諮商的資訊，下方留言滿滿都是謝謝。",
+        effect: s => {
+          s.mental += 3;
+          s.tagsScore.hero += 1;
+        }
+      }
+    );
+
+    // 新增的 20 個時事風格事件
+    events.push(
+      {
+        id: "disaster_001",
+        tags: ["新聞", "災難", "互助"],
+        weight: 1,
+        text: s =>
+          "你看到新聞在報「東部山區堰塞湖潰堤」，一群被稱為『鏟子志工』的人，自發跑去幫忙清淤。",
+        effect: s => {
+          s.mental += 2;
+          s.tagsScore.hero += 1.5;
+        }
+      },
+      {
+        id: "disaster_002",
+        tags: ["新聞", "災難", "詐騙"],
+        weight: 1,
+        text: s =>
+          "水災畫面播完後，你收到了幾封「災區捐款連結」，看起來很像官方單位，但網址怪怪的。",
+        effect: s => {
+          s.mental -= 2;
+          s.tagsScore.lazy += 0.5;
+        }
+      },
+      {
+        id: "crime_001",
+        tags: ["新聞", "治安", "謠言"],
+        weight: 1,
+        text: s =>
+          "有謠言說有人要模仿北城車站隨機攻擊，社群瘋傳未證實的截圖，你的通勤路線剛好會經過。",
+        effect: s => {
+          s.trauma = true;
+          s.mental -= 4;
+          s.tagsScore.lazy += 1;
+        }
+      },
+      {
+        id: "crime_002",
+        tags: ["street", "治安"],
+        weight: 1,
+        text: s =>
+          "你經過北城某個路口，看到警察巡邏明顯變多，路上的人好像也比較放心。",
+        effect: s => {
+          s.mental += 2;
+          s.tagsScore.hero += 0.5;
+        }
+      },
+      {
+        id: "econ_002",
+        tags: ["經濟", "股市", "新聞"],
+        weight: 1,
+        text: s =>
+          "新聞說國際關稅新制上路，電子股盤中狂跌，財經節目一邊喊恐慌、一邊推訂閱服務。",
+        effect: s => {
+          s.mental -= 2;
+        }
+      },
+      {
+        id: "econ_003",
+        tags: ["經濟", "work"],
+        weight: 1,
+        text: s =>
+          "你們公司主管開會說，因為供應鏈重組，接到一筆國外新訂單，但加班一定會變多。",
+        effect: s => {
+          s.mental -= 1;
+          s.tagsScore.darkSpin += 0.5;
+        }
+      },
+      {
+        id: "typhoon_001",
+        tags: ["災難", "颱風", "生活"],
+        weight: 1,
+        text: s =>
+          "強颱掃過，半夜你租屋處忽然停電，手機網路也不穩，只能在黑暗中發呆。",
+        effect: s => {
+          s.mental -= 3;
+          s.tagsScore.lazy += 0.5;
+        }
+      },
+      {
+        id: "typhoon_002",
+        tags: ["災難", "互助", "street"],
+        weight: 1,
+        text: s =>
+          "停電第二天，鄰居在樓梯間分發煮好的熱湯和延長線給沒有行動電源的人。",
+        effect: s => {
+          s.mental += 4;
+          s.tagsScore.hero += 2;
+          s.tagsScore.family += 0.5;
+        }
+      },
+      {
+        id: "housing_001",
+        tags: ["新聞", "房價", "青年"],
+        weight: 1,
+        text: s =>
+          "新聞做了一個專題：「年輕人買房只剩夢？」畫面裡的受訪者年紀跟你差不多。",
+        effect: s => {
+          s.mental -= 3;
+          s.tagsScore.lazy += 1;
+        }
+      },
+      {
+        id: "housing_002",
+        tags: ["房價", "公共", "新聞"],
+        weight: 1,
+        text: s =>
+          "有人在社團分享自己抽中社會住宅的喜悅，說終於不用再住違建鐵皮屋。",
+        effect: s => {
+          s.mental += 2;
+          s.tagsScore.public += 1;
+          s.tagsScore.hero += 0.5;
+        }
+      },
+      {
+        id: "strait_001",
+        tags: ["新聞", "軍演", "兩岸"],
+        weight: 1,
+        text: s =>
+          "你看到新聞跑馬燈寫著「周邊海空又有大規模軍演」，有人在留言區開玩笑說今天該多喝一杯。",
+        effect: s => {
+          s.mental -= 3;
+          s.tagsScore.lazy += 0.5;
+        }
+      },
+      {
+        id: "strait_002",
+        tags: ["軍演", "互助", "公共"],
+        weight: 1,
+        text: s =>
+          "新聞同時也播出軍演期間，地方小鎮有人自發為駐地官兵送飲料和便當。",
+        effect: s => {
+          s.mental += 1;
+          s.tagsScore.hero += 1;
+          s.tagsScore.public += 0.5;
+        }
+      },
+      {
+        id: "recall_001",
+        tags: ["政治", "大罷免", "street"],
+        weight: 1,
+        text: s =>
+          "你在路口看到大罷免宣講車來回繞行，喇叭一會兒喊要下架誰，一會兒喊要守護誰。",
+        effect: s => {
+          s.mental -= 2;
+          s.tagsScore.public += 0.5;
+        }
+      },
+      {
+        id: "recall_002",
+        tags: ["政治", "大罷免", "新聞"],
+        weight: 1,
+        text: s =>
+          "投票結束，結果是全部沒過。你看到有人說「這是民主常態」，也有人說「一切都白忙了」。",
+        effect: s => {
+          s.mental -= 1;
+          s.tagsScore.lazy += 0.5;
+        }
+      },
+      {
+        id: "mental_001",
+        tags: ["新聞", "心理", "青年"],
+        weight: 1,
+        text: s =>
+          "媒體做了一集節目談年輕人的憂鬱症與焦慮，畫面裡的故事讓你覺得有些片段很熟悉。",
+        effect: s => {
+          s.mental -= 1;
+          s.tagsScore.lazy += 0.5;
+          s.tagsScore.hero += 0.5;
+        }
+      },
+      {
+        id: "mental_002",
+        tags: ["心理", "公共", "互助"],
+        weight: 1,
+        text: s =>
+          "你在社團看到政府與民間合作的「青年免費諮商試辦計畫」，名額有限，但看起來是真的。",
+        effect: s => {
+          s.mental += 3;
+          s.tagsScore.hero += 1;
+          s.tagsScore.public += 1;
+        }
+      },
+      {
+        id: "media_001",
+        tags: ["媒體", "政治", "網紅"],
+        weight: 1,
+        text: s =>
+          "有知名網紅被抓包收錢帶風向，一夜之間從「良心頻道」變成「側翼代表」。",
+        effect: s => {
+          s.mental -= 2;
+          s.tagsScore.media += 1;
+          s.tagsScore.darkSpin += 1;
+        }
+      },
+      {
+        id: "media_002",
+        tags: ["媒體", "street", "網紅"],
+        weight: 1,
+        text: s =>
+          "你在路口看到一個小頻道實況主，拿著手機直播日常街景，粉絲不多，但留言都很真誠。",
+        effect: s => {
+          s.mental += 1;
+          s.tagsScore.media += 1;
+          s.tagsScore.hero += 0.5;
+        }
+      },
+      {
+        id: "labor_001",
+        tags: ["公共", "勞工", "street"],
+        weight: 1,
+        text: s =>
+          "你下班路過市府前廣場，剛好碰上勞工團體遊行，高舉寫著「加班也要有夢想？」的布條。",
+        effect: s => {
+          s.mental -= 1;
+          s.tagsScore.public += 1;
+          s.tagsScore.hero += 0.5;
+        }
+      },
+      {
+        id: "labor_002",
+        tags: ["work", "勞工", "新聞"],
+        weight: 1,
+        text: s =>
+          "某天勞檢突然到你們公司臨檢，結果開了好幾張超時工作罰單，群組裡一片歡呼。",
+        effect: s => {
+          s.mental += 3;
+          s.tagsScore.public += 1.5;
+        }
+      }
+    );
+
+    // 按標籤抽取隨機事件
+    function pickRandomEvent(tagFilters = [], maxPerRun = 1) {
+      const pool = events.filter(ev => {
+        if (tagFilters.length > 0 && !tagFilters.some(t => ev.tags.includes(t))) {
+          return false;
+        }
+        const used = state.randomFlags[ev.id] || 0;
+        return used < (ev.maxRepeat || 1);
+      });
+      if (pool.length === 0) return [];
+
+      const picked = [];
+      for (let i = 0; i < maxPerRun; i++) {
+        if (pool.length === 0) break;
+        const totalWeight = pool.reduce((s, e) => s + (e.weight || 1), 0);
+        let r = Math.random() * totalWeight;
+        let chosenIndex = 0;
+        for (let j = 0; j < pool.length; j++) {
+          r -= (pool[j].weight || 1);
+          if (r <= 0) {
+            chosenIndex = j;
+            break;
+          }
+        }
+        const ev = pool[chosenIndex];
+        state.randomFlags[ev.id] = (state.randomFlags[ev.id] || 0) + 1;
+        picked.push(ev);
+        pool.splice(chosenIndex, 1);
+      }
+      return picked;
+    }
+
+    // === 場景定義 ===
+    const scenes = {
+      intro: {
+        text: () =>
+`清晨 6 點，你擠在北城捷運的車廂裡。
+
+手機跳出三則新聞：
+1. 「史上最大普發現金一萬元今日入帳」
+2. 「大罷免全數否決，藍綠互轟」
+3. 「北城車站隨機攻擊事件一週年專題」
+
+你看著窗外黑壓壓的隧道，突然覺得有點喘不過氣。`,
+        choices: [
+          {
+            text: "忽略新聞，先想今天要怎麼活下去。",
+            next: "toWork"
+          },
+          {
+            text: "滑開留言區，看大家怎麼罵政客。",
+            next: "politicStart",
+            effect: () => {
+              state.tagsScore.lazy += 0.5;
+            }
+          },
+          {
+            text: "截圖發限動，打字抱怨：「這國家完了。」",
+            next: "influencerStart",
+            effect: () => {
+              state.fame += 10;
+              state.tagsScore.media += 1;
+            }
+          }
+        ]
+      },
+
+      toWork: {
+        text: () => {
+          let t = `你把手機關掉，決定先專心活過今天。
+
+到站後，你被人潮推著走出捷運站。`;
+          const evs = pickRandomEvent(["commute", "新聞"], 1);
+          if (evs.length > 0) {
+            evs.forEach(ev => {
+              ev.effect(state);
+              t += "\n\n【通勤事件】" + ev.text(state);
+            });
+          }
+          t += "\n\n中午，公司群組傳來一片歡呼聲：「一萬元到了！」";
+          return t;
+        },
+        choices: [
+          { text: "看看帳戶，確認一萬元真的進來了。", next: "moneyIn" }
+        ]
+      },
+
+      politicStart: {
+        text: () =>
+`你點開留言區，螢幕上全是謾罵和陰謀論。
+
+有人說「大罷免就是一場笑話」，有人說「這國家只剩下鍵盤正義」，
+你突然說不出話來，只是覺得有點累。
+
+就在這時，公司群組有人喊：「一萬元進帳啦！」`,
+        choices: [
+          { text: "切換到網銀 app，看看那筆一萬元。", next: "moneyIn" },
+          { text: "邊滑邊走出站，差點撞到人。", next: "toWork" }
+        ]
+      },
+
+      influencerStart: {
+        text: () => {
+          state.day++;
+          return `你的限動很快被一堆朋友回覆，有人按愛心，有人貼哭笑不得的貼圖。
+
+你心裡有種奇怪的爽感：原來抱怨也可以獲得掌聲。
+
+到了公司，中午群組炸開：「一萬元入帳啦！」`;
+        },
+        choices: [
+          { text: "打開網銀，盯著那多出來的一萬元。", next: "moneyIn" }
+        ]
+      },
+
+      moneyIn: {
+        text: () =>
+`你的帳戶數字多了一行：「政府普發現金 +10,000」。
+
+你原本只剩下 ${state.money} 元，突然覺得自己好像翻身了一點點。
+
+同事們在討論要怎麼用這筆錢：
+有人說要 all in 股市，有人說要去吃高級吃到飽，也有人說要全部捐出去。`,
+        choices: [
+          {
+            text: "全部拿去還卡債，至少比較安心。",
+            next: "payDebt",
+            effect: () => {
+              state.money = 0;
+              state.mental += 5;
+              state.tagsScore.family += 0.5;
+            }
+          },
+          {
+            text: "晚上再來玩股市，先留著。",
+            next: "planStock",
+            effect: () => {
+              state.money += 10000;
+            }
+          },
+          {
+            text: "揪同事去吃高級吃到飽慶祝。",
+            next: "eatBuffet",
+            effect: () => {
+              state.money += 10000 - 800;
+              state.mental += 10;
+            }
+          }
+        ]
+      },
+
+      payDebt: {
+        text: () =>
+`你毫不猶豫把一萬元轉去繳卡債，帳戶又回到 0。
+
+雖然還是窮，但至少那幾通追債電話暫時安靜了下來。
+
+下班時間到了，夜晚的北城風有點涼，你要怎麼回家？`,
+        choices: [
+          { text: "走地下街捷徑，想趕快回家。", next: "undergroundWarning" },
+          { text: "走地面大馬路，雖然遠一點。", next: "safeWalk" }
+        ]
+      },
+
+      planStock: {
+        text: () =>
+`你決定把一萬元留到晚上再說，心裡盤算著是不是該跟著新聞說的「關稅風暴」操作一波。
+
+下班時間到了，主管臨時丟給你一份報表，害你晚了一個小時才離開公司。
+
+你站在北城車站前，夜風冷得有點刺。`,
+        choices: [
+          {
+            text: "走地下街捷徑，想快點回家打開股市 app。",
+            next: "undergroundWarning"
+          },
+          {
+            text: "決定先去便利商店坐著想一想。",
+            next: "convenienceStore"
+          }
+        ]
+      },
+
+      eatBuffet: {
+        text: () =>
+`你跟同事去高級吃到飽，伙食精緻，肉和海鮮一輪又一輪。
+
+有人聊到股市，有人聊到大罷免，有人乾脆說「反正誰當選都一樣」。
+
+你吃到肚子撐，心情好了一點，但錢少了不少。`,
+        choices: [
+          { text: "回家路上走地下街，想消化一下。", next: "undergroundWarning" },
+          {
+            text: "搭計程車回家，懶得走路。",
+            next: "taxiHome",
+            effect: () => { state.money -= 200; }
+          }
+        ]
+      },
+
+      convenienceStore: {
+        text: () => {
+          let t =
+`你買了一杯熱咖啡，坐在便利商店的窗邊，看著路人來來往往。
+
+電視新聞正在播：「大罷免全數否決、關稅風暴重創股市、全民普發現金」的年度回顧。`;
+          const evs = pickRandomEvent(["news", "災難", "房價"], 1);
           evs.forEach(ev => {
             ev.effect(state);
             t += "\n\n【新聞事件】" + ev.text(state);
@@ -822,7 +1833,6 @@
 聊天室裡有人大喊要 all in，也有人勸大家快跑。
 
 你猶豫了一下，還是下了單。`;
-          // 用「事件」模擬股市波動
           const gainOrLoss = Math.random() < 0.5 ? -1 : 1;
           const amount = 1000 + Math.floor(Math.random() * 2000);
           state.money += gainOrLoss * amount;
@@ -846,7 +1856,7 @@
 `深夜，你躺在床上滑手機，演算法不停推送災難新聞、股市預言、陰謀論與戀愛短影音。
 
 時間默默來到了凌晨兩點。`;
-          const evs = pickRandomEvent(["lateNight"], 1);
+          const evs = pickRandomEvent(["lateNight", "心理", "新聞"], 1);
           evs.forEach(ev => {
             ev.effect(state);
             t += "\n\n【深夜事件】" + ev.text(state);
@@ -938,14 +1948,14 @@
         ]
       },
 
-      // 示範：有隨機跳支線的場景（randomNext）
+      // 有隨機支線的場景
       workAndFamily: {
         text: () => {
           let t =
 `接下來的幾個月，你在工作、家人、社團之間掙扎。
 
 某天，一個朋友拉你去參加一場「青年座談」，說有免費披薩和飲料。`;
-          const evs = pickRandomEvent(["work"], 1);
+          const evs = pickRandomEvent(["work", "勞工"], 1);
           evs.forEach(ev => {
             ev.effect(state);
             t += "\n\n【工作事件】" + ev.text(state);
@@ -1124,7 +2134,6 @@
             text: "面對自己的選擇，迎接結局。",
             next: null,
             effect: () => {
-              // 決定結局並跳轉
               const endingKey = decideEnding();
               currentScene = endingKey;
             }
@@ -1132,7 +2141,7 @@
         ]
       },
 
-      // === 各種結局 ===
+      // === 結局 ===
 
       endingLazyWalk: {
         text: () => {
@@ -1258,43 +2267,29 @@ ${canTurnBack ? "你腦中閃過媽媽的聲音、自救會的留言、地下街
       const s = state;
       const cands = [];
 
-      // 躺平悲劇
       if (s.tagsScore.lazy >= 5 && s.mental <= 30) {
         cands.push({ ending: "endingLazyWalk", weight: s.tagsScore.lazy + 2 });
       }
-
-      // 英雄
       if (s.tagsScore.hero >= 4 && s.joinedSupportGroup) {
         cands.push({ ending: "endingHero", weight: s.tagsScore.hero + s.motherHealth / 20 });
       }
-
-      // 黑錢側翼
       if (s.corruption && s.tagsScore.darkSpin >= 3) {
         cands.push({ ending: "endingDarkSpin", weight: s.tagsScore.darkSpin + s.fame / 20 });
       }
-
-      // 回家開店
       if (s.tagsScore.family >= 3 && s.motherHealth >= 40) {
         cands.push({ ending: "endingHomeShop", weight: s.tagsScore.family + s.motherHealth / 20 });
       }
-
-      // 候選人
       if (s.tagsScore.public >= 3 && s.fame >= 40 && !s.corruption) {
         cands.push({ ending: "endingCandidate", weight: s.tagsScore.public + s.fame / 30 });
       }
-
-      // 網紅／實況主
       if (s.tagsScore.media >= 3 && s.fame >= 60) {
         cands.push({ ending: "endingInfluencer", weight: s.tagsScore.media + s.fame / 20 });
       }
-
-      // 負債輪迴（保底之一）
       if (s.money <= 0) {
         cands.push({ ending: "endingDebtLoop", weight: 3 });
       }
 
       if (cands.length === 0) {
-        // 如果沒有任何明顯傾向，就給一個較中性的結局
         return "endingDebtLoop";
       }
 
@@ -1336,7 +2331,6 @@ ${canTurnBack ? "你腦中閃過媽媽的聲音、自救會的留言、地下街
           btn.onclick = () => {
             if (choice.effect) choice.effect();
 
-            // 判斷是否有 randomNext
             let nextKey = choice.next;
             if (choice.randomNext && choice.randomNext.length > 0) {
               let r = Math.random();
