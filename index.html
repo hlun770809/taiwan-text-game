@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>一萬塊的人生轉彎（手機修正版）</title>
+  <title>一萬塊的人生轉彎（恐怖擴充版）</title>
   <style>
     :root{
       --bg: #0f1115;
@@ -52,7 +52,7 @@
       padding: 14px 12px;
       white-space: pre-wrap;
       line-height: 1.75;
-      font-size: 1.12rem; /* 手機更清楚 */
+      font-size: 1.12rem;
       min-height: 180px;
     }
     .choices{
@@ -103,7 +103,7 @@
 </head>
 <body>
   <div id="game">
-    <h1>一萬塊的人生轉彎（手機修正版）</h1>
+    <h1>一萬塊的人生轉彎（恐怖擴充版）</h1>
     <div id="banner">提示：如果你看得到這行字＋下面按鈕，就代表已成功載入。</div>
     <div id="stats"></div>
     <div id="story"></div>
@@ -112,7 +112,7 @@
   </div>
 
   <script>
-    // ===== 安全保護：把錯誤顯示在畫面上（手機無 Console 也看得到） =====
+    // ===== 安全保護：把錯誤顯示在畫面上 =====
     window.onerror = function(message, source, lineno, colno) {
       const storyEl = document.getElementById("story");
       const banner = document.getElementById("banner");
@@ -124,7 +124,7 @@
       return false;
     };
 
-    // ===== 狀態 =====
+    // ===== 狀態 ===== (加入 horror 標籤)
     const initialState = () => ({
       money: 3000,
       mental: 70,
@@ -136,16 +136,16 @@
       joinedSupportGroup: false,
       heroPotential: false,
       randomFlags: {},
-      tagsScore: { lazy:0, hero:0, darkSpin:0, family:0, public:0, media:0 },
+      tagsScore: { lazy:0, hero:0, darkSpin:0, family:0, public:0, media:0, horror:0 },
       day: 1
     });
 
     let state = initialState();
     let currentScene = "intro";
 
-    // ===== 事件（示範 + 20 時事風格）=====
+    // ===== 事件（原事件 + 新增恐怖/獵奇事件）=====
     const events = [
-      // 基礎事件
+      // 原基礎事件（保留）
       { id:"commute_001", tags:["commute","治安","新聞"], weight:1,
         text:s=>"捷運電視牆播放去年的北城車站隨機攻擊回顧專題，你突然想起地下街那晚的混亂。",
         effect:s=>{ s.trauma=true; s.mental-=4; s.tagsScore.lazy+=1; }
@@ -174,8 +174,7 @@
         text:s=>"你收到一則可疑的投資 Line 群邀請，裡面滿是「財富自由」截圖與豪車照片。",
         effect:s=>{ s.mental-=2; s.tagsScore.lazy+=0.5; }
       },
-
-      // 20 個時事風格事件（節錄你要的那批）
+      // 20 個時事風格事件（保留）
       { id:"disaster_001", tags:["新聞","災難","互助"], weight:1,
         text:s=>"你看到新聞在報「東部山區堰塞湖潰堤」，一群被稱為『鏟子志工』的人，自發跑去幫忙清淤。",
         effect:s=>{ s.mental+=2; s.tagsScore.hero+=1.5; }
@@ -255,6 +254,51 @@
       { id:"labor_002", tags:["work","勞工","新聞"], weight:1,
         text:s=>"某天勞檢突然到你們公司臨檢，開了好幾張超時工作罰單，群組裡一片歡呼。",
         effect:s=>{ s.mental+=3; s.tagsScore.public+=1.5; }
+      },
+      // ===== 新增恐怖／獵奇隨機事件 =====
+      { id:"horror_shadow_001", tags:["horror","lateNight","weird"], weight:1,
+        text:s=>"凌晨三點醒來，你發現床尾站著一個黑影。你以為是夢，但黑影緩緩舉起了手……",
+        effect:s=>{ s.mental-=12; s.tagsScore.horror+=2; }
+      },
+      { id:"horror_shadow_002", tags:["horror","lateNight"], weight:1,
+        text:s=>"手機突然自動播放一則影片：空無一人的地下街，鏡頭慢慢轉向，一張蒼白的臉貼著螢幕。",
+        effect:s=>{ s.mental-=8; s.tagsScore.horror+=1; }
+      },
+      { id:"horror_rental_001", tags:["horror","房價","weird"], weight:1,
+        text:s=>"你在租屋網上看到一間超便宜套房，照片拍得很模糊，但留言區有人說「晚上不要照鏡子」。",
+        effect:s=>{ s.mental-=2; s.tagsScore.horror+=1; }
+      },
+      { id:"horror_rental_002", tags:["horror","房價","temptation"], weight:1,
+        text:s=>"房東私下問你：「想不想用身體折抵房租？只要每個月來陪『她』聊聊天。」",
+        effect:s=>{ s.mental-=5; s.tagsScore.horror+=2; s.tagsScore.darkSpin+=1; }
+      },
+      { id:"horror_street_001", tags:["horror","street","治安"], weight:1,
+        text:s=>"深夜走過北城地下街某個廢棄出口，你聽見牆壁裡傳來指甲刮擦的聲音。",
+        effect:s=>{ s.trauma=true; s.mental-=10; s.tagsScore.horror+=3; }
+      },
+      { id:"horror_cult_001", tags:["horror","邪教","temptation"], weight:1,
+        text:s=>"有人在社團張貼「最後的解脫：集體意識升維工作坊」，附圖是一群穿白衣的人圍成圓圈。",
+        effect:s=>{ s.mental-=3; s.tagsScore.horror+=1; }
+      },
+      { id:"horror_cult_002", tags:["horror","邪教","weird"], weight:1,
+        text:s=>"你收到一封手寫信，裡面只有一句話：「你準備好告別自己了嗎？」背面是奇怪的符號。",
+        effect:s=>{ s.mental-=4; s.tagsScore.horror+=2; }
+      },
+      { id:"horror_media_001", tags:["horror","媒體","weird"], weight:1,
+        text:s=>"你追蹤的靈異網紅突然上傳一段影片，他瞪大眼睛說：「他們要我告訴你們，快逃。」之後頻道永久刪除。",
+        effect:s=>{ s.mental-=6; s.tagsScore.horror+=2; s.tagsScore.media+=1; }
+      },
+      { id:"horror_work_001", tags:["horror","work","weird"], weight:1,
+        text:s=>"同事私下跟你說，晚上加班時茶水間的鏡子裡會出現另一個自己，已經有三個人離職了。",
+        effect:s=>{ s.mental-=5; s.tagsScore.horror+=1; }
+      },
+      { id:"horror_family_001", tags:["horror","家庭","weird"], weight:1,
+        text:s=>"媽媽打電話來，聲音斷斷續續：「你……你身後……有人……」然後掛斷。你再撥回去，她說剛在睡覺。",
+        effect:s=>{ s.mental-=8; s.tagsScore.horror+=2; s.tagsScore.family+=0.5; }
+      },
+      { id:"horror_tempt_001", tags:["horror","temptation","dark"], weight:1,
+        text:s=>"一個陌生人遞給你一張名片，上面只有一個眼睛圖案和一行字：「我們看見你的渴望。午夜，廢棄商場地下室。」",
+        effect:s=>{ s.mental-=3; s.tagsScore.horror+=2; s.tagsScore.darkSpin+=1; }
       }
     ];
 
@@ -487,13 +531,19 @@
 
       searchHelp: {
         text: () =>
-"你搜尋「創傷」、「免費諮商」、「社福資源」。\n\n兩個社團特別顯眼：\n- 躺平無罪聯盟\n- 月光族自救會",
+"你搜尋「創傷」、「免費諮商」、「社福資源」。\n\n兩個社團特別顯眼：\n- 躺平無罪聯盟\n- 月光族自救會\n\n另外，你看到一則超便宜租屋廣告，還有一封神秘的工作坊邀請函。",
         choices: [
           { text: "加入「躺平無罪聯盟」。", next: "lazyCult",
             effect: () => { state.joinedLazyCult=true; state.mental-=5; state.tagsScore.lazy+=3; }
           },
           { text: "加入「月光族自救會」。", next: "supportGroup",
             effect: () => { state.joinedSupportGroup=true; state.mental+=5; state.tagsScore.hero+=2; state.tagsScore.family+=1; }
+          },
+          { text: "點進那間超便宜套房看看。", next: "horrorRentalStart",
+            effect: () => { state.tagsScore.horror+=1; }
+          },
+          { text: "點開神秘邀請函。", next: "cultInvitation",
+            effect: () => { state.tagsScore.horror+=1; }
           }
         ]
       },
@@ -547,7 +597,12 @@
           evs.forEach(ev => { ev.effect(state); t += "\n\n【深夜事件】" + ev.text(state); });
           return t;
         },
-        choices: [{ text: "終於累了，睡著了。", next: "morningCall" }]
+        choices: [
+          { text: "終於累了，睡著了。", next: "morningCall" },
+          { text: "繼續滑，看到一則詭異的租屋廣告。", next: "horrorRentalStart",
+            effect: () => { state.tagsScore.horror+=1; }
+          }
+        ]
       },
 
       morningCall: {
@@ -574,7 +629,6 @@
         ]
       },
 
-      // 示範：randomNext 隨機跳支線
       workAndFamily: {
         text: () => {
           let t = "你在工作、家人、社群之間掙扎了一段時間。";
@@ -652,7 +706,7 @@
         ]
       },
 
-      // ===== 8 結局（其中 7 個會用 decideEnding 抽到，lazyWalk 也可能直接走到）=====
+      // ===== 原結局 =====
       endingLazyWalk: {
         text: () =>
 "你跟著一群人來到海邊。\n\n風很冷，海很黑。\n\n【結局一：躺平集體出走】",
@@ -692,6 +746,262 @@
         text: () =>
 "你沒有變有錢，但你成為那種在關鍵時刻會伸手的人。\n\n【結局八：北城地下街的小小英雄】",
         choices: []
+      },
+
+      // ===== 新增恐怖租屋支線 =====
+      horrorRentalStart: {
+        text: () => {
+          let t = "你約了房東看房，地點在北城邊緣的老公寓。樓梯間瀰漫著霉味，牆上有不明的抓痕。";
+          const ev = pickRandomEvent(["horror","房價"],1);
+          ev.forEach(e=>{ e.effect(state); t += "\n\n【詭異預兆】"+e.text(state); });
+          return t;
+        },
+        choices: [
+          { text: "租金真的便宜，先租下來再說。", next: "horrorRentalMoveIn",
+            effect: ()=>{ state.money -= 3000; state.tagsScore.horror+=1; }
+          },
+          { text: "太詭異了，趕快離開。", next: "safeWalk",
+            effect: ()=>{ state.mental+=5; }
+          }
+        ]
+      },
+      horrorRentalMoveIn: {
+        text: () => {
+          state.tagsScore.horror += 2;
+          return "你搬進那間套房。第一晚，天花板傳來彈珠聲，你安慰自己只是樓上小孩。";
+        },
+        choices: [
+          { text: "戴耳機睡覺，不理會。", next: "horrorRentalNight1" },
+          { text: "上網查這棟樓的歷史。", next: "horrorRentalHistory",
+            effect: ()=>{ state.tagsScore.horror+=1; }
+          }
+        ]
+      },
+      horrorRentalHistory: {
+        text: () => {
+          let t = "你查到十年前這裡發生過火災，一名獨居女子逃生不及。她的房間……就是你現在住的這一間。";
+          const ev = pickRandomEvent(["horror","weird"],1);
+          ev.forEach(e=>{ e.effect(state); t += "\n\n"+e.text(state); });
+          return t;
+        },
+        choices: [
+          { text: "馬上搬家！", next: "safeWalk",
+            effect: ()=>{ state.money -= 2000; state.mental+=10; }
+          },
+          { text: "也許只是巧合，再觀察看看。", next: "horrorRentalNight1",
+            effect: ()=>{ state.tagsScore.horror+=2; }
+          }
+        ]
+      },
+      horrorRentalNight1: {
+        text: () => {
+          let t = "半夜，你被冷醒。窗戶明明是關著的，卻有風吹動窗簾。你隱約看見窗簾後站著一個人形。";
+          return t;
+        },
+        choices: [
+          { text: "衝過去拉開窗簾！", next: "horrorRentalCurtain",
+            effect: ()=>{ state.mental-=5; }
+          },
+          { text: "躲進棉被假裝沒看見。", next: "horrorRentalIgnore",
+            effect: ()=>{ state.tagsScore.horror+=1; state.mental-=8; }
+          }
+        ]
+      },
+      horrorRentalCurtain: {
+        text: () => {
+          state.mental -= 15;
+          state.tagsScore.horror += 3;
+          return "你拉開窗簾，空無一物。但一回頭，那個人形正貼在你背後，腐爛的臉幾乎碰到你的鼻子。";
+        },
+        choices: [
+          { text: "尖叫著衝出門。", next: "horrorRentalEscape" },
+          { text: "閉上眼睛唸阿彌陀佛。", next: "horrorRentalPray" }
+        ]
+      },
+      horrorRentalIgnore: {
+        text: () => {
+          state.mental -= 10;
+          state.tagsScore.horror += 2;
+          return "你蜷縮在棉被裡，感覺到有人坐在床邊，輕輕拍著你。你不敢動，直到天亮。";
+        },
+        choices: [
+          { text: "天一亮就搬家。", next: "safeWalk",
+            effect: ()=>{ state.money -= 2000; state.mental+=5; }
+          },
+          { text: "也許只是壓力大，再住幾天。", next: "horrorRentalNight2",
+            effect: ()=>{ state.tagsScore.horror+=2; }
+          }
+        ]
+      },
+      horrorRentalEscape: {
+        text: () => {
+          state.mental += 10;
+          return "你逃出公寓，在便利商店坐到天亮。你決定再也不回那裡。";
+        },
+        choices: [
+          { text: "回到正常生活", next: "workAndFamily" }
+        ]
+      },
+      horrorRentalPray: {
+        text: () => {
+          state.mental -= 5;
+          state.tagsScore.horror += 1;
+          return "你一直唸佛，那東西慢慢後退，消失在牆角。你鬆了一口氣，但從此不敢關燈睡覺。";
+        },
+        choices: [
+          { text: "繼續住下去，但精神越來越差。", next: "horrorRentalNight2" },
+          { text: "還是搬家吧。", next: "safeWalk" }
+        ]
+      },
+      horrorRentalNight2: {
+        text: () => {
+          let t = "你已經分不清是夢還是現實。每天晚上，那東西都會出現，有時候在床底，有時候在衣櫃。";
+          const ev = pickRandomEvent(["horror","weird"],1);
+          ev.forEach(e=>{ e.effect(state); t += "\n\n"+e.text(state); });
+          return t;
+        },
+        choices: [
+          { text: "求助宮廟或心理醫師。", next: "horrorRentalHelp" },
+          { text: "開始跟她對話。", next: "horrorRentalDialogue",
+            effect: ()=>{ state.tagsScore.horror+=2; state.tagsScore.darkSpin+=1; }
+          }
+        ]
+      },
+      horrorRentalHelp: {
+        text: () => {
+          state.mental += 15;
+          return "你找了老師來處理，對方說這裡的磁場很亂，給了你護身符。之後的夜晚安靜了。";
+        },
+        choices: [
+          { text: "總算可以好好生活", next: "workAndFamily" }
+        ]
+      },
+      horrorRentalDialogue: {
+        text: () => {
+          state.tagsScore.horror += 4;
+          state.tagsScore.darkSpin += 2;
+          return "你鼓起勇氣問她想要什麼。她流著淚說，她只是想找個人說說話，她太寂寞了。你開始每晚陪她聊天，甚至覺得她比活人更懂你。";
+        },
+        choices: [
+          { text: "繼續這種詭異的同居生活", next: "horrorRentalEnding",
+            effect: ()=>{ currentScene = decideHorrorEnding(); }
+          }
+        ]
+      },
+
+      // ===== 新增邪教支線 =====
+      cultInvitation: {
+        text: () => {
+          let t = "你收到一封精美的邀請函，邀請你參加「意識升維工作坊」，地點在山區一間民宿。";
+          const ev = pickRandomEvent(["horror","邪教","temptation"],1);
+          ev.forEach(e=>{ e.effect(state); t += "\n\n"+e.text(state); });
+          return t;
+        },
+        choices: [
+          { text: "去看看是什麼。", next: "cultMeeting",
+            effect: ()=>{ state.tagsScore.horror+=1; }
+          },
+          { text: "刪掉，這太詭異了。", next: "lateNightScroll" }
+        ]
+      },
+      cultMeeting: {
+        text: () => {
+          state.tagsScore.horror += 2;
+          return "聚會在山區一間老宅舉行。大約二十人圍坐，主持人一身白衣，眼神狂熱。他說：「我們將一起突破現實的牢籠。」";
+        },
+        choices: [
+          { text: "參與他們的冥想。", next: "cultMeditation",
+            effect: ()=>{ state.mental-=5; }
+          },
+          { text: "覺得不對勁，想離開。", next: "cultEscape" }
+        ]
+      },
+      cultMeditation: {
+        text: () => {
+          state.mental -= 10;
+          state.tagsScore.horror += 2;
+          return "你閉上眼，感覺意識開始漂浮。你聽見耳邊傳來低語：「留下來……留下來……」睜眼時，所有人都盯著你。";
+        },
+        choices: [
+          { text: "答應留下來參加進階課程。", next: "cultInitiation",
+            effect: ()=>{ state.tagsScore.horror+=2; }
+          },
+          { text: "假裝順從，找機會逃跑。", next: "cultEscape" }
+        ]
+      },
+      cultEscape: {
+        text: () => {
+          state.mental += 10;
+          return "你趁休息時間偷偷溜出老宅，一路跑下山，搭上最後一班公車。";
+        },
+        choices: [
+          { text: "回到城市", next: "workAndFamily" }
+        ]
+      },
+      cultInitiation: {
+        text: () => {
+          state.tagsScore.horror += 3;
+          state.tagsScore.darkSpin += 2;
+          return "入會儀式在午夜舉行。他們讓你喝下一杯苦澀的液體，然後在你額頭畫上符號。你開始看見不存在的東西。";
+        },
+        choices: [
+          { text: "接受他們的世界觀。", next: "cultBelief",
+            effect: ()=>{ state.mental-=20; }
+          },
+          { text: "內心抗拒，但不敢表現。", next: "cultResist" }
+        ]
+      },
+      cultBelief: {
+        text: () => {
+          state.tagsScore.horror += 4;
+          state.tagsScore.lazy += 3;
+          return "你漸漸相信只有擺脫物質束縛才能解脫。你捐出所有積蓄，辭掉工作，準備跟隨導師進行「最後的旅程」。";
+        },
+        choices: [
+          { text: "走向結局", next: null,
+            effect: ()=>{ currentScene = decideCultEnding(); }
+          }
+        ]
+      },
+      cultResist: {
+        text: () => {
+          state.mental -= 15;
+          return "你表面順從，但每天都被噩夢糾纏。你知道必須逃，但他們監視著每個人。";
+        },
+        choices: [
+          { text: "深夜偷偷報警。", next: "cultRescue",
+            effect: ()=>{ state.tagsScore.hero+=2; }
+          },
+          { text: "繼續忍耐，直到精神崩潰。", next: "cultBreakdown" }
+        ]
+      },
+      cultRescue: {
+        text: () => {
+          state.mental += 20;
+          return "警方突襲了聚會點，你被救出。那些人都被逮捕，但你已經回不去原來的生活。";
+        },
+        choices: [
+          { text: "重新開始", next: "workAndFamily" }
+        ]
+      },
+      cultBreakdown: {
+        text: () => {
+          state.mental = 0;
+          return "你再也分不清現實與幻覺，最後被送進療養院。";
+        },
+        choices: []
+      },
+
+      // ===== 新增兩個專屬結局 =====
+      endingHorrorRental: {
+        text: () =>
+"你再也沒有搬離那間套房。你和她成了某種共存體，白天你上班，晚上你們聊天。\n\n有人說你氣色越來越差，但你覺得你終於不再孤單。\n\n【結局九：與鬼同居的人】",
+        choices: []
+      },
+      endingCultSacrifice: {
+        text: () =>
+"你跟隨導師來到海邊，他們說今天是最後的解脫。你看著海浪，忽然想起媽媽的臉。但一切都太遲了。\n\n【結局十：意識升維的祭品】",
+        choices: []
       }
     };
 
@@ -700,6 +1010,14 @@
       const s = state;
       const cands = [];
 
+      // 恐怖租屋結局
+      if (s.tagsScore.horror >= 8 && s.mental <= 30) {
+        cands.push({ ending: "endingHorrorRental", weight: s.tagsScore.horror + 3 });
+      }
+      // 邪教獻祭結局
+      if (s.tagsScore.horror >= 6 && s.tagsScore.darkSpin >= 5 && s.joinedLazyCult) {
+        cands.push({ ending: "endingCultSacrifice", weight: s.tagsScore.horror + s.tagsScore.darkSpin });
+      }
       // 躺平悲劇
       if (s.tagsScore.lazy >= 5 && s.mental <= 30) {
         cands.push({ ending: "endingLazyWalk", weight: s.tagsScore.lazy + 2 });
@@ -741,6 +1059,14 @@
       return cands[cands.length-1].ending;
     }
 
+    // 輔助函數：恐怖租屋結局直接跳轉
+    function decideHorrorEnding(){
+      return "endingHorrorRental";
+    }
+    function decideCultEnding(){
+      return "endingCultSacrifice";
+    }
+
     // ===== 渲染 =====
     function render(){
       const storyEl = document.getElementById("story");
@@ -749,11 +1075,10 @@
       const restartBtn = document.getElementById("restart");
       const banner = document.getElementById("banner");
 
-      // banner 提示（可視化：真的跑起來）
       if (banner) banner.innerHTML = '<span class="hint-ok">已載入</span>：點選按鈕進行（手機可滑動內容）。';
 
       statsEl.textContent =
-        `現金：${state.money}｜精神：${state.mental}｜媽媽健康：${state.motherHealth}｜知名度：${state.fame}`;
+        `現金：${state.money}｜精神：${state.mental}｜媽媽健康：${state.motherHealth}｜知名度：${state.fame}｜恐怖值：${state.tagsScore.horror}`;
 
       const scene = scenes[currentScene];
       if (!scene){
