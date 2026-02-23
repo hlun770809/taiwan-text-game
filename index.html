@@ -1,1020 +1,544 @@
 <!DOCTYPE html>
-<html lang="zh-Hant-TW">
+<html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>墮落青年 · 不重複人生</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      background: #0b0e14;
-      font-family: 'Segoe UI', 'Noto Sans TC', Roboto, sans-serif;
-      padding: 16px 12px 40px;
-      color: #eef2f6;
-    }
-    #game {
-      max-width: 720px;
-      margin: 0 auto;
-      background: #151b26;
-      border-radius: 36px 36px 28px 28px;
-      padding: 24px 18px 32px;
-      box-shadow: 0 12px 0 #0a0f17;
-    }
-    h1 {
-      font-size: 1.9rem;
-      font-weight: 700;
-      text-align: center;
-      letter-spacing: 1px;
-      background: linear-gradient(145deg, #ffb347, #ff8c42);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 10px;
-    }
-    .stats {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px 20px;
-      background: #1d2535;
-      border-radius: 48px;
-      padding: 16px 22px;
-      margin-bottom: 20px;
-      border: 1px solid #3d4b65;
-      font-size: 1rem;
-    }
-    .stat-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .stat-label {
-      color: #a0b2d9;
-    }
-    .stat-value {
-      font-weight: 700;
-      background: #00000030;
-      padding: 4px 12px;
-      border-radius: 40px;
-      border: 1px solid #5f739b;
-    }
-    #story {
-      background: #1b2333;
-      border-radius: 28px;
-      padding: 28px 22px;
-      line-height: 1.8;
-      font-size: 1.15rem;
-      white-space: pre-wrap;
-      min-height: 200px;
-      border: 1px solid #43506e;
-      box-shadow: inset 0 4px 6px #00000040;
-      margin-bottom: 24px;
-    }
-    .choices {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      margin-top: 8px;
-    }
-    .choice-btn {
-      background: #263040;
-      border: none;
-      border-radius: 60px;
-      padding: 18px 22px;
-      color: white;
-      font-size: 1.12rem;
-      text-align: left;
-      border-bottom: 4px solid #0f1622;
-      transition: 0.1s ease;
-      box-shadow: 0 6px 0 #0c121e;
-      cursor: pointer;
-    }
-    .choice-btn:active {
-      transform: translateY(5px);
-      border-bottom-width: 1px;
-    }
-    #restart {
-      margin-top: 30px;
-      width: 100%;
-      padding: 18px;
-      background: transparent;
-      border: 2px solid #5e6e8f;
-      color: #ccd9f0;
-      border-radius: 60px;
-      font-size: 1.2rem;
-      font-weight: bold;
-      display: none;
-      cursor: pointer;
-    }
-    .footer {
-      text-align: center;
-      color: #5c6d8f;
-      margin-top: 20px;
-      font-size: 0.9rem;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>平凡青年異聞錄 · 動態屬性版</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft JhengHei', 'Helvetica Neue', sans-serif;
+        }
+        body {
+            background: #1a1e2b;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 12px;
+        }
+        .game-container {
+            max-width: 720px;
+            width: 100%;
+            background: #0f1219;
+            border-radius: 36px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            padding: 24px 20px;
+            border: 1px solid #2e3a4a;
+        }
+        .stats-panel {
+            background: #1e2636;
+            border-radius: 48px;
+            padding: 20px 18px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 12px 8px;
+            border: 1px solid #3c4b5e;
+            margin-bottom: 24px;
+            box-shadow: inset 0 2px 5px #0a0c12;
+        }
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #2a3442;
+            padding: 8px 18px;
+            border-radius: 40px;
+            border-left: 4px solid;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #f0e9d8;
+            box-shadow: 0 4px 0 #0b0e13;
+        }
+        .stat-coin { border-left-color: #f5b342; }
+        .stat-stamina { border-left-color: #4ac7a2; }
+        .stat-mind { border-left-color: #9f7aea; }
+        .stat-value {
+            min-width: 48px;
+            text-align: center;
+            background: #1d2532;
+            padding: 4px 10px;
+            border-radius: 30px;
+            color: white;
+        }
+        .event-window {
+            background: #1b2330;
+            border-radius: 48px;
+            padding: 30px 24px;
+            border: 1px solid #37465b;
+            box-shadow: inset 0 0 15px #0a0e14, 0 10px 10px rgba(0,0,0,0.3);
+            margin-bottom: 24px;
+            min-height: 240px;
+            display: flex;
+            flex-direction: column;
+        }
+        .event-desc {
+            color: #e6dacf;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            letter-spacing: 0.3px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 3px black;
+        }
+        .event-tag {
+            align-self: flex-end;
+            background: #2d3f4f;
+            padding: 5px 16px;
+            border-radius: 50px;
+            color: #bdd9f0;
+            font-size: 0.8rem;
+            border: 1px solid #5f7a97;
+        }
+        .options-area {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+        .option-btn {
+            background: #283244;
+            border: none;
+            border-radius: 60px;
+            padding: 18px 22px;
+            font-size: 1.1rem;
+            text-align: left;
+            color: #f2e5d4;
+            border-left: 8px solid #6c5b7b;
+            box-shadow: 0 6px 0 #121722, 0 8px 12px black;
+            transition: 0.07s ease;
+            cursor: pointer;
+            font-weight: 500;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+        .option-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 2px 0 #121722, 0 5px 10px black;
+        }
+        .option-btn.disabled, .option-btn:disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            filter: grayscale(0.5);
+        }
+        .reset-btn {
+            background: #393e5c;
+            border: none;
+            border-radius: 50px;
+            padding: 16px 26px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #f0e9db;
+            box-shadow: 0 5px 0 #1d2232;
+            cursor: pointer;
+            transition: 0.07s ease;
+            width: fit-content;
+            margin: 10px auto 0;
+            border: 1px solid #7f8aa8;
+            letter-spacing: 1px;
+        }
+        .reset-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 1px 0 #1d2232;
+        }
+        .footer-note {
+            color: #5f6f82;
+            text-align: center;
+            margin-top: 16px;
+            font-size: 0.9rem;
+            border-top: 1px dashed #2f3e52;
+            padding-top: 16px;
+        }
+        @media (max-width: 450px) {
+            .stat-item { font-size: 0.9rem; padding: 6px 12px; }
+            .event-desc { font-size: 1rem; }
+            .option-btn { padding: 15px 18px; font-size: 1rem; }
+        }
+    </style>
 </head>
 <body>
-<div id="game">
-  <h1>⬇️ 墮落青年</h1>
-  <div class="stats" id="stats">
-    <div class="stat-item"><span class="stat-label">💰錢</span><span class="stat-value" id="money">1200</span></div>
-    <div class="stat-item"><span class="stat-label">⚡體</span><span class="stat-value" id="energy">75</span></div>
-    <div class="stat-item"><span class="stat-label">🧠神</span><span class="stat-value" id="mental">68</span></div>
-    <div class="stat-item"><span class="stat-label">👿罪</span><span class="stat-value" id="sin">0</span></div>
-    <div class="stat-item"><span class="stat-label">🌑瘋</span><span class="stat-value" id="crazy">0</span></div>
-    <div class="stat-item"><span class="stat-label">🏷️名</span><span class="stat-value" id="fame">0</span></div>
-  </div>
-  <div id="story">載入中...</div>
-  <div class="choices" id="choices"></div>
-  <button id="restart">🔄 重新墮落</button>
-  <div class="footer">每天一個選擇 • 超過160種事件 • 18種結局</div>
+<div class="game-container" id="gameContainer">
+    <div class="stats-panel" id="statsPanel">
+        <div class="stat-item stat-coin">💰金幣 <span class="stat-value" id="statCoin">50</span></div>
+        <div class="stat-item stat-stamina">⚡體力 <span class="stat-value" id="statStamina">50</span></div>
+        <div class="stat-item stat-mind">🧠精神 <span class="stat-value" id="statMind">50</span></div>
+    </div>
+    <div class="event-window" id="eventWindow">
+        <div class="event-desc" id="eventDesc">載入故事中⋯⋯</div>
+        <div class="event-tag" id="eventTag">✨ 平凡啟程</div>
+    </div>
+    <div class="options-area" id="optionsArea"></div>
+    <button class="reset-btn" id="resetGameBtn">🔄 重新開始 · 異聞錄</button>
+    <div class="footer-note">🔥 屬性影響選擇 · 超過200種事件 · 10+結局</div>
 </div>
+
 <script>
-(function() {
-  // --------------------- 初始狀態 -------------------------
-  let state = {
-    money: 1200,
-    energy: 75,
-    mental: 68,
-    sin: 0,           // 罪惡值 (加入幫派、犯罪)
-    crazy: 0,         // 瘋狂值 (靈異、精神異常)
-    fame: 0,          // 名聲 (網紅、街頭名人)
-    drug: 0,          // 藥物依賴
-    debt: 0,          // 負債
-    gang: 0,          // 幫派關係
-    cult: 0,          // 邪教傾向
-    day: 1,
-    // 特殊旗標 (用於結局)
-    killed: false,
-    betrayed: false,
-    saved: false,
-    enlighten: false,
-    // 記錄已觸發的一次性事件 (once)
-    triggeredEvents: {}
-  };
+(function(){
+    // ---------- 遊戲狀態 ----------
+    let state = {
+        coin: 50,
+        stamina: 50,
+        mind: 50,
+        currentEventId: 'M1'      // 起始主線
+    };
 
-  // --------------------- 工具函數 -------------------------
-  function clamp(num, min, max) {
-    return Math.min(max, Math.max(min, num));
-  }
+    // ---------- 事件資料庫 ----------
+    const eventDB = new Map();
 
-  function update(change) {
-    if (change.money !== undefined) state.money = clamp(state.money + change.money, 0, 999999);
-    if (change.energy !== undefined) state.energy = clamp(state.energy + change.energy, 0, 100);
-    if (change.mental !== undefined) state.mental = clamp(state.mental + change.mental, 0, 100);
-    if (change.sin !== undefined) state.sin = clamp(state.sin + change.sin, 0, 100);
-    if (change.crazy !== undefined) state.crazy = clamp(state.crazy + change.crazy, 0, 100);
-    if (change.fame !== undefined) state.fame = clamp(state.fame + change.fame, 0, 100);
-    if (change.drug !== undefined) state.drug = clamp(state.drug + change.drug, 0, 100);
-    if (change.debt !== undefined) state.debt = clamp(state.debt + change.debt, 0, 999999);
-    if (change.gang !== undefined) state.gang = clamp(state.gang + change.gang, 0, 100);
-    if (change.cult !== undefined) state.cult = clamp(state.cult + change.cult, 0, 100);
-    if (change.killed) state.killed = true;
-    if (change.betrayed) state.betrayed = true;
-    if (change.saved) state.saved = true;
-    if (change.enlighten) state.enlighten = true;
-  }
+    // ------------------- 輔助函式 -------------------
+    const randElem = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-  // 更新畫面數值
-  function refreshStats() {
-    document.getElementById('money').innerText = state.money;
-    document.getElementById('energy').innerText = state.energy;
-    document.getElementById('mental').innerText = state.mental;
-    document.getElementById('sin').innerText = state.sin;
-    document.getElementById('crazy').innerText = state.crazy;
-    document.getElementById('fame').innerText = state.fame;
-  }
-
-  // --------------------- 結局列表 (18種) --------------------
-  const endings = [
-    { id: 'end_debt', name: '💸 債台高築跳樓', condition: () => state.debt >= 80000 && state.mental < 20,
-      text: '你欠下巨額債務，走投無路，從頂樓一躍而下。留下滿地借據。' },
-    { id: 'end_drug', name: '💉 毒蟲人生', condition: () => state.drug >= 80,
-      text: '你徹底被毒品控制，在廢棄大樓裡注射過量，再也醒不過來。' },
-    { id: 'end_gang', name: '🔫 幫派火拚', condition: () => state.gang >= 70 && state.sin >= 50,
-      text: '你成為幫派核心，但在一次爭地盤中被亂刀砍死。' },
-    { id: 'end_cult', name: '🕯️ 邪教獻祭', condition: () => state.cult >= 70,
-      text: '你深信教主能帶你解脫，自願成為祭品，永遠留在山洞裡。' },
-    { id: 'end_crazy', name: '👁️ 精神分裂', condition: () => state.crazy >= 90,
-      text: '你看見的世界與常人完全不同，被送進療養院，終身禁錮。' },
-    { id: 'end_hero', name: '🦸 平凡英雄', condition: () => state.saved && state.sin < 20 && state.mental > 60,
-      text: '你曾在災難中救出一家三口，雖然依舊貧窮，但心裡踏實。' },
-    { id: 'end_betray', name: '🗡️ 被出賣', condition: () => state.betrayed && state.gang > 30,
-      text: '你最信任的兄弟出賣了你，你死在巷子裡，無人知曉。' },
-    { id: 'end_enlighten', name: '🧘 覺悟行者', condition: () => state.enlighten && state.crazy > 50,
-      text: '你拋棄物質，成為街頭哲學家，偶爾有人給你食物，你已不在乎。' },
-    { id: 'end_rich', name: '💰 暴富短暫', condition: () => state.money >= 100000 && state.sin < 30,
-      text: '你意外獲得一大筆錢，但揮霍無度，一年後比現在更窮。' },
-    { id: 'end_normal', name: '🏠 普通上班族', condition: () => state.day >= 100 && state.money > 20000 && state.mental > 50,
-      text: '你找到一份穩定工作，搬離了那個鬼地方，過著朝九晚五的日子。' },
-    { id: 'end_killer', name: '🔪 殺人犯', condition: () => state.killed,
-      text: '你在衝突中失手殺人，開始逃亡，最終被捕入獄。' },
-    { id: 'end_starve', name: '🍂 餓死街頭', condition: () => state.money <= 0 && state.energy <= 0,
-      text: '你再也走不動，倒在公園長椅下，結束了短暫的一生。' },
-    { id: 'end_suicide', name: '🌊 精神崩潰自殺', condition: () => state.mental <= 0,
-      text: '你受不了這個世界的折磨，選擇結束自己。' },
-    { id: 'end_workaholic', name: '⚡ 過勞死', condition: () => state.energy <= 0 && state.money > 10000,
-      text: '你為了還債沒日沒夜工作，最後心臟病發作。' },
-    { id: 'end_hermit', name: '🏔️ 隱居山林', condition: () => state.day >= 80 && state.money < 5000 && state.mental > 70,
-      text: '你厭倦城市，躲到深山自給自足，再也沒人找到你。' },
-    { id: 'end_cynical', name: '📱 網路酸民', condition: () => state.fame >= 60 && state.sin < 10,
-      text: '你成為知名網紅，靠帶風向賺錢，但內心空洞。' },
-    { id: 'end_gangster', name: '👑 地方角頭', condition: () => state.gang >= 80 && state.money > 50000,
-      text: '你爬到了幫派高層，但每天都要提防暗殺。' },
-    { id: 'end_zombie', name: '🧟 行屍走肉', condition: () => state.drug >= 50 && state.mental <= 20,
-      text: '你對一切都無所謂，每天只是找錢買藥，如同活死人。' },
-  ];
-
-  function checkEnding() {
-    for (let e of endings) {
-      if (e.condition()) {
-        return e;
-      }
-    }
-    return null;
-  }
-
-  // --------------------- 事件庫 (160+) ---------------------
-  // 每個事件包含 id, 類別, 文字, 選項, once(是否只觸發一次)
-  // once 事件觸發後會加入 triggeredEvents 不再抽取
-  const events = [
-    // ========== 日常類 (30+) ==========
-    { id: 'daily_1', category: 'daily', once: false,
-      text: '你醒來發現手機沒電，充電器壞了。',
-      choices: [
-        { text: '買新的 (金錢-500)', effect: { money: -500 } },
-        { text: '去超商借充電 (體力-5)', effect: { energy: -5 } },
-        { text: '不管它，放空一天 (精神+5)', effect: { mental: 5 } }
-      ] },
-    { id: 'daily_2', category: 'daily', once: false,
-      text: '樓下早餐店阿姨多送你一顆蛋。',
-      choices: [
-        { text: '開心接受 (精神+3, 體力+3)', effect: { mental: 3, energy: 3 } },
-        { text: '堅持付錢 (金錢-15)', effect: { money: -15 } },
-        { text: '趁機訴苦 (精神-2, 阿姨尷尬)', effect: { mental: -2 } }
-      ] },
-    { id: 'daily_3', category: 'daily', once: false,
-      text: '隔壁情侶大吵一架，摔東西。',
-      choices: [
-        { text: '報警', effect: { mental: -3 } },
-        { text: '敲牆警告', effect: { gang: 2 } },
-        { text: '錄影上網 (名聲+5, 罪惡+2)', effect: { fame: 5, sin: 2 } }
-      ] },
-    { id: 'daily_4', category: 'daily', once: false,
-      text: '你發現銀行帳戶被扣了不明的手續費。',
-      choices: [
-        { text: '打電話去罵 (精神+2)', effect: { mental: 2 } },
-        { text: '自認倒楣', effect: { money: -300 } },
-        { text: '提領所有錢放床底', effect: { crazy: 3 } }
-      ] },
-    { id: 'daily_5', category: 'daily', once: false,
-      text: '颱風天，窗戶滲水。',
-      choices: [
-        { text: '用抹布堵住 (體力-5)', effect: { energy: -5 } },
-        { text: '找房東 (精神+2)', effect: { mental: 2 } },
-        { text: '拿桶子接水，順便洗澡', effect: { crazy: 3, money: 100 } }
-      ] },
-    { id: 'daily_6', category: 'daily', once: false,
-      text: '你撿到一隻流浪狗。',
-      choices: [
-        { text: '帶回家養 (金錢-200/月)', effect: { money: -200, mental: 8 } },
-        { text: '送去收容所', effect: { mental: 3 } },
-        { text: '無視', effect: { sin: 2 } }
-      ] },
-    { id: 'daily_7', category: 'daily', once: false,
-      text: '收到紅色炸彈，朋友要結婚。',
-      choices: [
-        { text: '包 2000 去', effect: { money: -2000, mental: 5 } },
-        { text: '裝沒看見', effect: { fame: -5 } },
-        { text: '藉口出差', effect: { sin: 3 } }
-      ] },
-    { id: 'daily_8', category: 'daily', once: false,
-      text: '你剪壞了頭髮，變得很醜。',
-      choices: [
-        { text: '戴帽子', effect: { mental: -3 } },
-        { text: '去理髮店補救 (金錢-400)', effect: { money: -400, mental: 5 } },
-        { text: '光頭也很帥', effect: { crazy: 4 } }
-      ] },
-    { id: 'daily_9', category: 'daily', once: false,
-      text: '郵差送錯信，是別人的信用卡。',
-      choices: [
-        { text: '還給郵差', effect: { mental: 3 } },
-        { text: '試試看能不能刷', effect: { sin: 10, money: 5000, debt: 5000 } },
-        { text: '剪掉丟掉', effect: {} }
-      ] },
-    { id: 'daily_10', category: 'daily', once: false,
-      text: '你夢到過世的奶奶給你一個紅包。',
-      choices: [
-        { text: '去墳前看看', effect: { mental: 10, crazy: 2 } },
-        { text: '當作沒這回事', effect: { mental: -3 } },
-        { text: '買紙錢燒', effect: { money: -300, mental: 8 } }
-      ] },
-    { id: 'daily_11', category: 'daily', once: false,
-      text: '隔壁搬來新鄰居，一直瞪著你。',
-      choices: [
-        { text: '打招呼', effect: { mental: 2 } },
-        { text: '瞪回去', effect: { gang: 2 } },
-        { text: '貼符咒在門口', effect: { crazy: 5 } }
-      ] },
-    { id: 'daily_12', category: 'daily', once: false,
-      text: '你發現自己有白頭髮了。',
-      choices: [
-        { text: '染髮 (金錢-600)', effect: { money: -600 } },
-        { text: '拔掉', effect: { mental: -2 } },
-        { text: '接受老化', effect: { crazy: 2 } }
-      ] },
-    { id: 'daily_13', category: 'daily', once: false,
-      text: '去超商買東西，店員多找你 500 元。',
-      choices: [
-        { text: '還回去', effect: { mental: 8 } },
-        { text: '默默收下', effect: { money: 500, sin: 3 } },
-        { text: '拿來買樂透', effect: { money: -500, crazy: 2 } }
-      ] },
-    { id: 'daily_14', category: 'daily', once: false,
-      text: '你便秘三天了。',
-      choices: [
-        { text: '買軟便劑 (金錢-150)', effect: { money: -150, energy: 5 } },
-        { text: '狂吃香蕉', effect: { money: -80 } },
-        { text: '用力', effect: { mental: -5 } }
-      ] },
-    { id: 'daily_15', category: 'daily', once: false,
-      text: '你覺得有人在跟蹤你。',
-      choices: [
-        { text: '突然回頭', effect: { mental: -3 } },
-        { text: '跑進超商', effect: { energy: -5 } },
-        { text: '拿手機反拍', effect: { crazy: 3, fame: 3 } }
-      ] },
-    { id: 'daily_16', category: 'daily', once: false,
-      text: '你租屋處的熱水器壞了。',
-      choices: [
-        { text: '洗冷水澡 (體力-5)', effect: { energy: -5 } },
-        { text: '請房東修', effect: { mental: 2 } },
-        { text: '去朋友家洗', effect: { fame: -3 } }
-      ] },
-    { id: 'daily_17', category: 'daily', once: false,
-      text: '在路上遇到發傳單的工讀生。',
-      choices: [
-        { text: '拿傳單', effect: {} },
-        { text: '問他時薪多少', effect: { money: 150, energy: -5 } },
-        { text: '發起傳單改革', effect: { fame: 4 } }
-      ] },
-    { id: 'daily_18', category: 'daily', once: false,
-      text: '你發現自己忘了某個重要約會。',
-      choices: [
-        { text: '打電話道歉', effect: { mental: -5 } },
-        { text: '假裝沒發生', effect: { sin: 2 } },
-        { text: '衝去現場', effect: { energy: -10, mental: -3 } }
-      ] },
-    { id: 'daily_19', category: 'daily', once: false,
-      text: '你參加里民活動，抽中一台烤箱。',
-      choices: [
-        { text: '開心搬回家', effect: { mental: 5 } },
-        { text: '上網賣掉', effect: { money: 1500 } },
-        { text: '送給鄰居', effect: { fame: 5 } }
-      ] },
-    { id: 'daily_20', category: 'daily', once: false,
-      text: '你半夜被蚊子吵醒。',
-      choices: [
-        { text: '起來打蚊子', effect: { energy: -2 } },
-        { text: '戴耳塞繼續睡', effect: { mental: 2 } },
-        { text: '拿電蚊拍跳舞', effect: { crazy: 3 } }
-      ] },
-
-    // ========== 工作類 (25+) ==========
-    { id: 'work_1', category: 'work', once: false,
-      text: '臨時粗工，搬運貨物一天 1500。',
-      choices: [
-        { text: '接下 (體力-20, 金錢+1500)', effect: { energy: -20, money: 1500 } },
-        { text: '太累了拒絕', effect: { money: -200 } },
-        { text: '找朋友一起做', effect: { fame: 3, money: 1200, energy: -15 } }
-      ] },
-    { id: 'work_2', category: 'work', once: false,
-      text: '超商大夜班，時薪 200。',
-      choices: [
-        { text: '去做 (精神-8, 金錢+800)', effect: { mental: -8, money: 800 } },
-        { text: '只做幾天', effect: { money: 300, energy: -5 } },
-        { text: '偷吃報廢品', effect: { sin: 3, money: 300 } }
-      ] },
-    { id: 'work_3', category: 'work', once: false,
-      text: '接到詐騙集團的打工邀約，說輕鬆月入十萬。',
-      choices: [
-        { text: '加入 (罪惡+20, 金錢+20000)', effect: { sin: 20, money: 20000, gang: 10 } },
-        { text: '拒絕並報警', effect: { fame: 10 } },
-        { text: '假裝配合再騙他們', effect: { crazy: 8, sin: 5, money: 5000 } }
-      ] },
-    { id: 'work_4', category: 'work', once: false,
-      text: '公司裁員，你被通知走人。',
-      choices: [
-        { text: '申請補助', effect: { money: 2000, mental: -10 } },
-        { text: '立刻找新工作', effect: { energy: -10 } },
-        { text: '自己創業', effect: { money: -5000, debt: 5000, crazy: 10 } }
-      ] },
-    { id: 'work_5', category: 'work', once: false,
-      text: '外送員，接單跑腿。',
-      choices: [
-        { text: '跑十單 (體力-15, 金錢+800)', effect: { energy: -15, money: 800 } },
-        { text: '偷懶只跑五單', effect: { money: 400, energy: -7 } },
-        { text: '車禍 (體力-30, 金錢-2000)', effect: { energy: -30, money: -2000, crazy: 5 } }
-      ] },
-    { id: 'work_6', category: 'work', once: false,
-      text: '清潔隊員，負責收垃圾。',
-      choices: [
-        { text: '做一個月 (體力-40, 金錢+3000)', effect: { energy: -40, money: 3000 } },
-        { text: '檢寶特瓶變賣', effect: { money: 200, energy: -5 } },
-        { text: '撿到名牌包', effect: { money: 5000, sin: 5 } }
-      ] },
-    { id: 'work_7', category: 'work', once: false,
-      text: '幫派分子找你當運毒小弟。',
-      choices: [
-        { text: '答應 (罪惡+30, 金錢+10000, 幫派+20)', effect: { sin: 30, money: 10000, gang: 20, drug: 10 } },
-        { text: '拒絕並搬家', effect: { money: -2000 } },
-        { text: '偷偷報警', effect: { gang: -10, sin: -5, fame: 15 } }
-      ] },
-    { id: 'work_8', category: 'work', once: false,
-      text: '地下錢莊廣告，借十萬利息低。',
-      choices: [
-        { text: '借錢', effect: { money: 100000, debt: 120000, sin: 10 } },
-        { text: '撕掉廣告', effect: {} },
-        { text: '打電話罵對方', effect: { gang: 5, crazy: 5 } }
-      ] },
-    { id: 'work_9', category: 'work', once: false,
-      text: '朋友找你合夥開雞排攤。',
-      choices: [
-        { text: '投資兩萬', effect: { money: -20000, debt: 20000, fame: 10 } },
-        { text: '只幫忙', effect: { energy: -20, money: 1000 } },
-        { text: '勸他不要', effect: { mental: 3 } }
-      ] },
-    { id: 'work_10', category: 'work', once: false,
-      text: '應徵上直播主，但要露身材。',
-      choices: [
-        { text: '接受 (名聲+20, 金錢+5000, 罪惡+5)', effect: { fame: 20, money: 5000, sin: 5 } },
-        { text: '拒絕', effect: {} },
-        { text: '戴面具播', effect: { fame: 10, money: 2000 } }
-      ] },
-
-    // ========== 街頭類 (25+) ==========
-    { id: 'street_1', category: 'street', once: false,
-      text: '街頭藝人表演，你駐足觀看。',
-      choices: [
-        { text: '打賞100', effect: { money: -100, mental: 5 } },
-        { text: '批評他', effect: { sin: 2, fame: -2 } },
-        { text: '也來一段', effect: { fame: 5, money: 200, energy: -5 } }
-      ] },
-    { id: 'street_2', category: 'street', once: false,
-      text: '遊民向你乞討。',
-      choices: [
-        { text: '給50元', effect: { money: -50, mental: 3 } },
-        { text: '買便當給他', effect: { money: -100, mental: 8 } },
-        { text: '無視', effect: { sin: 2 } }
-      ] },
-    { id: 'street_3', category: 'street', once: false,
-      text: '路上有人發生車禍。',
-      choices: [
-        { text: '叫救護車', effect: { mental: 3 } },
-        { text: '幫忙指揮交通', effect: { fame: 10, energy: -5 } },
-        { text: '拍照上網', effect: { fame: 8, sin: 3 } }
-      ] },
-    { id: 'street_4', category: 'street', once: false,
-      text: '遇到警察臨檢，你沒帶證件。',
-      choices: [
-        { text: '報身份證字號', effect: {} },
-        { text: '裝傻', effect: { sin: 3, fame: -5 } },
-        { text: '趁機逃跑', effect: { energy: -10, gang: 5, crazy: 5 } }
-      ] },
-    { id: 'street_5', category: 'street', once: false,
-      text: '有人在路邊賣奇怪的藥。',
-      choices: [
-        { text: '買一包試試', effect: { money: -500, drug: 15, crazy: 5 } },
-        { text: '檢舉', effect: { fame: 5, gang: -3 } },
-        { text: '問他還有沒有別的', effect: { sin: 5, drug: 5 } }
-      ] },
-    { id: 'street_6', category: 'street', once: false,
-      text: '一群青少年挑釁你。',
-      choices: [
-        { text: '低頭快走', effect: { mental: -3 } },
-        { text: '嗆回去', effect: { gang: 5, energy: -5 } },
-        { text: '報警', effect: { fame: 3 } }
-      ] },
-    { id: 'street_7', category: 'street', once: false,
-      text: '你看到一隻受傷的貓。',
-      choices: [
-        { text: '送獸醫 (金錢-1500)', effect: { money: -1500, mental: 10 } },
-        { text: '不管', effect: { sin: 3 } },
-        { text: '帶回家養', effect: { money: -300, mental: 5 } }
-      ] },
-    { id: 'street_8', category: 'street', once: false,
-      text: '街頭開來一輛宣傳車，是某政黨候選人。',
-      choices: [
-        { text: '揮手支持', effect: { fame: 2 } },
-        { text: '丟雞蛋', effect: { sin: 5, gang: 3, crazy: 8 } },
-        { text: '無視', effect: {} }
-      ] },
-    { id: 'street_9', category: 'street', once: false,
-      text: '你經過一間廢棄廟宇，裡面傳來誦經聲。',
-      choices: [
-        { text: '進去看看', effect: { crazy: 5, cult: 5 } },
-        { text: '快步離開', effect: { mental: 2 } },
-        { text: '拍照打卡', effect: { fame: 3, crazy: 2 } }
-      ] },
-    { id: 'street_10', category: 'street', once: false,
-      text: '路邊有人免費擁抱。',
-      choices: [
-        { text: '抱一下', effect: { mental: 8 } },
-        { text: '覺得噁心', effect: { sin: 2 } },
-        { text: '加入他們', effect: { fame: 5, mental: 5 } }
-      ] },
-
-    // ========== 人際類 (20+) ==========
-    { id: 'social_1', category: 'social', once: false,
-      text: '老朋友約你喝酒。',
-      choices: [
-        { text: '去 (金錢-800, 精神+10, 體力-5)', effect: { money: -800, mental: 10, energy: -5 } },
-        { text: '拒絕', effect: { mental: -3 } },
-        { text: '帶他去聲色場所', effect: { sin: 10, money: -2000, gang: 5 } }
-      ] },
-    { id: 'social_2', category: 'social', once: false,
-      text: '前女友找你復合。',
-      choices: [
-        { text: '答應', effect: { mental: 20, money: -5000 } },
-        { text: '拒絕', effect: { mental: -10 } },
-        { text: '藉口考慮', effect: { crazy: 3 } }
-      ] },
-    { id: 'social_3', category: 'social', once: false,
-      text: '家人催你寄錢回家。',
-      choices: [
-        { text: '寄5000', effect: { money: -5000, mental: 5 } },
-        { text: '說沒錢', effect: { mental: -10 } },
-        { text: '回去一趟', effect: { money: -2000, energy: -10, mental: 8 } }
-      ] },
-    { id: 'social_4', category: 'social', once: false,
-      text: '網友約見面，結果是推銷。',
-      choices: [
-        { text: '買一套產品', effect: { money: -3000, sin: 2 } },
-        { text: '翻臉', effect: { gang: 3 } },
-        { text: '假裝有興趣反整他', effect: { crazy: 5 } }
-      ] },
-    { id: 'social_5', category: 'social', once: false,
-      text: '同事借錢不還。',
-      choices: [
-        { text: '天天催', effect: { mental: -5 } },
-        { text: '算了', effect: { money: -2000, mental: 3 } },
-        { text: '找人堵他', effect: { gang: 10, sin: 10 } }
-      ] },
-
-    // ========== 詭異恐怖類 (35+) ==========
-    { id: 'horror_1', category: 'horror', once: true,
-      text: '凌晨三點，樓上傳來彈珠聲，但這棟樓頂樓是廢棄的。',
-      choices: [
-        { text: '上樓查看', effect: { crazy: 10, mental: -10 }, nextEvent: 'horror_1a' },
-        { text: '蒙頭繼續睡', effect: { crazy: 5, mental: -5 } }
-      ] },
-    { id: 'horror_1a', category: 'horror', once: true,
-      text: '你走上樓，發現一間半開的門，裡面有個小女孩在玩彈珠。她轉過頭，臉是空的。',
-      choices: [
-        { text: '尖叫逃跑', effect: { mental: -20, crazy: 15 } },
-        { text: '問她要不要一起玩', effect: { crazy: 30, mental: -30, cult: 10 } }
-      ] },
-    { id: 'horror_2', category: 'horror', once: true,
-      text: '你在巷子裡撿到一個老舊娃娃，眼睛好像會盯著你。',
-      choices: [
-        { text: '帶回家', effect: { crazy: 8, mental: -5 } },
-        { text: '丟回原處', effect: { crazy: 2 } },
-        { text: '燒掉', effect: { crazy: 5, mental: 5 } }
-      ] },
-    { id: 'horror_3', category: 'horror', once: true,
-      text: '電梯突然故障，卡在兩層之間，燈光熄滅。',
-      choices: [
-        { text: '按緊急鈴', effect: { mental: -5 } },
-        { text: '試圖扳開門', effect: { energy: -10, crazy: 5 } },
-        { text: '唸阿彌陀佛', effect: { mental: 3 } }
-      ] },
-    { id: 'horror_4', category: 'horror', once: true,
-      text: '你半夜醒來，床邊站著一個穿白衣的女人。',
-      choices: [
-        { text: '閉眼默念', effect: { mental: -10, crazy: 5 } },
-        { text: '問她是誰', effect: { crazy: 20, mental: -20, cult: 5 } }
-      ] },
-    { id: 'horror_5', category: 'horror', once: true,
-      text: '用手機拍照，照片裡出現一張陌生的臉。',
-      choices: [
-        { text: '刪除照片', effect: { crazy: 3 } },
-        { text: '放大研究', effect: { mental: -15, crazy: 10 } },
-        { text: '上傳網路', effect: { fame: 10, crazy: 8 } }
-      ] },
-    { id: 'horror_6', category: 'horror', once: true,
-      text: '深夜有人敲你的門，但門外沒有人。',
-      choices: [
-        { text: '開門查看', effect: { crazy: 8, mental: -8 } },
-        { text: '不理會', effect: { mental: -2 } }
-      ] },
-    { id: 'horror_7', category: 'horror', once: true,
-      text: '走在路上感覺背後有人跟蹤，回頭卻空無一人。',
-      choices: [
-        { text: '加快腳步', effect: { energy: -5, mental: -3 } },
-        { text: '躲進超商', effect: { mental: 2 } }
-      ] },
-    { id: 'horror_8', category: 'horror', once: true,
-      text: '電視突然自動打開，畫面全是雜訊，浮現一張臉。',
-      choices: [
-        { text: '拔掉插頭', effect: { crazy: 5 } },
-        { text: '盯著看', effect: { mental: -15, crazy: 10 } }
-      ] },
-    { id: 'horror_9', category: 'horror', once: true,
-      text: '你在地下道看見一個沒有影子的人。',
-      choices: [
-        { text: '裝作沒看見', effect: { crazy: 5 } },
-        { text: '上前搭話', effect: { cult: 15, mental: -20, crazy: 15 } }
-      ] },
-    { id: 'horror_10', category: 'horror', once: true,
-      text: '回家後，發現屋內所有鏡子都被蓋上紅布。',
-      choices: [
-        { text: '掀開', effect: { mental: -25, crazy: 20 } },
-        { text: '趕快離開', effect: { energy: -10, mental: -5 } }
-      ] },
-    { id: 'horror_11', category: 'horror', once: true,
-      text: '你收到一封來自自己的信，郵戳是明天的日期。',
-      choices: [
-        { text: '打開', effect: { mental: -20, crazy: 15 } },
-        { text: '燒掉', effect: { crazy: 5 } }
-      ] },
-    { id: 'horror_12', category: 'horror', once: true,
-      text: '路邊的野狗對著你狂吠，但你身後什麼都沒有。',
-      choices: [
-        { text: '快跑', effect: { energy: -5 } },
-        { text: '撿石頭嚇牠', effect: { crazy: 3 } }
-      ] },
-    { id: 'horror_13', category: 'horror', once: true,
-      text: '洗澡時，水突然變成紅色。',
-      choices: [
-        { text: '衝出浴室', effect: { mental: -15, crazy: 10 } },
-        { text: '檢查水管', effect: { energy: -5 } }
-      ] },
-    { id: 'horror_14', category: 'horror', once: true,
-      text: '手機收到一段自己睡覺的影片，但你從未錄過。',
-      choices: [
-        { text: '刪除', effect: { crazy: 5 } },
-        { text: '報警', effect: { mental: -10 } }
-      ] },
-    { id: 'horror_15', category: 'horror', once: true,
-      text: '經過廢棄醫院，裡面傳來嬰兒哭聲。',
-      choices: [
-        { text: '進去看看', effect: { crazy: 15, mental: -20, cult: 5 } },
-        { text: '快步離開', effect: { energy: -5 } }
-      ] },
-    { id: 'horror_16', category: 'horror', once: true,
-      text: '你的影子在沒有光的情況下，自己動了一下。',
-      choices: [
-        { text: '揉眼睛', effect: { mental: -5 } },
-        { text: '尖叫', effect: { energy: -5 } }
-      ] },
-    { id: 'horror_17', category: 'horror', once: true,
-      text: '鄰居一直說你房間裡有「人」在走動，但你是一個人住。',
-      choices: [
-        { text: '請他幫忙', effect: { mental: -10, crazy: 8 } },
-        { text: '搬家', effect: { money: -5000 } }
-      ] },
-    { id: 'horror_18', category: 'horror', once: true,
-      text: '你在床底發現一綹長髮，但你頭髮很短。',
-      choices: [
-        { text: '燒掉', effect: { crazy: 5 } },
-        { text: '不理會', effect: { mental: -5 } }
-      ] },
-    { id: 'horror_19', category: 'horror', once: true,
-      text: '鏡子裡的我，笑容和你不同步。',
-      choices: [
-        { text: '砸碎鏡子', effect: { mental: -20, crazy: 15 } },
-        { text: '閉眼數到十', effect: { mental: -5 } }
-      ] },
-    { id: 'horror_20', category: 'horror', once: true,
-      text: '夜班計程車司機說他載過一個乘客，給的錢是冥紙。',
-      choices: [
-        { text: '毛骨悚然', effect: { mental: -8 } },
-        { text: '問細節', effect: { crazy: 5 } }
-      ] },
-    { id: 'horror_21', category: 'horror', once: true,
-      text: '你打開衣櫃，裡面站著一個裸體的人。',
-      choices: [
-        { text: '關上門當作沒看見', effect: { crazy: 10, mental: -10 } },
-        { text: '問他怎麼進來的', effect: { crazy: 20, mental: -20 } }
-      ] },
-    { id: 'horror_22', category: 'horror', once: true,
-      text: '深夜的公園鞦韆自己搖動。',
-      choices: [
-        { text: '走近', effect: { crazy: 8, mental: -5 } },
-        { text: '繞路', effect: {} }
-      ] },
-    { id: 'horror_23', category: 'horror', once: true,
-      text: '你聞到腐臭味，但找不到來源。',
-      choices: [
-        { text: '檢查每個角落', effect: { energy: -5, crazy: 5 } },
-        { text: '噴芳香劑', effect: { mental: 2 } }
-      ] },
-    { id: 'horror_24', category: 'horror', once: true,
-      text: '晚上看到對面大樓某個窗戶裡有人向你揮手，但那層是廢棄的。',
-      choices: [
-        { text: '揮回去', effect: { crazy: 10, mental: -10 } },
-        { text: '拉上窗簾', effect: { mental: 2 } }
-      ] },
-    { id: 'horror_25', category: 'horror', once: true,
-      text: '筆記本突然出現陌生字跡：「快逃」。',
-      choices: [
-        { text: '聽從建議', effect: { energy: -5 } },
-        { text: '覺得是惡作劇', effect: { crazy: 5 } }
-      ] },
-    { id: 'horror_26', category: 'horror', once: true,
-      text: '走在天橋上，有人從背後推你，回頭卻沒人。',
-      choices: [
-        { text: '嚇得跑走', effect: { energy: -5, mental: -10 } },
-        { text: '罵髒話', effect: {} }
-      ] },
-    { id: 'horror_27', category: 'horror', once: true,
-      text: '電梯裡的樓層按鈕全部自己亮起來。',
-      choices: [
-        { text: '按緊急停止', effect: { mental: -5 } },
-        { text: '等它自己停', effect: { crazy: 8 } }
-      ] },
-    { id: 'horror_28', category: 'horror', once: true,
-      text: '你看到新聞報導一具無名屍，長得跟你一模一樣。',
-      choices: [
-        { text: '去認屍', effect: { mental: -30, crazy: 20 } },
-        { text: '關掉電視', effect: { mental: -5 } }
-      ] },
-    { id: 'horror_29', category: 'horror', once: true,
-      text: '一個自稱「命運規劃師」的人遞給你名片。',
-      choices: [
-        { text: '接受', effect: { cult: 10, mental: -5 } },
-        { text: '拒絕', effect: { crazy: 2 } }
-      ] },
-    { id: 'horror_30', category: 'horror', once: true,
-      text: '連續七天做同一個夢，夢裡有人告訴你倒數計時。',
-      choices: [
-        { text: '去廟裡求平安', effect: { mental: 5, money: -500 } },
-        { text: '無視', effect: { crazy: 10 } }
-      ] },
-    { id: 'horror_31', category: 'horror', once: true,
-      text: '你拿起杯子喝水，水裡有一根長髮。',
-      choices: [
-        { text: '倒掉重倒', effect: {} },
-        { text: '喝掉', effect: { crazy: 5, mental: -3 } }
-      ] },
-    { id: 'horror_32', category: 'horror', once: true,
-      text: '你聽見牆壁裡有人敲牆回應你。',
-      choices: [
-        { text: '繼續敲', effect: { crazy: 8 } },
-        { text: '嚇得不敢動', effect: { mental: -8 } }
-      ] },
-    { id: 'horror_33', category: 'horror', once: true,
-      text: '走在夜路，路燈一盞盞熄滅。',
-      choices: [
-        { text: '拿手機照明', effect: { energy: -2 } },
-        { text: '狂奔', effect: { energy: -10, mental: -5 } }
-      ] },
-    { id: 'horror_34', category: 'horror', once: true,
-      text: '你看到一個穿紅衣的小女孩站在路口，轉眼不見。',
-      choices: [
-        { text: '追上去', effect: { crazy: 10, mental: -10 } },
-        { text: '當作眼花', effect: { mental: 2 } }
-      ] },
-    { id: 'horror_35', category: 'horror', once: true,
-      text: '晚上睡覺感覺有人摸你的臉。',
-      choices: [
-        { text: '開燈', effect: { crazy: 8, mental: -8 } },
-        { text: '翻身繼續睡', effect: { crazy: 5 } }
-      ] },
-
-    // ========== 墮落歪路類 (20+) ==========
-    { id: 'dark_1', category: 'dark', once: true,
-      text: '有人介紹你去討債公司，暴力討債。',
-      choices: [
-        { text: '接受 (罪惡+20, 金錢+8000, 幫派+15)', effect: { sin: 20, money: 8000, gang: 15 } },
-        { text: '拒絕', effect: {} },
-        { text: '偷學技巧自己開', effect: { sin: 10, money: 3000, crazy: 5 } }
-      ] },
-    { id: 'dark_2', category: 'dark', once: true,
-      text: '酒店經紀找你當男公關。',
-      choices: [
-        { text: '去做 (金錢+12000, 罪惡+10, 名聲+15)', effect: { money: 12000, sin: 10, fame: 15, energy: -20 } },
-        { text: '拒絕', effect: {} },
-        { text: '介紹朋友去', effect: { sin: 5, money: 2000 } }
-      ] },
-    { id: 'dark_3', category: 'dark', once: true,
-      text: '地下賭場缺人顧門。',
-      choices: [
-        { text: '做 (金錢+5000, 罪惡+10, 幫派+10)', effect: { money: 5000, sin: 10, gang: 10 } },
-        { text: '拒絕', effect: {} },
-        { text: '進去賭兩把', effect: { money: -5000, debt: 5000, crazy: 10 } }
-      ] },
-    { id: 'dark_4', category: 'dark', once: true,
-      text: '詐騙集團徵話務手，假裝檢察官。',
-      choices: [
-        { text: '加入 (罪惡+30, 金錢+20000)', effect: { sin: 30, money: 20000, gang: 15 } },
-        { text: '拒絕並警告親友', effect: { fame: 5 } },
-        { text: '反詐騙他們', effect: { crazy: 15, money: 5000 } }
-      ] },
-    { id: 'dark_5', category: 'dark', once: true,
-      text: '藥頭問你要不要幫忙送貨。',
-      choices: [
-        { text: '接 (罪惡+25, 金錢+15000, 毒品+20, 幫派+10)', effect: { sin: 25, money: 15000, drug: 20, gang: 10 } },
-        { text: '拒絕', effect: {} },
-        { text: '自己吸', effect: { drug: 30, money: -2000, crazy: 10 } }
-      ] },
-    { id: 'dark_6', category: 'dark', once: true,
-      text: '朋友邀你一起偷機車。',
-      choices: [
-        { text: '參與 (罪惡+15, 金錢+3000)', effect: { sin: 15, money: 3000, gang: 5 } },
-        { text: '拒絕並勸他', effect: { mental: 3 } },
-        { text: '偷更好的車', effect: { sin: 20, money: 10000, gang: 10 } }
-      ] },
-    { id: 'dark_7', category: 'dark', once: true,
-      text: '有人在賣仿冒名牌包。',
-      choices: [
-        { text: '批發來賣', effect: { money: 8000, sin: 10, fame: 5 } },
-        { text: '檢舉', effect: { fame: 5 } },
-        { text: '買一個自用', effect: { money: -1000, fame: 2 } }
-      ] },
-    { id: 'dark_8', category: 'dark', once: true,
-      text: '當舖老闆說可以用不問來源的東西換錢。',
-      choices: [
-        { text: '偷東西來當', effect: { sin: 15, money: 5000 } },
-        { text: '賣自己的東西', effect: { money: 1000 } },
-        { text: '檢舉這間店', effect: { fame: 10 } }
-      ] },
-    { id: 'dark_9', category: 'dark', once: true,
-      text: '廟公找你當乩童，說有信徒會捐錢。',
-      choices: [
-        { text: '答應 (罪惡+10, 金錢+5000, 邪教+10)', effect: { sin: 10, money: 5000, cult: 10, crazy: 5 } },
-        { text: '拒絕', effect: {} },
-        { text: '假裝起乩', effect: { crazy: 15, money: 2000, cult: 5 } }
-      ] },
-    { id: 'dark_10', category: 'dark', once: true,
-      text: '你發現路邊有一個錢包，裡面有兩萬。',
-      choices: [
-        { text: '據為己有', effect: { money: 20000, sin: 15 } },
-        { text: '送去派出所', effect: { fame: 10, mental: 10 } },
-        { text: '拿一半', effect: { money: 10000, sin: 8 } }
-      ] },
-    { id: 'dark_11', category: 'dark', once: true,
-      text: '有陌生人請你幫忙搬東西，結果是贓物。',
-      choices: [
-        { text: '幫忙 (罪惡+10, 金錢+2000)', effect: { sin: 10, money: 2000, gang: 5 } },
-        { text: '拒絕', effect: {} },
-        { text: '反過來報警', effect: { fame: 15, gang: -5 } }
-      ] },
-    { id: 'dark_12', category: 'dark', once: true,
-      text: '你被黑道盯上，要你每個月繳保護費。',
-      choices: [
-        { text: '乖乖繳 (金錢-3000/月)', effect: { money: -3000, sin: 5 } },
-        { text: '找人幫忙', effect: { gang: 10, money: -5000 } },
-        { text: '反抗', effect: { energy: -30, gang: 10, killed: true } }
-      ] },
-    { id: 'dark_13', category: 'dark', once: true,
-      text: '你缺錢，想搶超商。',
-      choices: [
-        { text: '真的去搶', effect: { money: 5000, sin: 30, gang: 10, killed: true } },
-        { text: '打消念頭', effect: { mental: 5 } },
-        { text: '搶劫前被抓', effect: { sin: 5, debt: 10000 } }
-      ] },
-    { id: 'dark_14', category: 'dark', once: true,
-      text: '有富婆想包養你。',
-      choices: [
-        { text: '接受 (金錢+50000, 罪惡+5, 名聲-5)', effect: { money: 50000, sin: 5, fame: -5, energy: -30 } },
-        { text: '拒絕', effect: { mental: 5 } },
-        { text: '介紹朋友', effect: { money: 5000 } }
-      ] },
-    { id: 'dark_15', category: 'dark', once: true,
-      text: '你加入一個激進社運團體，開始抗爭。',
-      choices: [
-        { text: '積極參與', effect: { fame: 20, sin: 5, gang: 5, energy: -20 } },
-        { text: '只旁觀', effect: { fame: 5 } },
-        { text: '當臥底', effect: { fame: 15, gang: -5, sin: -5 } }
-      ] }
-  ];
-
-  // 建立 id 對照表
-  const eventMap = {};
-  events.forEach(e => eventMap[e.id] = e);
-
-  // 篩選出可用的隨機事件 (排除 once 且已觸發的)
-  function getAvailableEvents() {
-    return events.filter(e => !(e.once && state.triggeredEvents[e.id]));
-  }
-
-  // 抽取隨機事件 (可依類別比例，這裡簡單隨機)
-  function getRandomEvent() {
-    const available = getAvailableEvents();
-    if (available.length === 0) {
-      // 如果沒有事件了，複製一個日常事件 (但基本上不會)
-      return events.find(e => e.id === 'daily_1');
-    }
-    const idx = Math.floor(Math.random() * available.length);
-    return available[idx];
-  }
-
-  // 標記事件為已觸發 (once)
-  function markTriggered(eventId) {
-    state.triggeredEvents[eventId] = true;
-  }
-
-  // 遊戲主迴圈
-  let currentEvent = null;
-  let gameOver = false;
-
-  function render() {
-    if (gameOver) return;
-
-    // 更新數值顯示
-    refreshStats();
-
-    // 檢查結局
-    const ending = checkEnding();
-    if (ending) {
-      gameOver = true;
-      document.getElementById('story').innerText = `【${ending.name}】\n\n${ending.text}`;
-      document.getElementById('choices').innerHTML = '';
-      document.getElementById('restart').style.display = 'inline-block';
-      return;
+    // 條件檢查函數 (支援簡單表達式)
+    function checkCondition(conditionStr) {
+        if (!conditionStr) return true;
+        try {
+            // 將條件字串中的屬性替換為實際值
+            const func = new Function('coin', 'stamina', 'mind', `return ${conditionStr};`);
+            return func(state.coin, state.stamina, state.mind);
+        } catch (e) {
+            console.warn('條件解析錯誤', conditionStr, e);
+            return true; // 預設顯示
+        }
     }
 
-    // 若無目前事件，抽一個新事件
-    if (!currentEvent) {
-      currentEvent = getRandomEvent();
-      // 如果是 once 事件，立刻標記 (但還未選，等選完才真正觸發)
+    // 動態效果：可根據屬性調整數值 (例如 coin > 100 時效果加倍)
+    function computeEffect(effectTemplate) {
+        if (!effectTemplate) return { coin:0, stamina:0, mind:0 };
+        // 複製一份
+        let eff = { ...effectTemplate };
+        // 範例：若金幣很多，花費更傷；精神低時效果加重等
+        if (eff.coin && typeof eff.coin === 'number') {
+            if (state.coin > 200 && eff.coin < 0) eff.coin = Math.floor(eff.coin * 1.5); // 越有錢損失越多
+            if (state.mind < 20 && eff.mind < 0) eff.mind = Math.floor(eff.mind * 1.3);  // 精神脆弱時更傷神
+        }
+        return eff;
     }
 
-    const ev = currentEvent;
-    let storyText = `📆 第 ${state.day} 天\n\n${ev.text}`;
-    document.getElementById('story').innerText = storyText;
+    // ------------------- 豐富詞庫 -------------------
+    const scenes = {
+        horror: ['廢棄醫院的鬼影', '半夜手機傳來嬰兒笑聲', '鏡子裡的人眨眼', '床底下的濕髮', '電梯按了13樓卻不停', '背後腳步聲', '螢幕浮現「快逃」', '雨夜看見無臉人'],
+        funny: ['踩到香蕉皮滑進垃圾桶', '內褲穿反被女神發現', '被鴿子屎砸中頭獎', '自動販賣機找零吐出一堆乖乖', '誤闖阿伯的廣場舞陣型', '貓咪瘋狂舔你的腳趾', '參加滑稽模仿大賽得名'],
+        dark: ['同事偷偷把你的履歷丟掉', '房東漲租金並貼出凶宅證明', '發現女友是詐騙集團', '老婦人跌倒反而誣賴你', '銀行戶頭被凍結', '求職感謝函(嘲笑)', '摯友背後捅刀'],
+        temptation: ['神秘女子邀你參加私人派對', '投資群組「保證獲利」', '路邊撿到裝滿現金的錢包', '酒店經紀遞上名片', '免費試用頂級保健品', '賭場中介來搭訕'],
+        weird: ['巷子裡賣會說話的烤地瓜', '鄰居陽台種滿食人花', '7-11店員長出第三隻眼', '捷運站閘門唱京劇', '你的影子自己跑去買消夜', '大樓電梯直通異空間'],
+        current: ['AI取代了你的工作', '元宇宙炒房團跑路', '政府發放六千元卻限時24hr', '蛋價飆漲改養電子雞', 'Youtuber挑戰住凶宅', 'Threads上被炎上', '以巴衝突影響油價']
+    };
 
-    const choicesDiv = document.getElementById('choices');
-    choicesDiv.innerHTML = '';
+    // 效果模板 (部分會動態調整)
+    const effectTemplates = [
+        { coin: 5, stamina: -2, mind: 1 },
+        { coin: -8, stamina: 3, mind: -3 },
+        { coin: 15, stamina: -5, mind: -5 },
+        { coin: -3, stamina: -1, mind: 8 },
+        { coin: 20, stamina: -10, mind: -2 },
+        { coin: -12, stamina: 6, mind: 6 },
+        { coin: 0, stamina: -6, mind: -6 },
+        { coin: 7, stamina: 0, mind: -4 },
+        { coin: -5, stamina: 4, mind: 2 },
+        { coin: 10, stamina: -3, mind: -7 }
+    ];
 
-    ev.choices.forEach((choice, idx) => {
-      const btn = document.createElement('button');
-      btn.className = 'choice-btn';
-      btn.textContent = choice.text;
-      btn.onclick = () => {
-        // 套用效果
-        if (choice.effect) update(choice.effect);
+    // 生成選項 (可包含條件)
+    function createOption(textSeed, targetId, effect = null, condition = null) {
+        const baseEff = effect || randElem(effectTemplates);
+        return {
+            text: textSeed,
+            nextEvent: targetId,
+            baseEffect: { ...baseEff },
+            condition: condition,  // 字串，例如 "coin > 30 && stamina > 20"
+            // 計算實際效果的方法將在點擊時使用 computeEffect(baseEffect)
+        };
+    }
 
-        // 如果有 nextEvent，則跳到指定事件 (此事件不會被標記觸發，因為是指定事件)
-        if (choice.nextEvent) {
-          const next = eventMap[choice.nextEvent];
-          if (next) {
-            currentEvent = next;
-            // 若 nextEvent 也是 once，則在這裡標記 (但不會再次隨機出現)
-            if (next.once) markTriggered(next.id);
-          } else {
-            currentEvent = getRandomEvent();
-          }
-        } else {
-          // 正常情況，目前事件如果是 once，標記為已觸發
-          if (ev.once) markTriggered(ev.id);
-          // 抽取新事件
-          currentEvent = getRandomEvent();
+    // ---------- 1. 生成主線事件 M1~M50 (動態條件) ----------
+    for (let i = 1; i <= 50; i++) {
+        const id = 'M' + i;
+        const tag = randElem(['恐怖','搞笑','暗黑','誘惑','獵奇','時事']);
+        let desc = '';
+        if (tag === '恐怖') desc = `👻 ` + randElem(scenes.horror) + '。';
+        else if (tag === '搞笑') desc = `🤣 ` + randElem(scenes.funny) + '！';
+        else if (tag === '暗黑') desc = `💀 ` + randElem(scenes.dark) + '⋯⋯';
+        else if (tag === '誘惑') desc = `💋 ` + randElem(scenes.temptation) + '，';
+        else if (tag === '獵奇') desc = `👁️ ` + randElem(scenes.weird) + '？！';
+        else desc = `📰 ` + randElem(scenes.current) + '。';
+
+        // 根據屬性動態調整描述 (增加沉浸)
+        if (state && state.coin < 20) desc += ' 你摸著空空的錢包，更加焦慮。';
+        else if (state && state.stamina < 20) desc += ' 你累得眼皮打架，卻不能停下。';
+
+        // 產生2~4個選項，部分帶條件
+        let options = [];
+        const optCount = randInt(3, 4); // 增加選項多樣性
+        for (let j = 0; j < optCount; j++) {
+            let optText = '';
+            let condition = null;
+            if (j === 0) optText = '🔹 穩健前進 (維持主線)';
+            else if (j === 1) optText = '🔸 鋌而走險 (可能分支)';
+            else if (j === 2) optText = '⚠️ 異想天開 (獵奇分支)';
+            else optText = '🌀 神秘捷徑 (屬性限制)';
+
+            // 加入條件 (例如第三個選項需要體力>30)
+            if (j === 2) condition = 'stamina > 30';
+            if (j === 3) condition = 'mind > 40 && coin < 100';
+
+            // 決定目標
+            let target;
+            if (i === 50 && j === 0) target = 'E' + randInt(1,5);
+            else {
+                const r = Math.random();
+                if (r < 0.5) target = 'M' + (i+1 > 50 ? 50 : i+1);
+                else if (r < 0.8) target = 'S' + randInt(1, 40);
+                else target = 'R' + randInt(1, 35); // 增加隨機事件上限
+            }
+            options.push(createOption(optText, target, null, condition));
+        }
+        eventDB.set(id, { id, desc, tag, options });
+    }
+
+    // ---------- 2. 生成分線事件 S1~S45 (增加至45) ----------
+    for (let i = 1; i <= 45; i++) {
+        const id = 'S' + i;
+        const tag = randElem(['恐怖','搞笑','暗黑','誘惑','獵奇','時事']);
+        let desc = `🔀 分歧線·${i} ：`;
+        if (tag === '恐怖') desc += `🕸️ ` + randElem(scenes.horror) + ' 你捲入莫名恐懼。';
+        else if (tag === '搞笑') desc += `🍌 ` + randElem(scenes.funny) + ' 周圍人都在笑。';
+        else if (tag === '暗黑') desc += `🩸 ` + randElem(scenes.dark) + ' 你感到絕望。';
+        else if (tag === '誘惑') desc += `🍷 ` + randElem(scenes.temptation) + ' 慾望在招手。';
+        else if (tag === '獵奇') desc += `🐙 ` + randElem(scenes.weird) + ' 無法理解。';
+        else desc += `🌐 ` + randElem(scenes.current) + ' 這就是現代。';
+
+        // 動態附加
+        if (state && state.mind > 80) desc += ' 你的精神敏銳，察覺到異樣。';
+        else if (state && state.stamina < 15) desc += ' 你氣喘吁吁，難以應付。';
+
+        let options = [];
+        const optCount = randInt(2, 4);
+        for (let j = 0; j < optCount; j++) {
+            let optText = j===0 ? '🔻 順從本能' : (j===1 ? '🔺 抗拒逃離' : (j===2 ? '⚡ 孤注一擲' : '🌀 靜觀其變'));
+            let condition = null;
+            if (j === 2) condition = 'stamina > 25 && mind > 25';
+            if (j === 3) condition = 'coin > 50';
+
+            const r = Math.random();
+            let target;
+            if (r < 0.4) target = 'M' + randInt(1, 50);
+            else if (r < 0.65) target = 'S' + randInt(1, 45);
+            else if (r < 0.9) target = 'R' + randInt(1, 35);
+            else target = 'E' + randInt(1, 10);
+            options.push(createOption(optText, target, null, condition));
+        }
+        eventDB.set(id, { id, desc, tag, options });
+    }
+
+    // ---------- 3. 隨機事件 R1~R35 (增加至35) ----------
+    for (let i = 1; i <= 35; i++) {
+        const id = 'R' + i;
+        const tag = randElem(['恐怖','搞笑','暗黑','誘惑','獵奇','時事']);
+        let desc = `🎲 隨機·${i}：`;
+        switch(tag) {
+            case '恐怖': desc += `🪦 ` + randElem(scenes.horror)+ ` 心跳加速。`; break;
+            case '搞笑': desc += `😹 ` + randElem(scenes.funny)+ ` 你忍不住笑了。`; break;
+            case '暗黑': desc += `⚰️ ` + randElem(scenes.dark)+ ` 社會現實。`; break;
+            case '誘惑': desc += `💄 ` + randElem(scenes.temptation)+ ` 誘惑當前。`; break;
+            case '獵奇': desc += `🧿 ` + randElem(scenes.weird)+ ` 超出常理。`; break;
+            case '時事': desc += `📢 ` + randElem(scenes.current)+ ` 跟上話題。`; break;
         }
 
-        // 天數增加
-        state.day += 1;
-        render();
-      };
-      choicesDiv.appendChild(btn);
-    });
+        let options = [];
+        const optCount = randInt(2, 3);
+        for (let j = 0; j < optCount; j++) {
+            let optText = j===0 ? '🎭 接受現實' : (j===1 ? '🕳️ 頑強抵抗' : '🌟 順其自然');
+            let condition = null;
+            if (j === 1) condition = 'stamina > 20';
+            if (j === 2) condition = 'mind < 60';
 
-    document.getElementById('restart').style.display = 'none';
-  }
+            const r = Math.random();
+            let target;
+            if (r < 0.5) target = 'M' + randInt(1, 50);
+            else if (r < 0.8) target = 'R' + randInt(1, 35);
+            else if (r < 0.95) target = 'S' + randInt(1, 45);
+            else target = 'E' + randInt(1,10);
+            options.push(createOption(optText, target, null, condition));
+        }
+        eventDB.set(id, { id, desc, tag, options });
+    }
 
-  // 重新開始
-  function restart() {
-    state = {
-      money: 1200,
-      energy: 75,
-      mental: 68,
-      sin: 0,
-      crazy: 0,
-      fame: 0,
-      drug: 0,
-      debt: 0,
-      gang: 0,
-      cult: 0,
-      day: 1,
-      killed: false,
-      betrayed: false,
-      saved: false,
-      enlighten: false,
-      triggeredEvents: {}
-    };
-    currentEvent = null;
-    gameOver = false;
-    render();
-  }
+    // ---------- 4. 結局事件 E1~E12 (增加至12) ----------
+    const endingList = [
+        { name:'平凡永生', desc:'你度過了毫無波瀾的一生。在搖椅上睡去，再也沒醒來。', coin:0, stamina:0, mind:0 },
+        { name:'瘋狂邊緣', desc:'精神歸零⋯你看著虛空低語，被送入療養院。', coin:-30, stamina:-20, mind:-100 },
+        { name:'黃金囚徒', desc:'金幣滿滿，但眾叛親離。你抱著錢凍死在天橋下。', coin:200, stamina:-80, mind:-60 },
+        { name:'超自然體', desc:'第三隻眼張開，你成了陰陽交界的存在。', coin:20, stamina:10, mind:99 },
+        { name:'社會性死亡', desc:'你的荒謬影片瘋傳，從此無法直視熟人。', coin:-20, stamina:30, mind:-70 },
+        { name:'暗黑贏家', desc:'踩著別人往上爬，你坐上高位卻永遠失眠。', coin:150, stamina:-40, mind:-30 },
+        { name:'誘惑深淵', desc:'沉溺於慾望，最後一無所有。', coin:-100, stamina:10, mind:-90 },
+        { name:'時事倖存者', desc:'你跟上了每一波迷因，成為網路廢人但開心。', coin:5, stamina:-20, mind:-10 },
+        { name:'獵奇收藏家', desc:'家裡堆滿詭異物品，某天全消失，你反而失落。', coin:-60, stamina:0, mind:20 },
+        { name:'平凡英雄', desc:'你救了許多人，低調回到日常。', coin:30, stamina:-30, mind:50 },
+        { name:'體力透支', desc:'長時間過勞，你在工作中倒下，再也沒起來。', coin:0, stamina:-100, mind:10 },
+        { name:'精神覺醒', desc:'歷經無數詭事，你參透虛幻，選擇歸隱山林。', coin:-50, stamina:40, mind:120 }
+    ];
+    for (let i = 1; i <= 12; i++) {
+        const id = 'E' + i;
+        const ed = endingList[i-1];
+        const desc = `🏁 結局 · ${ed.name} ：${ed.desc} (金幣變動 ${ed.coin>0?'+':''}${ed.coin}，體力 ${ed.stamina>0?'+':''}${ed.stamina}，精神 ${ed.mind>0?'+':''}${ed.mind})`;
+        eventDB.set(id, { id, desc, tag:'結局', options: [] });
+    }
 
-  document.getElementById('restart').onclick = restart;
+    // 補遺：確保所有目標事件存在
+    for (let [id, ev] of eventDB.entries()) {
+        if (ev.options) {
+            ev.options = ev.options.map(opt => {
+                if (!eventDB.has(opt.nextEvent)) {
+                    opt.nextEvent = 'M' + randInt(1,50);
+                }
+                return opt;
+            });
+        }
+    }
 
-  // 啟動
-  render();
+    // ---------- 介面元素 ----------
+    const statCoin = document.getElementById('statCoin');
+    const statStamina = document.getElementById('statStamina');
+    const statMind = document.getElementById('statMind');
+    const eventDesc = document.getElementById('eventDesc');
+    const eventTag = document.getElementById('eventTag');
+    const optionsArea = document.getElementById('optionsArea');
+    const resetBtn = document.getElementById('resetGameBtn');
+
+    function updateStatsUI() {
+        statCoin.innerText = state.coin;
+        statStamina.innerText = state.stamina;
+        statMind.innerText = state.mind;
+    }
+
+    function checkExtremeEnding() {
+        if (state.stamina <= 0) return 'E2';
+        if (state.mind <= 0) return 'E2';
+        if (state.coin <= -150) return 'E7';
+        if (state.coin >= 600) return 'E3';
+        if (state.stamina >= 200) return 'E4';
+        if (state.mind >= 180) return 'E12';
+        return null;
+    }
+
+    function applyEffect(baseEffect) {
+        // 先計算動態效果
+        const effect = computeEffect(baseEffect);
+        if (effect.coin) state.coin = Math.max(-999, Math.min(999, state.coin + effect.coin));
+        if (effect.stamina) state.stamina = Math.max(0, Math.min(200, state.stamina + effect.stamina));
+        if (effect.mind) state.mind = Math.max(0, Math.min(200, state.mind + effect.mind));
+        updateStatsUI();
+
+        const forcedEnd = checkExtremeEnding();
+        if (forcedEnd) {
+            state.currentEventId = forcedEnd;
+        }
+    }
+
+    function loadEvent() {
+        const ev = eventDB.get(state.currentEventId);
+        if (!ev) {
+            state.currentEventId = 'M1';
+            loadEvent();
+            return;
+        }
+
+        // 動態更新描述 (重新抓取當前狀態)
+        let finalDesc = ev.desc;
+        // 如果事件是主線且屬性較低，添加情緒描述
+        if (ev.id.startsWith('M')) {
+            if (state.coin < 20) finalDesc += ' 你摸著空空的錢包，更加焦慮。';
+            else if (state.coin > 200) finalDesc += ' 你財大氣粗，走路有風。';
+            if (state.stamina < 20) finalDesc += ' 你累得眼皮打架，卻不能停下。';
+            if (state.mind < 20) finalDesc += ' 精神恍惚，你開始出現幻覺。';
+        }
+        eventDesc.innerText = finalDesc;
+        eventTag.innerText = `#${ev.id} · ${ev.tag || '未知'}`;
+
+        optionsArea.innerHTML = '';
+
+        // 結局處理
+        if (ev.id.startsWith('E')) {
+            const msg = document.createElement('div');
+            msg.style.padding = '20px';
+            msg.style.textAlign = 'center';
+            msg.style.color = '#b8a9c9';
+            msg.style.fontStyle = 'italic';
+            msg.innerText = '⭐ 旅程終點 · 點下方重啟按鈕展開新人生';
+            optionsArea.appendChild(msg);
+            if (!ev._applied) {
+                const idx = parseInt(ev.id.substring(1)) - 1;
+                if (endingList[idx]) {
+                    applyEffect({
+                        coin: endingList[idx].coin,
+                        stamina: endingList[idx].stamina,
+                        mind: endingList[idx].mind
+                    });
+                }
+                ev._applied = true;
+            }
+            return;
+        }
+
+        // 過濾選項：只保留條件為true的
+        const availableOptions = ev.options.filter(opt => checkCondition(opt.condition));
+
+        availableOptions.forEach((opt) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            // 計算預覽效果 (使用當前屬性計算)
+            const previewEff = computeEffect(opt.baseEffect);
+            const effText = ` [💰${previewEff.coin>0?'+':''}${previewEff.coin} ⚡${previewEff.stamina>0?'+':''}${previewEff.stamina} 🧠${previewEff.mind>0?'+':''}${previewEff.mind}]`;
+            btn.innerText = opt.text + effText;
+            btn.addEventListener('click', (e) => {
+                applyEffect(opt.baseEffect);  // 使用基底效果，內部會再動態計算
+                if (opt.nextEvent && eventDB.has(opt.nextEvent)) {
+                    state.currentEventId = opt.nextEvent;
+                } else {
+                    state.currentEventId = 'M' + randInt(1,50);
+                }
+                const forced = checkExtremeEnding();
+                if (forced) state.currentEventId = forced;
+                loadEvent();
+            });
+            optionsArea.appendChild(btn);
+        });
+
+        // 如果沒有可用選項，提供一個默認選項返回主線
+        if (availableOptions.length === 0) {
+            const fallbackBtn = document.createElement('button');
+            fallbackBtn.className = 'option-btn';
+            fallbackBtn.innerText = '🚪 無路可走，回到主線';
+            fallbackBtn.addEventListener('click', () => {
+                state.currentEventId = 'M' + randInt(1,50);
+                loadEvent();
+            });
+            optionsArea.appendChild(fallbackBtn);
+        }
+    }
+
+    function resetGame() {
+        state = {
+            coin: 50,
+            stamina: 50,
+            mind: 50,
+            currentEventId: 'M1'
+        };
+        for (let ev of eventDB.values()) {
+            ev._applied = false;
+        }
+        updateStatsUI();
+        loadEvent();
+    }
+
+    // 初始載入
+    resetGame();
+    resetBtn.addEventListener('click', resetGame);
 })();
 </script>
 </body>
