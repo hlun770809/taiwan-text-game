@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>一萬塊的人生轉彎</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #111;
+      color: #eee;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    #game {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+    h1 {
+      font-size: 1.6rem;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    #stats {
+      font-size: 0.9rem;
+      color: #ccc;
+      margin-bottom: 8px;
+    }
+    #story {
+      white-space: pre-wrap;
+      line-height: 1.6;
+      margin-bottom: 16px;
+      font-size: 1rem;
+    }
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    button.choice {
+      width: 100%;
+      padding: 10px 12px;
+      border: none;
+      border-radius: 4px;
+      background: #333;
+      color: #eee;
+      font-size: 1rem;
+      text-align: left;
+    }
+    button.choice:hover {
+      background: #555;
+      cursor: pointer;
+    }
+    button.choice:active {
+      background: #777;
+    }
+    #restart {
+      margin-top: 12px;
+      padding: 8px 10px;
+      background: #444;
+      border: none;
+      border-radius: 4px;
+      color: #eee;
+      font-size: 0.9rem;
+      display: none;
+    }
+    @media (max-width: 480px) {
+      h1 { font-size: 1.3rem; }
+      #story { font-size: 0.95rem; }
+      button.choice { font-size: 0.95rem; }
+    }
+  </style>
+</head>
+<body>
+  <div id="game">
+    <h1>一萬塊的人生轉彎</h1>
+    <div id="stats"></div>
+    <div id="story"></div>
+    <div class="choices" id="choices"></div>
+    <button id="restart">重新開始</button>
+  </div>
+
+  <script>
+    // 遊戲狀態
+    const initialState = () => ({
+      money: 3000,
+      mental: 70,
+      motherHealth: 50,
+      fame: 0,
+      corruption: false,
+      trauma: false,
+      joinedLazyCult: false,
+      joinedSupportGroup: false,
+      heroPotential: false,
+      randomFlags: {}, // 用來記錄隨機事件是否已觸發
+      day: 1
+    });
+
+    let state = initialState();
+    let currentScene = "intro";
+
+    // 簡易隨機工具
+    function chance(p) {
+      return Math.random() < p;
+    }
+
+    // 隨機事件定義
+    function randomEventOnCommute() {
+      // 上下班通勤隨機事件：推銷、街頭衝突、撿到錢等
+      if (state.randomFlags.commuteOnce) return null;
+      state.randomFlags.commuteOnce = true;
+
+      const roll = Math.random();
+      if (roll < 0.25) {
+        state.money += 500;
+        state.mental += 5;
+        return "你在捷運出口附近撿到一個紅包袋，裡面竟然有 500 元，你偷偷收入口袋，心情莫名好了一點。";
+      } else if (roll < 0.5) {
+        state.mental -= 10;
+        return "你遇到保險推銷一路跟到車站口，硬是聽完一輪人生道理，頭有點痛，精神值略為下降。";
+      } else if (roll < 0.75) {
+        state.trauma = true;
+        state.mental -= 15;
+        return "車站前突然有人激烈爭吵，推擠中有人摔倒，你雖然沒受傷，但畫面讓你感到不安。";
+      } else {
+        return "今天的通勤異常平靜，你開始懷疑是不是風雨前的寧靜。";
+      }
+    }
+
+    function randomEventStock() {
+      // 股市隨機事件：意外小賺／大跌
+      const roll = Math.random();
+      if (roll < 0.4) {
+        const gain = 1000 + Math.floor(Math.random() * 2000);
+        state.money += gain;
+        state.mental += 5;
+        return `受「關稅風暴」影響，市場劇烈震盪，你居然在亂買一通中賺了 ${gain} 元。`;
+      } else if (roll < 0.8) {
+        const loss = 1000 + Math.floor(Math.random() * 2000);
+        state.money -= loss;
+        state.mental -= 10;
+        return `股市忽然急殺一根，你來不及停損，慘賠 ${loss} 元。`;
+      } else {
+        return "今天股市量縮整理，你看著 K 線發呆，什麼事也沒發生，只是又浪費了一個晚上。";
+      }
+    }
+
+    function randomEventLateNight() {
+      // 半夜滑手機隨機事件：遇到極端社團廣告、心理測驗、詐騙
+      if (state.randomFlags.lateNight) return null;
+      state.randomFlags.lateNight = true;
+
+      const roll = Math.random();
+      if (roll < 0.33) {
+        state.joinedLazyCult = true;
+        state.mental -= 5;
+        return "半夜你被一個「躺平無罪聯盟」廣告打到，莫名其妙就點進了社團申請，管理員秒通過。";
+      } else if (roll < 0.66) {
+        state.joinedSupportGroup = true;
+        state.mental += 5;
+        return "你看到一個「月光族自救會」的招募貼文，裡面的人互相分享省錢與求助資源，你也默默加入。";
+      } else {
+        state.money -= 300;
+        state.mental -= 5;
+        return "你被一個「一夜翻身投資課程」騙走 300 元報名費，結果裡面只有激勵話術。";
+      }
+    }
+
+    // 場景定義
+    const scenes = {
+      intro: {
+        text: () =>
+`清晨 6 點，你擠在北城捷運的車廂裡。
+
+手機跳出三則新聞：
+1. 「史上最大普發現金一萬元今日入帳」
+2. 「大罷免全數否決，藍綠互轟」
+3. 「北城車站隨機攻擊事件一週年專題」
+
+你看著窗外黑壓壓的隧道，突然覺得有點喘不過氣。`,
+        choices: [
+          { text: "忽略新聞，先想今天要怎麼活下去。", next: "toWork" },
+          { text: "滑開留言區，看大家怎麼罵政客。", next: "politicStart" },
+          { text: "截圖發限動，打字抱怨：「這國家完了。」", next: "influencerStart", effect: () => { state.fame += 10; } }
+        ]
+      },
+
+      toWork: {
+        text: () => {
+          let t = `你把手機關掉，決定先專心活過今天。
+
+到站後，你被人潮推著走出捷運站。`;
+          const re = randomEventOnCommute();
+          if (re) t += "\n\n【隨機事件】" + re;
+          t += "\n\n中午，公司群組傳來一片歡呼聲：「一萬元到了！」";
+          return t;
+        },
+        choices: [
+          { text: "看看帳戶，確認一萬元真的進來了。", next: "moneyIn" }
+        ]
+      },
+
+      politicStart: {
+        text: () =>
+`你點開留言區，螢幕上全是謾罵和陰謀論。
+
+有人說「大罷免就是一場笑話」，有人說「這國家只剩下鍵盤正義」，
+你突然說不出話來，只是覺得有點累。
+
+就在這時，公司群組有人喊：「一萬元進帳啦！」`,
+        choices: [
+          { text: "切換到網銀 app，看看那筆一萬元。", next: "moneyIn" },
+          { text: "邊滑邊走出站，差點撞到人。", next: "toWork" }
+        ]
+      },
+
+      influencerStart: {
+        text: () => {
+          state.day++;
+          return `你的限動很快被一堆朋友回覆，有人按愛心，有人貼哭笑不得的貼圖。
+
+你心裡有種奇怪的爽感：原來抱怨也可以獲得掌聲。
+
+到了公司，中午群組炸開：「一萬元入帳啦！」`;
+        },
+        choices: [
+          { text: "打開網銀，盯著那多出來的一萬元。", next: "moneyIn" }
+        ]
+      },
+
+      moneyIn: {
+        text: () =>
+`你的帳戶數字多了一行：「政府普發現金 +10,000」。
+
+你原本只剩下 ${state.money} 元，突然覺得自己好像翻身了一點點。
+
+同事們在討論要怎麼用這筆錢：
+有人說要 all in 股市，有人說要去吃高級吃到飽，也有人說要全部捐出去。`,
+        choices: [
+          { text: "全部拿去還卡債，至少比較安心。", next: "payDebt", effect: () => { state.money = 0; state.mental += 5; } },
+          { text: "晚上再來玩股市，先留著。", next: "planStock", effect: () => { state.money += 10000; } },
+          { text: "揪同事去吃高級吃到飽慶祝。", next: "eatBuffet", effect: () => { state.money += 10000 - 800; state.mental += 10; } }
+        ]
+      },
+
+      payDebt: {
+        text: () =>
+`你毫不猶豫把一萬元轉去繳卡債，帳戶又回到 0。
+
+雖然還是窮，但至少那幾通追債電話暫時安靜了下來。
+
+下班時間到了，夜晚的北城風有點涼，你要怎麼回家？`,
+        choices: [
+          { text: "走地下街捷徑，想趕快回家。", next: "undergroundWarning" },
+          { text: "走地面大馬路，雖然遠一點。", next: "safeWalk" }
+        ]
+      },
+
+      planStock: {
+        text: () =>
+`你決定把一萬元留到晚上再說，心裡盤算著是不是該跟著新聞說的「關稅風暴」操作一波。
+
+下班時間到了，主管臨時丟給你一份報表，害你晚了一個小時才離開公司。
+
+你站在北城車站前，夜風冷得有點刺。`,
+        choices: [
+          { text: "走地下街捷徑，想快點回家打開股市 app。", next: "undergroundWarning" },
+          { text: "決定先去便利商店坐著想一想。", next: "convenienceStore" }
+        ]
+      },
+
+      eatBuffet: {
+        text: () =>
+`你跟同事去高級吃到飽，伙食精緻，肉和海鮮一輪又一輪。
+
+有人聊到股市，有人聊到大罷免，有人乾脆說「反正誰當選都一樣」。
+
+你吃到肚子撐，心情好了一點，但錢少了不少。`,
+        choices: [
+          { text: "回家路上走地下街，想消化一下。", next: "undergroundWarning" },
+          { text: "搭計程車回家，懶得走路。", next: "taxiHome", effect: () => { state.money -= 200; } }
+        ]
+      },
+
+      convenienceStore: {
+        text: () => {
+          let t =
+`你買了一杯熱咖啡，坐在便利商店的窗邊，看著路人來來往往。
+
+電視新聞正在播：「大罷免全數否決、關稅風暴重創股市、全民普發現金」的年度回顧。`;
+          t += "\n\n你突然覺得，自己好像只是一個被新聞推著走的小人物。";
+          return t;
+        },
+        choices: [
+          { text: "喝完咖啡，走地下街回家。", next: "undergroundWarning" },
+          { text: "慢慢走回家，順便散步。", next: "safeWalk" }
+        ]
+      },
+
+      taxiHome: {
+        text: () =>
+`你攔了一台計程車，坐上去的瞬間，覺得自己像個有錢人。
+
+司機一路抱怨房價、抱怨政府、抱怨治安，你有一搭沒一搭地回應。
+
+回到租屋處，你躺在床上滑手機，想到那一萬元好像還可以做很多事。`,
+        choices: [
+          { text: "打開股市 app，打算小試身手。", next: "stockNight" },
+          { text: "累了，決定先睡一覺再說。", next: "lateNightScroll" }
+        ]
+      },
+
+      safeWalk: {
+        text: () =>
+`你選擇走地面大馬路，路燈亮著，車子來來往往，人潮稀稀落落。
+
+雖然多花了十五分鐘，但你覺得心裡比較踏實。
+
+回到房間，你打開手機，思考那一萬元的用途。`,
+        choices: [
+          { text: "試著拿一部分去投資股市。", next: "stockNight" },
+          { text: "上網搜尋「窮人翻身方法」。", next: "searchHelp" }
+        ]
+      },
+
+      undergroundWarning: {
+        text: () =>
+`你走向北城車站地下街入口。
+
+入口旁貼著一張還沒撕掉的海報：「北城車站隨機攻擊事件一週年紀念座談」。
+
+你想起那天新聞畫面裡的尖叫和混亂，不禁打了個冷顫。`,
+        choices: [
+          { text: "還是走地下街，想快點回家。", next: "undergroundEvent" },
+          { text: "臨時改變心意，繞遠路走地面。", next: "safeWalk" }
+        ]
+      },
+
+      undergroundEvent: {
+        text: () => {
+          state.day++;
+          state.trauma = true;
+          state.mental -= 20;
+          state.heroPotential = true;
+          return `你走進地下街，店家大多已經拉下鐵門，只有幾家還亮著燈。
+
+突然，一陣騷動從前方傳來，有人尖叫：「小心！快跑！」
+
+人潮像浪一樣朝你推來，你看到遠處有人倒在地上，有人拿著不明物品揮舞。`;
+        },
+        choices: [
+          { text: "拉住身旁的小孩，一起躲進還沒打烊的店裡。", next: "heroBranch" },
+          { text: "自己先跑，什麼都顧不了。", next: "escapeAlone" },
+          { text: "拿出手機錄影，上傳限動。", next: "recordEvent", effect: () => { state.fame += 20; } }
+        ]
+      },
+
+      heroBranch: {
+        text: () =>
+`你一把抓住身旁的小孩，把他推進還亮著燈的店裡，順手把鐵門拉下一半。
+
+外面吵雜的聲音持續了好一陣子，你抱著小孩，緊張得手心都是汗。
+
+過了一會兒，警笛聲響起，人群緩慢散去。`,
+        choices: [
+          { text: "你默默離開現場，不想被訪問。", next: "postUnderground" },
+          { text: "接受警方紀錄與媒體訪問。", next: "postUndergroundFame", effect: () => { state.fame += 30; } }
+        ]
+      },
+
+      escapeAlone: {
+        text: () =>
+`你頭也不回地往出口狂奔，差點在樓梯上摔倒。
+
+你知道自己沒有做錯什麼，但胸口有一個說不出口的重量。
+
+回到房間，你發現手還在抖，怎麼也平靜不下來。`,
+        choices: [
+          { text: "打開社群，看大家在討論這件事。", next: "socialAfterTrauma" },
+          { text: "假裝什麼都沒發生，直接洗澡睡覺。", next: "lateNightScroll" }
+        ]
+      },
+
+      recordEvent: {
+        text: () =>
+`你一邊往安全的地方退，一邊舉起手機錄影。
+
+影片上傳後，短短幾分鐘就破千次觀看，有人說你勇敢，有人說你冷血。
+
+你看著那些留言，覺得世界變得既真實又虛假。`,
+        choices: [
+          { text: "繼續追蹤新聞與留言。", next: "socialAfterTrauma" },
+          { text: "關掉手機，努力睡覺。", next: "lateNightScroll" }
+        ]
+      },
+
+      postUnderground: {
+        text: () =>
+`你拒絕留下姓名，只是默默離開地下街。
+
+回到房間，你才發現自己的手一直在發抖。
+
+你知道，今晚之後，你再也回不到原本那個單純怕沒錢的自己。`,
+        choices: [
+          { text: "試著上網搜尋「創傷輔導」與自救資源。", next: "searchHelp" },
+          { text: "打電話給老家，聽聽媽媽的聲音。", next: "callMom" }
+        ]
+      },
+
+      postUndergroundFame: {
+        text: () =>
+`你留下聯絡方式，接受警方詢問，也接受媒體的簡短訪問。
+
+隔天新聞標題寫著：「地下街小人物的勇敢一拉」，你雖然臉被打馬賽克，但朋友一眼就認出是你。
+
+你的追蹤數迅速增加，陌生人傳訊息說：「謝謝你救了那個小孩。」`,
+        choices: [
+          { text: "趁勢經營社群，寫長文談心情。", next: "startInfluencer", effect: () => { state.fame += 30; state.mental += 5; } },
+          { text: "低調關掉通知，專心過日子。", next: "searchHelp" }
+        ]
+      },
+
+      socialAfterTrauma: {
+        text: () =>
+`你滑著手機，看見各種角度的影片、各種版本的說法。
+
+有人責怪政府，有人責怪加害者的家庭，有人說只是個案，也有人把這當成政治工具。
+
+你越看越煩躁，卻又停不下來。`,
+        choices: [
+          { text: "加入一個在討論社會安全與心理健康的社團。", next: "joinGroups" },
+          { text: "轉身去關心自己的家人。", next: "callMom" }
+        ]
+      },
+
+      searchHelp: {
+        text: () =>
+`你打開搜尋：「窮人翻身」、「創傷後壓力」、「免費諮商」、「社福資源」。
+
+資訊多到爆炸，但你勉強整理出幾個重點。
+
+有兩個社團看起來特別顯眼：
+「躺平無罪聯盟」和「月光族自救會」。`,
+        choices: [
+          { text: "加入「躺平無罪聯盟」。", next: "lazyCult", effect: () => { state.joinedLazyCult = true; state.mental -= 5; } },
+          { text: "加入「月光族自救會」。", next: "supportGroup", effect: () => { state.joinedSupportGroup = true; state.mental += 5; } },
+          { text: "兩個都加，看看再說。", next: "bothGroups", effect: () => { state.joinedLazyCult = true; state.joinedSupportGroup = true; } }
+        ]
+      },
+
+      joinGroups: {
+        text: () =>
+`你在社群平台上找到兩個截然不同的社團：
+
+「躺平無罪聯盟」裡充滿「世界要毀滅、人生沒有希望」的長文。
+「月光族自救會」則分享怎麼申請補助、如何找諮商與打工。`,
+        choices: [
+          { text: "加入躺平無罪聯盟，覺得他們很懂你的心。", next: "lazyCult", effect: () => { state.joinedLazyCult = true; state.mental -= 5; } },
+          { text: "加入月光族自救會，想試著拯救自己。", next: "supportGroup", effect: () => { state.joinedSupportGroup = true; state.mental += 5; } },
+          { text: "兩個都加入，反正看看也不虧。", next: "bothGroups", effect: () => { state.joinedLazyCult = true; state.joinedSupportGroup = true; } }
+        ]
+      },
+
+      lazyCult: {
+        text: () =>
+`躺平無罪聯盟的貼文寫著：
+
+「這個國家沒救了。」
+「努力只是幫別人賺更多而已。」
+「真正的自由，是一起離開這個遊戲。」
+
+你看著看著，心裡某個角落被戳到了。`,
+        choices: [
+          { text: "深入參與社團活動，開始每天發負面文。", next: "lazyDeep" },
+          { text: "只是潛水，順便加入另一個比較正向的社團。", next: "supportGroup", effect: () => { state.joinedSupportGroup = true; } }
+        ]
+      },
+
+      supportGroup: {
+        text: () =>
+`月光族自救會的成員互相分享租屋陷阱、打工經驗，也有人談心理諮商與社福資源。
+
+有人說：「我們不一定會變有錢，但至少不要再被壓垮。」`,
+        choices: [
+          { text: "主動在社團發文，分享自己的處境。", next: "supportActive", effect: () => { state.mental += 5; } },
+          { text: "默默在群組裡看別人的故事。", next: "supportPassive" }
+        ]
+      },
+
+      bothGroups: {
+        text: () =>
+`你的通知欄充滿兩種完全不同的聲音：
+
+一邊是說「躺平才是真理」，一邊是說「大家一起慢慢爬出來」。
+你在兩種情緒之間來回拉扯，白天覺得有希望，半夜又覺得一切沒救。`,
+        choices: [
+          { text: "最後選擇完全投入躺平無罪聯盟。", next: "lazyDeep", effect: () => { state.joinedLazyCult = true; } },
+          { text: "最後選擇專心待在月光族自救會。", next: "supportActive", effect: () => { state.joinedSupportGroup = true; } }
+        ]
+      },
+
+      lazyDeep: {
+        text: () =>
+`你開始每天在社團裡分享自己的厭世與絕望。
+
+管理員很欣賞你，邀請你進入更私密的聊天室，說要一起策劃一場「最後的散步」。`,
+        choices: [
+          { text: "答應參加那場「散步」，覺得這是命中注定。", next: "endingLazyWalk" },
+          { text: "突然害怕，決定退出社團。", next: "lateNightScroll", effect: () => { state.joinedLazyCult = false; state.mental += 10; } }
+        ]
+      },
+
+      supportActive: {
+        text: () =>
+`你的貼文底下，有人認真回應你，提供可行的方案與資源連結。
+
+你慢慢發現，原來你不是唯一在水裡掙扎的人。`,
+        choices: [
+          { text: "開始利用這些資源，調整生活。", next: "workAndFamily" },
+          { text: "仍然懷疑一切，但決定先照做看看。", next: "workAndFamily" }
+        ]
+      },
+
+      supportPassive: {
+        text: () =>
+`你只是默默看著別人的故事，沒有多說什麼。
+
+但不知不覺中，你開始把某些省錢與自救的方法記在心裡。
+
+你知道自己還沒準備好求救，但也不想再讓自己一直往下掉。`,
+        choices: [
+          { text: "找一天鼓起勇氣，把自己的故事打出來。", next: "supportActive" },
+          { text: "暫時先專心處理眼前的工作與家人。", next: "workAndFamily" }
+        ]
+      },
+
+      stockNight: {
+        text: () => {
+          let t =
+`晚上，你打開股市 app，看著標題寫著「關稅風暴」、「股市雲霄飛車」。
+
+聊天室裡有人大喊要 all in，也有人勸大家快跑。`;
+          t += "\n\n你猶豫了一下，還是下了單。";
+          t += "\n\n【隨機股市事件】" + randomEventStock();
+          return t;
+        },
+        choices: [
+          { text: "不管結果如何，先睡覺再說。", next: "lateNightScroll" },
+          { text: "越想越不甘心，繼續盯著盤後數字。", next: "lateNightScroll", effect: () => { state.mental -= 5; } }
+        ]
+      },
+
+      lateNightScroll: {
+        text: () => {
+          let t =
+`深夜，你躺在床上滑手機，演算法不停推送災難新聞、股市預言、陰謀論與戀愛短影音。
+
+時間默默來到了凌晨兩點。`;
+          const re = randomEventLateNight();
+          if (re) t += "\n\n【隨機事件】" + re;
+          return t;
+        },
+        choices: [
+          { text: "終於累了，睡著了。", next: "morningCall" }
+        ]
+      },
+
+      morningCall: {
+        text: () =>
+`你的手機在清晨六點半響起，是從高雄家裡打來的電話。
+
+是媽媽的聲音，聽起來比以前更虛弱。`,
+        choices: [
+          { text: "趕快接起來，問媽媽怎麼了。", next: "callMom" },
+          { text: "按掉，告訴自己等等再回。", next: "ignoreMomCall", effect: () => { state.mental -= 10; } }
+        ]
+      },
+
+      callMom: {
+        text: () =>
+`電話那頭，媽媽說最近身體狀況變差，醫生建議要更穩定的照顧。
+
+她問你：「你在北部還好嗎？有沒有想過回來？」`,
+        choices: [
+          { text: "答應過一陣子就回去陪她。", next: "planReturnHome" },
+          { text: "說自己還在打拚，叫她先撐著。", next: "stayInCity", effect: () => { state.mental -= 5; } }
+        ]
+      },
+
+      ignoreMomCall: {
+        text: () =>
+`你按掉電話，對自己說只是剛好在忙。
+
+過了半小時，你才鼓起勇氣回撥，還好只是例行檢查。
+
+但你隱約知道，有些事情不能再拖太久。`,
+        choices: [
+          { text: "主動打給媽媽，好好聊聊。", next: "callMom" },
+          { text: "把情緒壓下去，先去上班。", next: "workAndFamily", effect: () => { state.mental -= 5; } }
+        ]
+      },
+
+      planReturnHome: {
+        text: () =>
+`你答應媽媽，很快會想辦法調整工作，回南部陪她。
+
+掛掉電話後，你看著北城租屋處狹小的房間，突然覺得有點迷失。`,
+        choices: [
+          { text: "開始盤算存款與未來計畫。", next: "workAndFamily" }
+        ]
+      },
+
+      stayInCity: {
+        text: () =>
+`你告訴媽媽自己還在努力，叫她先相信醫生和附近的鄰居。
+
+掛掉電話後，你心裡有一個角落隱隱作痛。`,
+        choices: [
+          { text: "把這股罪惡感當成動力，更拚工作和賺錢。", next: "workAndFamily" },
+          { text: "上網查是否有長照、社福可以申請。", next: "supportGroup", effect: () => { state.joinedSupportGroup = true; } }
+        ]
+      },
+
+      workAndFamily: {
+        text: () =>
+`接下來的幾個月，你在工作、家人、社團之間掙扎。
+
+有天，一個神秘帳號加你好友，自稱是「社群小編招募」。`,
+        choices: [
+          { text: "聽聽看對方要說什麼。", next: "darkJobOffer" },
+          { text: "直接封鎖，覺得八成是詐騙。", next: "noDarkJob" }
+        ]
+      },
+
+      darkJobOffer: {
+        text: () =>
+`對方說，只要幫某些議題寫貼文、帶風向，每個月就有額外一萬五。
+
+有些內容可能需要「適度誇大」，例如把治安、經濟、戰爭風險講得很可怕。`,
+        choices: [
+          { text: "點頭答應，反正大家都在玩資訊戰。", next: "acceptDarkJob", effect: () => { state.corruption = true; state.money += 15000; } },
+          { text: "拒絕，覺得這種工作很噁心。", next: "noDarkJob" },
+          { text: "先接著，之後看情況退出。", next: "halfDarkJob", effect: () => { state.corruption = true; state.money += 15000; } }
+        ]
+      },
+
+      noDarkJob: {
+        text: () =>
+`你直接拒絕了這份看起來輕鬆又賺的工作。
+
+雖然荷包依舊緊，但你至少還睡得著。`,
+        choices: [
+          { text: "把心力放在家人與自救會上。", next: "towardEnding" },
+          { text: "把心力放在社群經營與分享日常。", next: "startInfluencer" }
+        ]
+      },
+
+      acceptDarkJob: {
+        text: () =>
+`你開始為匿名客戶寫貼文，學會了如何用一句話挑起仇恨與恐懼。
+
+追蹤數和收入都上升了，但你對新聞的信任度下降到接近零。`,
+        choices: [
+          { text: "越做越上手，決定全職投入。", next: "endingDarkSpin" },
+          { text: "某天突然厭惡自己，想要抽身。", next: "towardEnding" }
+        ]
+      },
+
+      halfDarkJob: {
+        text: () =>
+`你告訴自己「先賺一波就好」，偶爾寫些模糊的貼文。
+
+但不知不覺中，你開始習慣把人群分類，習慣預測哪一句話可以讓誰吵起來。`,
+        choices: [
+          { text: "繼續做，反正錢很香。", next: "endingDarkSpin" },
+          { text: "找機會慢慢減少接案量。", next: "towardEnding" }
+        ]
+      },
+
+      startInfluencer: {
+        text: () =>
+`你開始把自己的社會觀察、地鐵故事、家庭壓力一篇一篇寫出來。
+
+有人感謝你說出他們不敢說的話，有人罵你只會抱怨不會做事。`,
+        choices: [
+          { text: "繼續寫，甚至嘗試做直播。", next: "endingInfluencer" },
+          { text: "把聲量導向實際行動，例如社區參與。", next: "endingCandidate" }
+        ]
+      },
+
+      towardEnding: {
+        text: () =>
+`時間在混亂中前進，你做了許多掙扎與選擇。
+
+有些夜晚，你會想起地下街的尖叫，有些白天，你會想起媽媽的聲音。
+
+你知道，接下來的決定，會把你推向完全不同的人生。`,
+        choices: [
+          { text: "優先回南部，陪媽媽一起開一間小店。", next: "endingHomeShop" },
+          { text: "留在北城，努力存錢還債。", next: "endingDebtLoop" },
+          { text: "積極參與社區與議題，走上公共事務之路。", next: "endingCandidate" }
+        ]
+      },
+
+      // === 結局 ===
+
+      endingLazyWalk: {
+        text: () => {
+          const canTurnBack = state.mental > 30;
+          return `某個陰雨綿綿的晚上，你跟著躺平無罪聯盟的一群人，坐車來到海邊。
+
+管理員說：「我們只是來散步，順便跟這個世界說再見。」
+
+你站在漆黑的海邊，浪打在岸上，風聲蓋過彼此的呼吸聲。
+
+${canTurnBack ? "你腦中閃過媽媽的聲音、自救會的留言、地下街那個小孩的哭聲。" : "你只覺得一切都很安靜，安靜得異常。"}
+`;
+        },
+        choices: [
+          { text: "走向更黑的那一頭，跟著人群一起往前。", next: "endingLazyTragedy" },
+          { text: "在最後一刻，轉身往反方向狂奔。", next: "endingRebirth" }
+        ]
+      },
+
+      endingLazyTragedy: {
+        text: () =>
+`你跟著人群往前走，直到腳底感覺不到沙，只有冰冷的海水。
+
+畫面慢慢變黑。
+
+【結局一：躺平集體出走】`,
+        choices: []
+      },
+
+      endingRebirth: {
+        text: () =>
+`你在最後一刻轉身狂奔，一路跑回大馬路。
+
+你在便利商店門口蹲下來大口喘氣，哭得像個孩子。
+
+隔天，你主動聯絡自救會、打給媽媽，也預約了諮商。
+
+【結局二：從邊緣掉頭的人】`,
+        choices: []
+      },
+
+      endingDarkSpin: {
+        text: () =>
+`幾年後，你成為某一個陣營的王牌側翼小編。
+
+你的貼文可以讓一個人一夕之間被網路公審，也可以讓一個議題突然被遺忘。
+
+薪水破百萬，你卻偶爾會在夜裡驚醒，搞不清楚哪個版本的故事才是真實。
+
+【結局三：資訊戰的操盤手】`,
+        choices: []
+      },
+
+      endingHomeShop: {
+        text: () =>
+`你最後選擇回南部，和媽媽一起在市場口開了一間小早餐店。
+
+早上六點，你在鐵板前煎蛋餅，看著新聞台還在聊新的罷免案和股票震盪。
+
+客人多是附近的鄰居，偶爾也有人認出你曾經是地下街事件裡的那個人。
+
+你笑笑說：「那都過去了。」但你知道，那些夜晚成就了現在的你。
+
+【結局四：平凡卻踏實的日常】`,
+        choices: []
+      },
+
+      endingDebtLoop: {
+        text: () =>
+`你留在北城，換了幾份工作，不斷在房租與債務之間計算。
+
+有時候你會想，如果當初那一萬元用得不一樣，人生會不會完全改變。
+
+某一天，政府又宣布要「普發現金」來刺激經濟，你看著手機上的新聞標題，嘴角微微上揚。
+
+畫面跳出一行小字：
+
+「你要再賭一次嗎？」（按重新開始，輪迴將再次展開）
+
+【結局五：股海與債務的輪迴】`,
+        choices: []
+      },
+
+      endingInfluencer: {
+        text: () =>
+`你成為某種類型的網紅／實況主，專門談社會現象與基層生活。
+
+你既賺得到抖內，也承受得住各種謾罵和公審。
+
+你有時會懷疑自己是在改變世界，還是只是被演算法推著走的內容產製機器。
+
+【結局六：灰階世界的說書人】`,
+        choices: []
+      },
+
+      endingCandidate: {
+        text: () =>
+`大罷免潮過後，社區裡的人對傳統政治人物越來越失望。
+
+自救會的夥伴們拱你出來選里長／議員，說你比那些人「至少還有在聽我們說話」。
+
+你貼上人生第一張競選海報，對著自己的照片發呆，心想：「我真的準備好了嗎？」
+
+【結局七：從鍵盤到街頭的候選人】`,
+        choices: []
+      },
+
+      endingHero: {
+        text: () =>
+`幾年後，有人拍了一部關於「平凡英雄」的小紀錄片。
+
+鏡頭裡，你只是一個在南部早餐店忙進忙出、偶爾上線分享故事的普通人。
+
+當被問到那天地下街事件時，你沉默了一下，只說：
+
+「我那時候也很怕，只是剛好有人比我更需要被拉一把。」
+
+【結局八：北城地下街的小小英雄】`,
+        choices: []
+      }
+    };
+
+    // 有些情境可以跳到 hero 結局
+    function checkForHeroEnding() {
+      if (state.heroPotential && state.joinedSupportGroup && state.motherHealth >= 50 && state.mental >= 60) {
+        currentScene = "endingHero";
+        render();
+        return true;
+      }
+      return false;
+    }
+
+    // 畫面更新
+    function render() {
+      const storyEl = document.getElementById("story");
+      const choicesEl = document.getElementById("choices");
+      const statsEl = document.getElementById("stats");
+      const restartBtn = document.getElementById("restart");
+
+      // 更新狀態條
+      statsEl.textContent =
+        `現金：${state.money}｜精神：${state.mental}｜媽媽健康：${state.motherHealth}｜知名度：${state.fame}`;
+
+      const scene = scenes[currentScene];
+      if (!scene) {
+        storyEl.textContent = "（發生錯誤：找不到場景 " + currentScene + "）";
+        choicesEl.innerHTML = "";
+        return;
+      }
+
+      storyEl.textContent = typeof scene.text === "function" ? scene.text() : scene.text;
+      choicesEl.innerHTML = "";
+
+      if (scene.choices && scene.choices.length > 0) {
+        restartBtn.style.display = "none";
+        scene.choices.forEach(choice => {
+          const btn = document.createElement("button");
+          btn.className = "choice";
+          btn.textContent = choice.text;
+          btn.onclick = () => {
+            if (choice.effect) choice.effect();
+            // 簡單數值界限處理
+            state.mental = Math.max(0, Math.min(100, state.mental));
+            state.motherHealth = Math.max(0, Math.min(100, state.motherHealth));
+
+            currentScene = choice.next;
+            // 若要檢查英雄結局
+            if (!checkForHeroEnding()) {
+              render();
+            }
+          };
+          choicesEl.appendChild(btn);
+        });
+      } else {
+        // 結局：顯示重新開始
+        restartBtn.style.display = "inline-block";
+      }
+    }
+
+    document.getElementById("restart").onclick = () => {
+      state = initialState();
+      currentScene = "intro";
+      render();
+    };
+
+    // 開始遊戲
+    render();
+  </script>
+</body>
+</html>
