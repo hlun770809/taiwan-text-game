@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>平凡青年異聞錄 · 動態屬性版</title>
+    <title>平凡青年異聞錄 · 抉擇之眼</title>
     <style>
         * {
             box-sizing: border-box;
@@ -34,10 +34,12 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: space-around;
+            align-items: center;
             gap: 12px 8px;
             border: 1px solid #3c4b5e;
             margin-bottom: 24px;
             box-shadow: inset 0 2px 5px #0a0c12;
+            position: relative;
         }
         .stat-item {
             display: flex;
@@ -62,6 +64,25 @@
             padding: 4px 10px;
             border-radius: 30px;
             color: white;
+        }
+        .preview-eye {
+            background: #2a3442;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            cursor: help;
+            border: 2px solid #9f7aea;
+            box-shadow: 0 4px 0 #0b0e13;
+            transition: 0.1s;
+        }
+        .preview-eye.active {
+            background: #9f7aea;
+            color: #1a1e2b;
+            border-color: #f5b342;
         }
         .event-window {
             background: #1b2330;
@@ -119,11 +140,6 @@
             transform: translateY(6px);
             box-shadow: 0 2px 0 #121722, 0 5px 10px black;
         }
-        .option-btn.disabled, .option-btn:disabled {
-            opacity: 0.5;
-            pointer-events: none;
-            filter: grayscale(0.5);
-        }
         .reset-btn {
             background: #393e5c;
             border: none;
@@ -160,75 +176,74 @@
     </style>
 </head>
 <body>
-<div class="game-container" id="gameContainer">
-    <div class="stats-panel" id="statsPanel">
+<div class="game-container">
+    <div class="stats-panel">
         <div class="stat-item stat-coin">💰金幣 <span class="stat-value" id="statCoin">50</span></div>
         <div class="stat-item stat-stamina">⚡體力 <span class="stat-value" id="statStamina">50</span></div>
         <div class="stat-item stat-mind">🧠精神 <span class="stat-value" id="statMind">50</span></div>
+        <div class="preview-eye" id="previewEye" title="預知狀態：關閉">👁️</div>
     </div>
-    <div class="event-window" id="eventWindow">
+    <div class="event-window">
         <div class="event-desc" id="eventDesc">載入故事中⋯⋯</div>
         <div class="event-tag" id="eventTag">✨ 平凡啟程</div>
     </div>
     <div class="options-area" id="optionsArea"></div>
     <button class="reset-btn" id="resetGameBtn">🔄 重新開始 · 異聞錄</button>
-    <div class="footer-note">🔥 屬性影響選擇 · 超過200種事件 · 10+結局</div>
+    <div class="footer-note">🔥 選項呼應事件 · 預知眼時隱時現 · 數十種結局</div>
 </div>
 
 <script>
-(function(){
+(function() {
     // ---------- 遊戲狀態 ----------
     let state = {
         coin: 50,
         stamina: 50,
         mind: 50,
-        currentEventId: 'M1'      // 起始主線
+        currentEventId: 'M1',
+        showEffectPreview: false,      // 是否在按鈕上顯示增減數值
     };
 
     // ---------- 事件資料庫 ----------
     const eventDB = new Map();
 
-    // ------------------- 輔助函式 -------------------
+    // ---------- 輔助函式 ----------
     const randElem = (arr) => arr[Math.floor(Math.random() * arr.length)];
     const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-    // 條件檢查函數 (支援簡單表達式)
+    // 條件檢查
     function checkCondition(conditionStr) {
         if (!conditionStr) return true;
         try {
-            // 將條件字串中的屬性替換為實際值
             const func = new Function('coin', 'stamina', 'mind', `return ${conditionStr};`);
             return func(state.coin, state.stamina, state.mind);
         } catch (e) {
-            console.warn('條件解析錯誤', conditionStr, e);
-            return true; // 預設顯示
+            console.warn('條件錯誤', conditionStr);
+            return true;
         }
     }
 
-    // 動態效果：可根據屬性調整數值 (例如 coin > 100 時效果加倍)
-    function computeEffect(effectTemplate) {
-        if (!effectTemplate) return { coin:0, stamina:0, mind:0 };
-        // 複製一份
-        let eff = { ...effectTemplate };
-        // 範例：若金幣很多，花費更傷；精神低時效果加重等
+    // 動態效果 (依屬性微調)
+    function computeEffect(baseEffect) {
+        if (!baseEffect) return { coin:0, stamina:0, mind:0 };
+        let eff = { ...baseEffect };
         if (eff.coin && typeof eff.coin === 'number') {
-            if (state.coin > 200 && eff.coin < 0) eff.coin = Math.floor(eff.coin * 1.5); // 越有錢損失越多
-            if (state.mind < 20 && eff.mind < 0) eff.mind = Math.floor(eff.mind * 1.3);  // 精神脆弱時更傷神
+            if (state.coin > 200 && eff.coin < 0) eff.coin = Math.floor(eff.coin * 1.5);
+            if (state.mind < 20 && eff.mind < 0) eff.mind = Math.floor(eff.mind * 1.3);
         }
         return eff;
     }
 
-    // ------------------- 豐富詞庫 -------------------
-    const scenes = {
-        horror: ['廢棄醫院的鬼影', '半夜手機傳來嬰兒笑聲', '鏡子裡的人眨眼', '床底下的濕髮', '電梯按了13樓卻不停', '背後腳步聲', '螢幕浮現「快逃」', '雨夜看見無臉人'],
-        funny: ['踩到香蕉皮滑進垃圾桶', '內褲穿反被女神發現', '被鴿子屎砸中頭獎', '自動販賣機找零吐出一堆乖乖', '誤闖阿伯的廣場舞陣型', '貓咪瘋狂舔你的腳趾', '參加滑稽模仿大賽得名'],
-        dark: ['同事偷偷把你的履歷丟掉', '房東漲租金並貼出凶宅證明', '發現女友是詐騙集團', '老婦人跌倒反而誣賴你', '銀行戶頭被凍結', '求職感謝函(嘲笑)', '摯友背後捅刀'],
-        temptation: ['神秘女子邀你參加私人派對', '投資群組「保證獲利」', '路邊撿到裝滿現金的錢包', '酒店經紀遞上名片', '免費試用頂級保健品', '賭場中介來搭訕'],
-        weird: ['巷子裡賣會說話的烤地瓜', '鄰居陽台種滿食人花', '7-11店員長出第三隻眼', '捷運站閘門唱京劇', '你的影子自己跑去買消夜', '大樓電梯直通異空間'],
-        current: ['AI取代了你的工作', '元宇宙炒房團跑路', '政府發放六千元卻限時24hr', '蛋價飆漲改養電子雞', 'Youtuber挑戰住凶宅', 'Threads上被炎上', '以巴衝突影響油價']
+    // ---------- 選項文本庫 (按標籤區分) ----------
+    const optionTextsByTag = {
+        '恐怖': ['👁️ 查看動靜', '🏃 逃離這裡', '🙈 閉眼不理', '🔦 拿出手機照亮', '📿 默念經文', '🕯️ 點燃火柴'],
+        '搞笑': ['😂 跟著大笑', '📱 拍片上傳', '🤷 裝作沒看見', '🎭 加入他們一起鬧', '🍌 踢開香蕉皮', '📢 大聲吐槽'],
+        '暗黑': ['😈 順從黑暗', '🌟 奮力抵抗', '🤔 暗中觀察', '📝 記下一切', '🔪 先發制人', '🕳️ 躲進角落'],
+        '誘惑': ['💋 接受誘惑', '🚫 嚴詞拒絕', '💸 試著殺價', '🏃 轉身就跑', '🤝 假裝配合', '💊 要求試用'],
+        '獵奇': ['🔍 靠近查看', '😱 尖叫逃離', '📦 撿回家', '📞 報警處理', '🧪 取樣研究', '🚫 不理會'],
+        '時事': ['📰 追蹤最新發展', '💬 上網帶風向', '🚶 冷眼旁觀', '🤝 參加集會', '📉 預測股市', '🧻 囤貨']
     };
 
-    // 效果模板 (部分會動態調整)
+    // 效果模板
     const effectTemplates = [
         { coin: 5, stamina: -2, mind: 1 },
         { coin: -8, stamina: 3, mind: -3 },
@@ -242,132 +257,123 @@
         { coin: 10, stamina: -3, mind: -7 }
     ];
 
-    // 生成選項 (可包含條件)
-    function createOption(textSeed, targetId, effect = null, condition = null) {
-        const baseEff = effect || randElem(effectTemplates);
-        return {
-            text: textSeed,
-            nextEvent: targetId,
-            baseEffect: { ...baseEff },
-            condition: condition,  // 字串，例如 "coin > 30 && stamina > 20"
-            // 計算實際效果的方法將在點擊時使用 computeEffect(baseEffect)
-        };
+    // 生成選項 (帶有對應標籤的文字、條件、可能切換預知眼)
+    function createOptionsForEvent(tag, count, baseTargetFunc) {
+        const pool = optionTextsByTag[tag] || optionTextsByTag['恐怖']; // 預設
+        // 隨機選取不重複的文本 (若count大於池子長度則重複)
+        const shuffled = [...pool].sort(() => Math.random() - 0.5);
+        const selectedTexts = [];
+        for (let i = 0; i < count; i++) {
+            selectedTexts.push(shuffled[i % shuffled.length]);
+        }
+
+        const options = [];
+        for (let i = 0; i < count; i++) {
+            const effect = randElem(effectTemplates);
+            const target = baseTargetFunc(i); // 根據索引決定目標
+            // 隨機決定是否為切換預知眼的選項 (機率8%)
+            const togglePreview = Math.random() < 0.08; 
+            // 隨機條件 (部分選項有門檻)
+            let condition = null;
+            if (Math.random() < 0.3) { // 30%機率帶條件
+                if (tag === '恐怖') condition = 'stamina > 20';
+                else if (tag === '誘惑') condition = 'coin > 30';
+                else if (tag === '暗黑') condition = 'mind < 70';
+                else condition = 'stamina > 15 && mind > 15';
+            }
+            options.push({
+                text: selectedTexts[i],
+                nextEvent: target,
+                baseEffect: effect,
+                condition: condition,
+                togglePreview: togglePreview,
+            });
+        }
+        return options;
     }
 
-    // ---------- 1. 生成主線事件 M1~M50 (動態條件) ----------
+    // ---------- 1. 主線 M1~M50 ----------
     for (let i = 1; i <= 50; i++) {
         const id = 'M' + i;
         const tag = randElem(['恐怖','搞笑','暗黑','誘惑','獵奇','時事']);
         let desc = '';
-        if (tag === '恐怖') desc = `👻 ` + randElem(scenes.horror) + '。';
-        else if (tag === '搞笑') desc = `🤣 ` + randElem(scenes.funny) + '！';
-        else if (tag === '暗黑') desc = `💀 ` + randElem(scenes.dark) + '⋯⋯';
-        else if (tag === '誘惑') desc = `💋 ` + randElem(scenes.temptation) + '，';
-        else if (tag === '獵奇') desc = `👁️ ` + randElem(scenes.weird) + '？！';
-        else desc = `📰 ` + randElem(scenes.current) + '。';
+        if (tag === '恐怖') desc = `👻 ` + randElem(['廢棄醫院的鬼影','半夜手機傳來嬰兒笑聲','鏡子裡的人眨眼','床底下的濕髮','電梯按了13樓卻不停','背後腳步聲','螢幕浮現「快逃」','雨夜看見無臉人']) + '。';
+        else if (tag === '搞笑') desc = `🤣 ` + randElem(['踩到香蕉皮滑進垃圾桶','內褲穿反被女神發現','被鴿子屎砸中頭獎','自動販賣機找零吐出一堆乖乖','誤闖阿伯的廣場舞陣型','貓咪瘋狂舔你的腳趾','參加滑稽模仿大賽得名']) + '！';
+        else if (tag === '暗黑') desc = `💀 ` + randElem(['同事偷偷把你的履歷丟掉','房東漲租金並貼出凶宅證明','發現女友是詐騙集團','老婦人跌倒反而誣賴你','銀行戶頭被凍結','求職感謝函(嘲笑)','摯友背後捅刀']) + '⋯⋯';
+        else if (tag === '誘惑') desc = `💋 ` + randElem(['神秘女子邀你參加私人派對','投資群組「保證獲利」','路邊撿到裝滿現金的錢包','酒店經紀遞上名片','免費試用頂級保健品','賭場中介來搭訕']) + '，';
+        else if (tag === '獵奇') desc = `👁️ ` + randElem(['巷子裡賣會說話的烤地瓜','鄰居陽台種滿食人花','7-11店員長出第三隻眼','捷運站閘門唱京劇','你的影子自己跑去買消夜','大樓電梯直通異空間']) + '？！';
+        else desc = `📰 ` + randElem(['AI取代了你的工作','元宇宙炒房團跑路','政府發放六千元卻限時24hr','蛋價飆漲改養電子雞','Youtuber挑戰住凶宅','Threads上被炎上','以巴衝突影響油價']) + '。';
 
-        // 根據屬性動態調整描述 (增加沉浸)
-        if (state && state.coin < 20) desc += ' 你摸著空空的錢包，更加焦慮。';
-        else if (state && state.stamina < 20) desc += ' 你累得眼皮打架，卻不能停下。';
+        // 根據屬性動態添加描述
+        if (state.coin < 20) desc += ' 你摸著空空的錢包，更加焦慮。';
+        else if (state.coin > 200) desc += ' 你財大氣粗，走路有風。';
+        if (state.stamina < 20) desc += ' 你累得眼皮打架，卻不能停下。';
+        if (state.mind < 20) desc += ' 精神恍惚，你開始出現幻覺。';
 
-        // 產生2~4個選項，部分帶條件
-        let options = [];
-        const optCount = randInt(3, 4); // 增加選項多樣性
-        for (let j = 0; j < optCount; j++) {
-            let optText = '';
-            let condition = null;
-            if (j === 0) optText = '🔹 穩健前進 (維持主線)';
-            else if (j === 1) optText = '🔸 鋌而走險 (可能分支)';
-            else if (j === 2) optText = '⚠️ 異想天開 (獵奇分支)';
-            else optText = '🌀 神秘捷徑 (屬性限制)';
+        // 生成選項 (數量3~4)
+        const optCount = randInt(3, 4);
+        const options = createOptionsForEvent(tag, optCount, (idx) => {
+            if (i === 50 && idx === 0) return 'E' + randInt(1,12);
+            const r = Math.random();
+            if (r < 0.5) return 'M' + (i+1 > 50 ? 50 : i+1);
+            else if (r < 0.8) return 'S' + randInt(1, 45);
+            else return 'R' + randInt(1, 35);
+        });
 
-            // 加入條件 (例如第三個選項需要體力>30)
-            if (j === 2) condition = 'stamina > 30';
-            if (j === 3) condition = 'mind > 40 && coin < 100';
-
-            // 決定目標
-            let target;
-            if (i === 50 && j === 0) target = 'E' + randInt(1,5);
-            else {
-                const r = Math.random();
-                if (r < 0.5) target = 'M' + (i+1 > 50 ? 50 : i+1);
-                else if (r < 0.8) target = 'S' + randInt(1, 40);
-                else target = 'R' + randInt(1, 35); // 增加隨機事件上限
-            }
-            options.push(createOption(optText, target, null, condition));
-        }
         eventDB.set(id, { id, desc, tag, options });
     }
 
-    // ---------- 2. 生成分線事件 S1~S45 (增加至45) ----------
+    // ---------- 2. 分線 S1~S45 ----------
     for (let i = 1; i <= 45; i++) {
         const id = 'S' + i;
         const tag = randElem(['恐怖','搞笑','暗黑','誘惑','獵奇','時事']);
         let desc = `🔀 分歧線·${i} ：`;
-        if (tag === '恐怖') desc += `🕸️ ` + randElem(scenes.horror) + ' 你捲入莫名恐懼。';
-        else if (tag === '搞笑') desc += `🍌 ` + randElem(scenes.funny) + ' 周圍人都在笑。';
-        else if (tag === '暗黑') desc += `🩸 ` + randElem(scenes.dark) + ' 你感到絕望。';
-        else if (tag === '誘惑') desc += `🍷 ` + randElem(scenes.temptation) + ' 慾望在招手。';
-        else if (tag === '獵奇') desc += `🐙 ` + randElem(scenes.weird) + ' 無法理解。';
-        else desc += `🌐 ` + randElem(scenes.current) + ' 這就是現代。';
+        if (tag === '恐怖') desc += `🕸️ ` + randElem(['廢棄醫院的地下室','鏡中浮現陌生臉孔','電梯裡的女人','床下的呼吸聲']) + ' 你捲入莫名恐懼。';
+        else if (tag === '搞笑') desc += `🍌 ` + randElem(['誤入老人卡拉OK大賽','被喜劇演員拉上臺','搞笑藝人傳授祕笈']) + ' 周圍人都在笑。';
+        else if (tag === '暗黑') desc += `🩸 ` + randElem(['職場霸凌','親人欠債跑路','被誣陷入獄']) + ' 你感到絕望。';
+        else if (tag === '誘惑') desc += `🍷 ` + randElem(['豪門聚會','加密貨幣礦場','直銷大會']) + ' 慾望在招手。';
+        else if (tag === '獵奇') desc += `🐙 ` + randElem(['街頭賣藝的怪人','深夜廣播的雜訊','鄰居家傳出呢喃']) + ' 無法理解。';
+        else desc += `🌐 ` + randElem(['深偽技術詐騙','虛擬貨幣暴跌','社群媒體炎上']) + ' 這就是現代。';
 
-        // 動態附加
-        if (state && state.mind > 80) desc += ' 你的精神敏銳，察覺到異樣。';
-        else if (state && state.stamina < 15) desc += ' 你氣喘吁吁，難以應付。';
-
-        let options = [];
         const optCount = randInt(2, 4);
-        for (let j = 0; j < optCount; j++) {
-            let optText = j===0 ? '🔻 順從本能' : (j===1 ? '🔺 抗拒逃離' : (j===2 ? '⚡ 孤注一擲' : '🌀 靜觀其變'));
-            let condition = null;
-            if (j === 2) condition = 'stamina > 25 && mind > 25';
-            if (j === 3) condition = 'coin > 50';
-
+        const options = createOptionsForEvent(tag, optCount, (idx) => {
             const r = Math.random();
-            let target;
-            if (r < 0.4) target = 'M' + randInt(1, 50);
-            else if (r < 0.65) target = 'S' + randInt(1, 45);
-            else if (r < 0.9) target = 'R' + randInt(1, 35);
-            else target = 'E' + randInt(1, 10);
-            options.push(createOption(optText, target, null, condition));
-        }
+            if (r < 0.4) return 'M' + randInt(1, 50);
+            else if (r < 0.65) return 'S' + randInt(1, 45);
+            else if (r < 0.9) return 'R' + randInt(1, 35);
+            else return 'E' + randInt(1, 12);
+        });
+
         eventDB.set(id, { id, desc, tag, options });
     }
 
-    // ---------- 3. 隨機事件 R1~R35 (增加至35) ----------
+    // ---------- 3. 隨機 R1~R35 ----------
     for (let i = 1; i <= 35; i++) {
         const id = 'R' + i;
         const tag = randElem(['恐怖','搞笑','暗黑','誘惑','獵奇','時事']);
         let desc = `🎲 隨機·${i}：`;
         switch(tag) {
-            case '恐怖': desc += `🪦 ` + randElem(scenes.horror)+ ` 心跳加速。`; break;
-            case '搞笑': desc += `😹 ` + randElem(scenes.funny)+ ` 你忍不住笑了。`; break;
-            case '暗黑': desc += `⚰️ ` + randElem(scenes.dark)+ ` 社會現實。`; break;
-            case '誘惑': desc += `💄 ` + randElem(scenes.temptation)+ ` 誘惑當前。`; break;
-            case '獵奇': desc += `🧿 ` + randElem(scenes.weird)+ ` 超出常理。`; break;
-            case '時事': desc += `📢 ` + randElem(scenes.current)+ ` 跟上話題。`; break;
+            case '恐怖': desc += `🪦 ` + randElem(['背後腳步聲','鏡子流血','窗外有臉']) + ` 心跳加速。`; break;
+            case '搞笑': desc += `😹 ` + randElem('踩到狗屎|被鴿子追|內褲鬆脫'.split('|')) + ` 你忍不住笑了。`; break;
+            case '暗黑': desc += `⚰️ ` + randElem('錢包被偷|收到兵單|確診隔離'.split('|')) + ` 社會現實。`; break;
+            case '誘惑': desc += `💄 ` + randElem('路邊發免費券|交友軟體配對|直銷邀請') + ` 誘惑當前。`; break;
+            case '獵奇': desc += `🧿 ` + randElem('天空下青蛙|電梯裡的神像|會說話的自動販賣機') + ` 超出常理。`; break;
+            case '時事': desc += `📢 ` + randElem('總統大選|奧運轉播|最新迷因') + ` 跟上話題。`; break;
         }
 
-        let options = [];
         const optCount = randInt(2, 3);
-        for (let j = 0; j < optCount; j++) {
-            let optText = j===0 ? '🎭 接受現實' : (j===1 ? '🕳️ 頑強抵抗' : '🌟 順其自然');
-            let condition = null;
-            if (j === 1) condition = 'stamina > 20';
-            if (j === 2) condition = 'mind < 60';
-
+        const options = createOptionsForEvent(tag, optCount, (idx) => {
             const r = Math.random();
-            let target;
-            if (r < 0.5) target = 'M' + randInt(1, 50);
-            else if (r < 0.8) target = 'R' + randInt(1, 35);
-            else if (r < 0.95) target = 'S' + randInt(1, 45);
-            else target = 'E' + randInt(1,10);
-            options.push(createOption(optText, target, null, condition));
-        }
+            if (r < 0.5) return 'M' + randInt(1, 50);
+            else if (r < 0.8) return 'R' + randInt(1, 35);
+            else if (r < 0.95) return 'S' + randInt(1, 45);
+            else return 'E' + randInt(1, 12);
+        });
+
         eventDB.set(id, { id, desc, tag, options });
     }
 
-    // ---------- 4. 結局事件 E1~E12 (增加至12) ----------
+    // ---------- 4. 結局 E1~E12 ----------
     const endingList = [
         { name:'平凡永生', desc:'你度過了毫無波瀾的一生。在搖椅上睡去，再也沒醒來。', coin:0, stamina:0, mind:0 },
         { name:'瘋狂邊緣', desc:'精神歸零⋯你看著虛空低語，被送入療養院。', coin:-30, stamina:-20, mind:-100 },
@@ -401,10 +407,11 @@
         }
     }
 
-    // ---------- 介面元素 ----------
+    // ---------- UI 元素 ----------
     const statCoin = document.getElementById('statCoin');
     const statStamina = document.getElementById('statStamina');
     const statMind = document.getElementById('statMind');
+    const previewEye = document.getElementById('previewEye');
     const eventDesc = document.getElementById('eventDesc');
     const eventTag = document.getElementById('eventTag');
     const optionsArea = document.getElementById('optionsArea');
@@ -414,6 +421,14 @@
         statCoin.innerText = state.coin;
         statStamina.innerText = state.stamina;
         statMind.innerText = state.mind;
+        // 更新預知眼狀態
+        if (state.showEffectPreview) {
+            previewEye.classList.add('active');
+            previewEye.title = '預知狀態：開啟 (可看見選擇的後果)';
+        } else {
+            previewEye.classList.remove('active');
+            previewEye.title = '預知狀態：關閉 (後果隱藏)';
+        }
     }
 
     function checkExtremeEnding() {
@@ -427,7 +442,6 @@
     }
 
     function applyEffect(baseEffect) {
-        // 先計算動態效果
         const effect = computeEffect(baseEffect);
         if (effect.coin) state.coin = Math.max(-999, Math.min(999, state.coin + effect.coin));
         if (effect.stamina) state.stamina = Math.max(0, Math.min(200, state.stamina + effect.stamina));
@@ -448,15 +462,8 @@
             return;
         }
 
-        // 動態更新描述 (重新抓取當前狀態)
+        // 動態描述 (可依屬性再微調)
         let finalDesc = ev.desc;
-        // 如果事件是主線且屬性較低，添加情緒描述
-        if (ev.id.startsWith('M')) {
-            if (state.coin < 20) finalDesc += ' 你摸著空空的錢包，更加焦慮。';
-            else if (state.coin > 200) finalDesc += ' 你財大氣粗，走路有風。';
-            if (state.stamina < 20) finalDesc += ' 你累得眼皮打架，卻不能停下。';
-            if (state.mind < 20) finalDesc += ' 精神恍惚，你開始出現幻覺。';
-        }
         eventDesc.innerText = finalDesc;
         eventTag.innerText = `#${ev.id} · ${ev.tag || '未知'}`;
 
@@ -485,18 +492,33 @@
             return;
         }
 
-        // 過濾選項：只保留條件為true的
+        // 過濾符合條件的選項
         const availableOptions = ev.options.filter(opt => checkCondition(opt.condition));
 
         availableOptions.forEach((opt) => {
             const btn = document.createElement('button');
             btn.className = 'option-btn';
-            // 計算預覽效果 (使用當前屬性計算)
-            const previewEff = computeEffect(opt.baseEffect);
-            const effText = ` [💰${previewEff.coin>0?'+':''}${previewEff.coin} ⚡${previewEff.stamina>0?'+':''}${previewEff.stamina} 🧠${previewEff.mind>0?'+':''}${previewEff.mind}]`;
-            btn.innerText = opt.text + effText;
-            btn.addEventListener('click', (e) => {
-                applyEffect(opt.baseEffect);  // 使用基底效果，內部會再動態計算
+
+            // 根據 showEffectPreview 決定是否顯示效果文字
+            let btnText = opt.text;
+            if (state.showEffectPreview) {
+                const previewEff = computeEffect(opt.baseEffect);
+                const effStr = ` [💰${previewEff.coin>0?'+':''}${previewEff.coin} ⚡${previewEff.stamina>0?'+':''}${previewEff.stamina} 🧠${previewEff.mind>0?'+':''}${previewEff.mind}]`;
+                btnText += effStr;
+            }
+            btn.innerText = btnText;
+
+            btn.addEventListener('click', () => {
+                // 先套用效果 (可能改變屬性)
+                applyEffect(opt.baseEffect);
+
+                // 處理預知眼切換 (如果選項有 togglePreview)
+                if (opt.togglePreview) {
+                    state.showEffectPreview = !state.showEffectPreview;
+                    updateStatsUI(); // 更新眼睛圖示
+                }
+
+                // 切換事件
                 if (opt.nextEvent && eventDB.has(opt.nextEvent)) {
                     state.currentEventId = opt.nextEvent;
                 } else {
@@ -509,7 +531,7 @@
             optionsArea.appendChild(btn);
         });
 
-        // 如果沒有可用選項，提供一個默認選項返回主線
+        // 若無可用選項，提供返回主線
         if (availableOptions.length === 0) {
             const fallbackBtn = document.createElement('button');
             fallbackBtn.className = 'option-btn';
@@ -527,7 +549,8 @@
             coin: 50,
             stamina: 50,
             mind: 50,
-            currentEventId: 'M1'
+            currentEventId: 'M1',
+            showEffectPreview: false,
         };
         for (let ev of eventDB.values()) {
             ev._applied = false;
